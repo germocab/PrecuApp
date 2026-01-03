@@ -16,274 +16,236 @@
             --bg: #f2f2f7;
             --card: #ffffff;
             --accent: #007aff;
-            --gray: #e5e5ea;
-            --safe-bottom: env(safe-area-inset-bottom);
+            --text: #000000;
+            --gray: #8e8e93;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); overflow: hidden; position: fixed; width: 100%; }
-
-        .app-container { width: 100%; max-width: 430px; height: 100vh; margin: 0 auto; position: relative; }
-
-        /* Sistema de pantallas mejorado para móvil */
-        .screen {
-            position: absolute; inset: 0; display: flex; flex-direction: column; padding: 20px;
-            padding-top: env(safe-area-inset-top); background: var(--bg);
-            opacity: 0; pointer-events: none; z-index: 1;
-            transition: opacity 0.2s ease-in-out;
-        }
-        .screen.active { opacity: 1; pointer-events: all; z-index: 10; }
-
-        .scroll-area { flex: 1; overflow-y: auto; padding-bottom: 100px; -webkit-overflow-scrolling: touch; }
-        .stat-card { background: var(--card); border-radius: 22px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .progress-bar { width: 100%; height: 10px; background: var(--gray); border-radius: 5px; overflow: hidden; margin-top: 10px; }
-        .fill { height: 100%; background: var(--accent); transition: width 0.8s ease; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         
-        .history-item { 
-            display: flex; align-items: center; background: var(--card); padding: 12px; 
-            border-radius: 18px; margin-bottom: 10px; gap: 12px; border: none; width: 100%;
+        body { 
+            margin: 0; background: var(--bg); color: var(--text);
+            overflow: hidden; position: fixed; width: 100%; height: 100%; 
         }
-        .history-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; background: var(--gray); }
 
-        .bottom-card { background: var(--card); border-radius: 30px; padding: 22px; margin-top: auto; margin-bottom: calc(15px + var(--safe-bottom)); box-shadow: 0 -10px 30px rgba(0,0,0,0.05); }
-        .photo-area { width: 100%; height: 100px; background: #f2f2f7; border-radius: 18px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; border: 2px dashed #c7c7cc; position: relative; overflow: hidden; }
-        #p-pre { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+        /* Sistema de Navegación Infalible */
+        .page {
+            position: absolute; inset: 0; display: none; flex-direction: column;
+            padding: 20px; padding-top: calc(20px + env(safe-area-inset-top));
+        }
+        .page.active { display: flex; }
+
+        .scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 120px; }
         
-        .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
-        .chip { background: var(--gray); padding: 10px 14px; border-radius: 15px; font-size: 13px; font-weight: 600; border: none; color: #333; }
+        /* UI Components */
+        h1 { font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px; }
+        .card { background: var(--card); border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        
+        .progress-bg { background: #e5e5ea; height: 12px; border-radius: 6px; margin-top: 10px; overflow: hidden; }
+        .progress-fill { background: var(--accent); height: 100%; border-radius: 6px; width: 0%; transition: width 0.6s cubic-bezier(0.1, 0.5, 0.5, 1); }
+
+        .btn-main { 
+            background: #000; color: #fff; border: none; padding: 20px; 
+            border-radius: 18px; font-size: 17px; font-weight: 700; width: 100%; 
+            margin-top: 10px; transition: transform 0.1s;
+        }
+        .btn-main:active { transform: scale(0.97); opacity: 0.8; }
+        
+        .fab { 
+            position: fixed; bottom: calc(30px + env(safe-area-inset-bottom)); right: 20px; 
+            width: 65px; height: 65px; background: #000; color: #fff; border-radius: 50%; 
+            font-size: 35px; border: none; box-shadow: 0 8px 25px rgba(0,0,0,0.2); z-index: 100;
+        }
+
+        /* Listado */
+        .item { 
+            display: flex; align-items: center; background: #fff; padding: 12px; 
+            border-radius: 18px; margin-bottom: 10px; gap: 15px; border: none; width: 100%; text-align: left;
+        }
+        .item-img { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; background: #eee; }
+
+        /* Chips Categorías */
+        .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
+        .chip { background: #e5e5ea; border: none; padding: 10px 15px; border-radius: 12px; font-size: 14px; font-weight: 600; color: #333; }
         .chip.active { background: var(--accent); color: white; }
 
-        input { width: 100%; border: none; border-bottom: 2px solid var(--gray); padding: 12px 0; font-size: 17px; margin-bottom: 15px; background: transparent; border-radius: 0; }
-        
-        .btn-main { width: 100%; padding: 20px; border-radius: 20px; background: #000; color: #fff; border: none; font-size: 17px; font-weight: 700; cursor: pointer; display: block; }
-        .btn-main:active { background: #333; }
+        /* Estilo de Inputs */
+        label { font-size: 14px; font-weight: 600; color: var(--gray); margin-left: 5px; }
+        input { 
+            width: 100%; padding: 15px; border: 1px solid #e5e5ea; border-radius: 12px; 
+            margin-top: 5px; margin-bottom: 20px; font-size: 17px; background: #fafafa;
+        }
 
-        .fab { position: fixed; bottom: calc(30px + var(--safe-bottom)); right: 20px; width: 64px; height: 64px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 100; border: none; }
-
-        .hour-display { font-size: 80px; font-weight: 900; text-align: center; margin: 10px 0; }
-
-        #detail-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; display: none; align-items: flex-end; }
-        .modal-content { width: 100%; background: #fff; border-radius: 30px 30px 0 0; padding: 25px; padding-bottom: calc(30px + var(--safe-bottom)); }
+        /* Modal */
+        #modal { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
+            display: none; flex-direction: column; justify-content: flex-end; z-index: 1000;
+        }
+        .modal-body { background: #fff; border-radius: 30px 30px 0 0; padding: 30px; padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    
-    <section id="scr-dash" class="screen active">
-        <div class="scroll-area">
-            <h1 style="font-size: 32px; letter-spacing: -1px;">Servicio Pro</h1>
-            <div class="stat-card">
-                <div style="display:flex; justify-content:space-between"><b id="lbl-m">Enero</b><span id="txt-m">0 / 50h</span></div>
-                <div class="progress-bar"><div id="bar-m" class="fill"></div></div>
-            </div>
-            <div class="stat-card">
-                <div style="display:flex; justify-content:space-between"><b>Año de Servicio</b><span id="txt-y">0 / 600h</span></div>
-                <div class="progress-bar"><div id="bar-y" class="fill" style="background:#34c759"></div></div>
-            </div>
-            <div id="hist-list"></div>
-        </div>
-        <button class="fab" id="btn-add">+</button>
-    </section>
-
-    <section id="scr-entry" class="screen">
-        <div style="flex:1"><h1>Detalles</h1></div>
-        <div class="bottom-card">
-            <div class="chips" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button id="t-day" class="chip active">Día</button>
-                <button id="t-month" class="chip">Ajuste Mes</button>
-            </div>
-
-            <div id="v-day">
-                <div class="photo-area" id="area-photo">
-                    <img id="p-pre">
-                    <span id="p-lbl">📸 Añadir Foto</span>
+    <div id="p-dash" class="page active">
+        <div class="scroll">
+            <h1>PrecuApp</h1>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between">
+                    <b id="month-name">Mes</b> <span id="month-txt" style="font-weight: 700;">0 / 50h</span>
                 </div>
-                <div class="chips">
-                    <button class="chip cat">Casa en casa</button>
-                    <button class="chip cat">Carritos</button>
-                    <button class="chip cat">Informal</button>
-                    <button class="chip cat">Cartas</button>
+                <div class="progress-bg"><div id="month-bar" class="progress-fill"></div></div>
+            </div>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between">
+                    <b>Año de Servicio</b> <span id="year-txt" style="font-weight: 700;">0 / 600h</span>
                 </div>
-                <input type="text" id="a-name" placeholder="Actividad...">
-                <input type="date" id="a-date">
+                <div class="progress-bg"><div id="year-bar" class="progress-fill" style="background:#34c759"></div></div>
             </div>
-
-            <div id="v-month" style="display:none">
-                <div class="chips" id="m-chips"></div>
-            </div>
-            
-            <button class="btn-main" id="btn-to-hours">Continuar</button>
-            <button class="btn-cancel" style="width:100%; background:none; border:none; color:#8e8e93; margin-top:15px; font-weight:600" id="btn-close-entry">Cerrar</button>
+            <div id="history-list"></div>
         </div>
-        <input type="file" id="f-in" accept="image/*" style="display:none">
-    </section>
+        <button class="fab" onclick="showPage('entry')">+</button>
+    </div>
 
-    <section id="scr-hours" class="screen">
-        <div style="flex:1"><h1>Tiempo</h1></div>
-        <div class="bottom-card">
-            <div class="hour-display" id="h-val">1h</div>
-            <div style="display:flex; justify-content:center; gap:30px; margin-bottom:40px">
-                <button class="btn-h" id="h-minus" style="width:75px; height:75px; border-radius:50%; border:none; background:#eee; font-size:32px">−</button>
-                <button class="btn-h" id="h-plus" style="width:75px; height:75px; border-radius:50%; border:none; background:#eee; font-size:32px">+</button>
+    <div id="p-entry" class="page">
+        <h1>Registrar</h1>
+        <div class="scroll">
+            <div class="card">
+                <label>¿Qué actividad realizaste?</label>
+                <div class="chip-group">
+                    <button class="chip" onclick="setAct('Casa en casa', this)">Casa en casa</button>
+                    <button class="chip" onclick="setAct('Carritos', this)">Carritos</button>
+                    <button class="chip" onclick="setAct('Informal', this)">Informal</button>
+                    <button class="chip" onclick="setAct('Cartas', this)">Cartas</button>
+                    <button class="chip" onclick="setAct('Telefónico', this)">Telefónico</button>
+                </div>
+                <input type="text" id="in-name" placeholder="Ej: Revisitas, Predicación...">
+                
+                <label>Evidencia (Opcional):</label>
+                <input type="file" id="in-file" accept="image/*">
+                
+                <label>Fecha:</label>
+                <input type="date" id="in-date">
             </div>
-            <button class="btn-main" id="btn-save">Guardar Registro</button>
-        </div>
-    </section>
-
-    <div id="detail-modal">
-        <div class="modal-content">
-            <img id="m-img" style="width:100%; border-radius:20px; margin-bottom:20px; max-height:250px; object-fit: cover;">
-            <h2 id="m-tit" style="margin:0"></h2>
-            <p id="m-met" style="color:#8e8e93; margin-bottom:25px"></p>
-            <button class="btn-main" style="background:#ff3b30; margin-bottom:12px" id="m-del">Eliminar</button>
-            <button class="btn-main" style="background:#eee; color:#000" id="btn-close-mod">Volver</button>
+            <button class="btn-main" onclick="showPage('hours')">Continuar</button>
+            <button onclick="showPage('dash')" style="width:100%; background:none; border:none; color:var(--gray); margin-top:15px; font-weight: 600;">Cancelar</button>
         </div>
     </div>
-</div>
 
-<script>
-    // USAMOS EVENT LISTENERS EN LUGAR DE ONCLICK EN EL HTML PARA MÁXIMA COMPATIBILIDAD
-    let db = JSON.parse(localStorage.getItem('db_v33')) || [];
-    let cur = { mode: 'day', name: '', hrs: 1, img: null, ms: Date.now() };
-    const mNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    <div id="p-hours" class="page">
+        <h1>Tiempo</h1>
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <div id="display-h" style="font-size:100px; font-weight:900; letter-spacing: -4px;">1h</div>
+            <div style="display:flex; gap:30px; margin-top:20px">
+                <button onclick="addH(-1)" style="width:80px; height:80px; border-radius:50%; border:none; background:#e5e5ea; font-size:35px; font-weight:bold;">−</button>
+                <button onclick="addH(1)" style="width:80px; height:80px; border-radius:50%; border:none; background:#e5e5ea; font-size:35px; font-weight:bold;">+</button>
+            </div>
+        </div>
+        <button class="btn-main" onclick="save()">Confirmar y Guardar</button>
+    </div>
 
-    function nav(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('scr-' + id).classList.add('active');
-    }
+    <div id="modal" onclick="closeModal()">
+        <div class="modal-body" onclick="event.stopPropagation()">
+            <img id="m-img" style="width:100%; border-radius:20px; margin-bottom:20px; max-height:280px; object-fit:cover; display:none">
+            <h2 id="m-name" style="margin:0; font-size: 24px;"></h2>
+            <p id="m-info" style="color:var(--gray); font-size: 17px; margin-top: 5px;"></p>
+            <button class="btn-main" style="background:#ff3b30" id="m-del">Eliminar Registro</button>
+            <button class="btn-main" style="background:#f2f2f7; color:#000; margin-top:12px" onclick="closeModal()">Volver</button>
+        </div>
+    </div>
 
-    // Inicialización de eventos al cargar
-    window.addEventListener('DOMContentLoaded', () => {
-        // Generar chips de meses
-        const mTeo = ["Sep 25", "Oct 25", "Nov 25", "Dic 25", "Ene 26", "Feb 26", "Mar 26", "Abr 26", "May 26", "Jun 26", "Jul 26", "Ago 26"];
-        const grid = document.getElementById('m-chips');
-        mTeo.forEach((m, i) => {
-            const btn = document.createElement('button');
-            btn.className = 'chip';
-            btn.innerText = m;
-            btn.onclick = () => {
-                document.querySelectorAll('#m-chips .chip').forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                cur.name = "Ajuste " + m;
-                cur.ms = new Date(i < 4 ? 2025 : 2026, (8 + i) % 12, 2).getTime();
-            };
-            grid.appendChild(btn);
-        });
+    <script>
+        let db = JSON.parse(localStorage.getItem('precuapp_db')) || [];
+        let temp = { name: '', date: '', hours: 1, img: null };
+        const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
-        // Eventos de Navegación
-        document.getElementById('btn-add').onclick = () => {
-            cur = { mode: 'day', name: '', hrs: 1, img: null, ms: Date.now() };
-            document.getElementById('p-pre').style.display = 'none';
-            document.getElementById('p-lbl').style.display = 'block';
-            document.getElementById('a-name').value = '';
-            document.getElementById('a-date').valueAsDate = new Date();
-            document.getElementById('h-val').innerText = '1h';
-            nav('entry');
-        };
-
-        document.getElementById('btn-to-hours').onclick = () => nav('hours');
-        document.getElementById('btn-close-entry').onclick = () => nav('dash');
-        
-        document.getElementById('t-day').onclick = () => {
-            cur.mode = 'day';
-            document.getElementById('t-day').classList.add('active');
-            document.getElementById('t-month').classList.remove('active');
-            document.getElementById('v-day').style.display = 'block';
-            document.getElementById('v-month').style.display = 'none';
-        };
-
-        document.getElementById('t-month').onclick = () => {
-            cur.mode = 'month';
-            document.getElementById('t-month').classList.add('active');
-            document.getElementById('t-day').classList.remove('active');
-            document.getElementById('v-day').style.display = 'none';
-            document.getElementById('v-month').style.display = 'block';
-        };
-
-        // Categorías
-        document.querySelectorAll('.chip.cat').forEach(btn => {
-            btn.onclick = () => {
-                document.querySelectorAll('.chip.cat').forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById('a-name').value = btn.innerText;
-            };
-        });
-
-        // Foto
-        document.getElementById('area-photo').onclick = () => document.getElementById('f-in').click();
-        document.getElementById('f-in').onchange = (e) => {
-            if (e.target.files && e.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    cur.img = ev.target.result;
-                    document.getElementById('p-pre').src = ev.target.result;
-                    document.getElementById('p-pre').style.display = 'block';
-                    document.getElementById('p-lbl').style.display = 'none';
-                };
-                reader.readAsDataURL(e.target.files[0]);
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('p-' + id).classList.add('active');
+            if(id === 'entry') {
+                document.getElementById('in-date').valueAsDate = new Date();
+                temp = { name: '', date: '', hours: 1, img: null };
+                document.getElementById('display-h').innerText = '1h';
+                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
             }
+        }
+
+        function setAct(name, el) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('in-name').value = name;
+        }
+
+        document.getElementById('in-file').onchange = function(e) {
+            const reader = new FileReader();
+            reader.onload = function() { temp.img = reader.result; };
+            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
         };
 
-        // Horas
-        document.getElementById('h-plus').onclick = () => { cur.hrs++; document.getElementById('h-val').innerText = cur.hrs + 'h'; };
-        document.getElementById('h-minus').onclick = () => { if(cur.hrs > 0) cur.hrs--; document.getElementById('h-val').innerText = cur.hrs + 'h'; };
+        function addH(val) {
+            temp.hours = Math.max(0, temp.hours + val);
+            document.getElementById('display-h').innerText = temp.hours + 'h';
+        }
 
-        // GUARDAR
-        document.getElementById('btn-save').onclick = () => {
-            if(cur.mode === 'day') {
-                cur.name = document.getElementById('a-name').value || 'Servicio';
-                cur.ms = new Date(document.getElementById('a-date').value).getTime() + 43200000;
-            }
-            db.unshift({...cur});
-            localStorage.setItem('db_v33', JSON.stringify(db));
+        function save() {
+            temp.name = document.getElementById('in-name').value || 'Servicio';
+            temp.date = document.getElementById('in-date').value;
+            db.unshift({...temp});
+            localStorage.setItem('precuapp_db', JSON.stringify(db));
             render();
-            nav('dash');
-        };
+            showPage('dash');
+        }
 
-        document.getElementById('btn-close-mod').onclick = clsMod;
+        function render() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = '<h3 style="margin-top:30px">Historial</h3>';
+            let tM = 0, tY = 0;
+            const now = new Date();
+            document.getElementById('month-name').innerText = meses[now.getMonth()] + " " + now.getFullYear();
+
+            db.forEach((item, i) => {
+                const d = new Date(item.date + "T12:00:00");
+                tY += item.hours;
+                if(d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) tM += item.hours;
+
+                const btn = document.createElement('button');
+                btn.className = 'item';
+                btn.onclick = () => showDetail(i);
+                btn.innerHTML = `
+                    <img src="${item.img || ''}" class="item-img" style="${!item.img ? 'background:#e5e5ea' : ''}">
+                    <div style="flex:1">
+                        <b style="font-size:17px">${item.name}</b><br>
+                        <small style="color:var(--gray)">${d.toLocaleDateString()} • ${item.hours}h</small>
+                    </div>
+                `;
+                list.appendChild(btn);
+            });
+
+            document.getElementById('month-txt').innerText = `${tM} / 50h`;
+            document.getElementById('month-bar').style.width = Math.min((tM/50)*100, 100) + '%';
+            document.getElementById('year-txt').innerText = `${tY} / 600h`;
+            document.getElementById('year-bar').style.width = Math.min((tY/600)*100, 100) + '%';
+        }
+
+        function showDetail(i) {
+            const item = db[i];
+            const m = document.getElementById('modal');
+            const img = document.getElementById('m-img');
+            img.src = item.img || '';
+            img.style.display = item.img ? 'block' : 'none';
+            document.getElementById('m-name').innerText = item.name;
+            document.getElementById('m-info').innerText = `${new Date(item.date + "T12:00:00").toLocaleDateString()} • ${item.hours} horas`;
+            document.getElementById('m-del').onclick = () => {
+                if(confirm('¿Eliminar este registro?')) {
+                    db.splice(i, 1);
+                    localStorage.setItem('precuapp_db', JSON.stringify(db));
+                    render();
+                    closeModal();
+                }
+            };
+            m.style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
         render();
-    });
-
-    function render() {
-        const list = document.getElementById('hist-list');
-        list.innerHTML = '<h2 style="font-size: 18px; margin: 20px 0 10px">Historial</h2>';
-        let tY = 0, tM = 0;
-        const now = new Date();
-        document.getElementById('lbl-m').innerText = mNames[now.getMonth()] + " " + now.getFullYear();
-
-        db.forEach((item, i) => {
-            const d = new Date(item.ms);
-            tY += item.hrs;
-            if(d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) tM += item.hrs;
-
-            const div = document.createElement('div');
-            div.className = 'history-item';
-            div.onclick = () => opMod(i);
-            div.innerHTML = `
-                <img src="${item.img || ''}" class="history-img" style="${!item.img ? 'background:#eee' : ''}">
-                <div style="flex:1"><b>${item.name}</b><small style="display:block; color:#8e8e93">${d.toLocaleDateString()} • ${item.hrs}h</small></div>
-            `;
-            list.appendChild(div);
-        });
-
-        document.getElementById('txt-m').innerText = `${tM} / 50h`;
-        document.getElementById('bar-m').style.width = Math.min((tM/50)*100, 100) + '%';
-        document.getElementById('txt-y').innerText = `${tY} / 600h`;
-        document.getElementById('bar-y').style.width = Math.min((tY/600)*100, 100) + '%';
-    }
-
-    function opMod(i) {
-        const item = db[i];
-        document.getElementById('m-img').src = item.img || '';
-        document.getElementById('m-img').style.display = item.img ? 'block' : 'none';
-        document.getElementById('m-tit').innerText = item.name;
-        document.getElementById('m-met').innerText = `${new Date(item.ms).toLocaleDateString()} • ${item.hrs}h`;
-        document.getElementById('m-del').onclick = () => { if(confirm('¿Borrar?')) { db.splice(i, 1); localStorage.setItem('db_v33', JSON.stringify(db)); render(); clsMod(); }};
-        document.getElementById('detail-modal').style.display = 'flex';
-    }
-
-    function clsMod() { document.getElementById('detail-modal').style.display = 'none'; }
-</script>
+    </script>
 </body>
 </html>
