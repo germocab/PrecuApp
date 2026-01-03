@@ -23,9 +23,8 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-main); overflow: hidden; }
 
-        .app-container { width: 100%; max-width: 430px; height: 100vh; margin: 0 auto; position: relative; display: flex; flex-direction: column; }
+        .app-container { width: 100%; max-width: 430px; height: 100vh; margin: 0 auto; position: relative; }
 
-        /* --- Pantallas --- */
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; padding: 20px;
@@ -36,56 +35,59 @@
         .screen.next { transform: translateX(100%); }
         .screen.prev { transform: translateX(-30%); opacity: 0; }
 
-        .content { flex: 1; overflow-y: auto; padding-top: 40px; }
-        h1 { font-size: 28px; font-weight: 800; margin-bottom: 10px; }
+        .content { flex: 1; padding-top: 20px; }
+        h1 { font-size: 26px; font-weight: 800; margin-bottom: 5px; }
 
-        /* --- Tarjeta de Actividad (Abajo) --- */
+        /* --- Selector de Modo Superior (Pestañas) --- */
+        .tab-selector {
+            display: grid; grid-template-columns: 1fr 1fr; 
+            background: var(--ios-gray); border-radius: 12px;
+            padding: 3px; margin-bottom: 20px;
+        }
+        .tab {
+            padding: 8px; border-radius: 10px; text-align: center;
+            font-size: 13px; font-weight: 600; color: #8e8e93; cursor: pointer;
+        }
+        .tab.active { background: white; color: var(--text-main); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        /* --- Tarjeta Principal --- */
         .bottom-card {
-            background: var(--card-bg);
-            border-radius: 35px;
-            padding: 25px;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
-            margin-bottom: calc(30px + var(--safe-bottom));
-            width: 100%;
+            background: var(--card-bg); border-radius: 30px;
+            padding: 22px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+            margin-bottom: calc(25px + var(--safe-bottom));
         }
 
         .photo-box {
-            width: 100%; height: 140px; background: #e5e5ea; border-radius: 25px;
+            width: 100%; height: 120px; background: #f2f2f7; border-radius: 20px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #8e8e93; margin-bottom: 20px; font-size: 14px; font-weight: 500;
+            color: #8e8e93; margin-bottom: 15px; font-size: 13px;
         }
 
-        .input-group { margin-bottom: 20px; }
-        .field-label { font-size: 11px; font-weight: 700; color: #8e8e93; text-transform: uppercase; margin-bottom: 8px; display: block; }
-        
-        input[type="text"] {
+        .field-label { font-size: 11px; font-weight: 700; color: #8e8e93; text-transform: uppercase; margin-bottom: 6px; display: block; }
+        input[type="text"], input[type="date"] {
             width: 100%; border: none; border-bottom: 2px solid var(--ios-gray);
-            padding: 10px 0; font-size: 18px; outline: none; background: transparent;
+            padding: 8px 0; font-size: 17px; outline: none; background: transparent; margin-bottom: 15px;
         }
 
-        /* --- Píldoras de Categoría --- */
-        .chips-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; justify-content: flex-start; }
+        .chips-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
         .chip {
-            background: var(--ios-gray); padding: 8px 16px; border-radius: 20px;
-            font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s;
+            background: var(--ios-gray); padding: 7px 14px; border-radius: 18px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
         }
         .chip.active { background: var(--accent); color: white; }
-        .chip.special { background: var(--text-main); color: white; }
+
+        /* Selector de Mes (Oculto por defecto) */
+        .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
 
         .btn-main {
-            width: 100%; padding: 18px; border-radius: 20px; background: var(--text-main);
-            color: white; border: none; font-size: 17px; font-weight: 700; cursor: pointer;
+            width: 100%; padding: 16px; border-radius: 18px; background: var(--text-main);
+            color: white; border: none; font-size: 16px; font-weight: 700; cursor: pointer;
         }
 
-        /* --- Selector de Horas --- */
-        .hour-wrap { display: flex; align-items: center; justify-content: space-around; margin: 40px 0; }
-        .circle-btn { width: 65px; height: 65px; border-radius: 50%; background: var(--ios-gray); border: none; font-size: 28px; }
-        #hour-input { width: 120px; text-align: center; border: none; background: transparent; font-size: 70px; font-weight: 800; outline: none; }
-
-        /* --- Resumen --- */
-        .stat-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; }
-        .progress-bar { width: 100%; height: 10px; background: var(--ios-gray); border-radius: 5px; overflow: hidden; margin-top: 10px; }
-        .fill { height: 100%; background: var(--accent); transition: width 0.6s ease; }
+        /* --- Pantalla Horas --- */
+        .hour-wrap { display: flex; align-items: center; justify-content: space-around; margin: 30px 0; }
+        .circle-btn { width: 55px; height: 55px; border-radius: 50%; background: var(--ios-gray); border: none; font-size: 24px; }
+        #hour-input { width: 110px; text-align: center; border: none; background: transparent; font-size: 60px; font-weight: 800; outline: none; }
     </style>
 </head>
 <body>
@@ -93,25 +95,35 @@
 <div class="app-container">
     
     <section id="screen1" class="screen active">
-        <div class="content"><h1>Actividad</h1></div>
+        <div class="content"><h1>Nuevo Registro</h1></div>
+        
         <div class="bottom-card">
-            <div class="photo-box">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:8px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                Añadir una foto
-            </div>
-            
-            <div class="input-group">
-                <span class="field-label">Nombre de la actividad</span>
-                <input type="text" id="act-name" placeholder="Escribe o elige abajo...">
+            <div class="tab-selector">
+                <div id="tab-day" class="tab active" onclick="setMode('day')">Día Individual</div>
+                <div id="tab-month" class="tab" onclick="setMode('month')">Ajuste de Mes</div>
             </div>
 
-            <div class="chips-grid">
-                <div class="chip" onclick="setCat(this)">Casa en casa</div>
-                <div class="chip" onclick="setCat(this)">Informal</div>
-                <div class="chip" onclick="setCat(this)">Estudio</div>
-                <div class="chip" onclick="setCat(this)">Carrito</div>
-                <div class="chip" onclick="setCat(this)">Revisita</div>
-                <div class="chip special" onclick="nav(4)">Ajuste Mes</div>
+            <div id="view-day">
+                <div class="photo-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:5px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    Añadir foto
+                </div>
+                <span class="field-label">Actividad</span>
+                <input type="text" id="act-name" placeholder="Nombre de actividad...">
+                <div class="chips-grid">
+                    <div class="chip" onclick="setCat(this)">Casa en casa</div>
+                    <div class="chip" onclick="setCat(this)">Informal</div>
+                    <div class="chip" onclick="setCat(this)">Estudio</div>
+                    <div class="chip" onclick="setCat(this)">Carrito</div>
+                    <div class="chip" onclick="setCat(this)">Revisita</div>
+                </div>
+                <span class="field-label">Fecha</span>
+                <input type="date" id="act-date">
+            </div>
+
+            <div id="view-month" style="display:none">
+                <span class="field-label">Selecciona el mes teocrático</span>
+                <div class="month-grid" id="month-list"></div>
             </div>
 
             <button class="btn-main" onclick="nav(2)">Continuar</button>
@@ -126,45 +138,41 @@
                 <input type="number" id="hour-input" value="1" inputmode="numeric">
                 <button class="circle-btn" onclick="modH(1)">+</button>
             </div>
-            <button class="btn-main" onclick="save()">Guardar Registro</button>
+            <button class="btn-main" onclick="save()">Confirmar y Guardar</button>
         </div>
     </section>
 
     <section id="screen3" class="screen next">
         <div class="content">
-            <h1>Progreso</h1>
-            <div class="stat-card">
-                <div style="display:flex; justify-content:space-between; font-weight:700"><span>Mes actual</span><span id="txt-m">0 / 50h</span></div>
-                <div class="progress-bar"><div id="bar-m" class="fill"></div></div>
-            </div>
-            <div class="stat-card">
-                <div style="display:flex; justify-content:space-between; font-weight:700"><span>Año de Servicio</span><span id="txt-y">0 / 600h</span></div>
-                <div class="progress-bar"><div id="bar-y" class="fill" style="background:#34c759"></div></div>
-            </div>
+            <h1>Resumen</h1>
+            <div id="summary-cards"></div>
         </div>
-        <div style="padding:20px"><button class="btn-main" onclick="location.reload()">Nueva Entrada</button></div>
-    </section>
-
-    <section id="screen4" class="screen next">
-        <div class="content"><h1>Elegir Mes</h1></div>
-        <div class="bottom-card">
-            <div class="chips-grid" id="month-grid"></div>
-            <button class="btn-main" onclick="nav(2)">Confirmar Mes</button>
-        </div>
+        <div style="padding:20px"><button class="btn-main" onclick="location.reload()">Nuevo Registro</button></div>
     </section>
 
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('db_v21_final')) || [];
-    let cur = { name: '', hrs: 1, ms: Date.now() };
+    let db = JSON.parse(localStorage.getItem('db_v22')) || [];
+    let cur = { mode: 'day', name: '', hrs: 1, ms: Date.now() };
 
-    // Cargar meses teocráticos
+    // Inicializar fecha
+    document.getElementById('act-date').valueAsDate = new Date();
+
+    // Cargar meses
     const meses = ["Sep 25", "Oct 25", "Nov 25", "Dic 25", "Ene 26", "Feb 26", "Mar 26", "Abr 26", "May 26", "Jun 26", "Jul 26", "Ago 26"];
-    const mGrid = document.getElementById('month-grid');
+    const mList = document.getElementById('month-list');
     meses.forEach(m => {
-        mGrid.innerHTML += `<div class="chip" onclick="setMonth(this, '${m}')">${m}</div>`;
+        mList.innerHTML += `<div class="chip" onclick="setMonth(this, '${m}')">${m}</div>`;
     });
+
+    function setMode(m) {
+        cur.mode = m;
+        document.getElementById('tab-day').classList.toggle('active', m === 'day');
+        document.getElementById('tab-month').classList.toggle('active', m === 'month');
+        document.getElementById('view-day').style.display = m === 'day' ? 'block' : 'none';
+        document.getElementById('view-month').style.display = m === 'month' ? 'block' : 'none';
+    }
 
     function setCat(el) {
         document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
@@ -173,12 +181,10 @@
     }
 
     function setMonth(el, m) {
-        document.querySelectorAll('#month-grid .chip').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.month-grid .chip').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
         cur.name = "Total " + m;
-        // Simulamos el inicio del mes para el registro
         cur.ms = new Date(2025, 8 + meses.indexOf(m), 1).getTime();
-        document.getElementById('act-name').value = cur.name;
     }
 
     function nav(n) {
@@ -194,25 +200,15 @@
     }
 
     function save() {
-        cur.name = document.getElementById('act-name').value || 'Servicio';
+        if(cur.mode === 'day') {
+            cur.name = document.getElementById('act-name').value || 'Servicio';
+            cur.ms = new Date(document.getElementById('act-date').value).getTime();
+        }
         cur.hrs = parseInt(document.getElementById('hour-input').value) || 0;
         db.push({...cur});
-        localStorage.setItem('db_v21_final', JSON.stringify(db));
-        render();
+        localStorage.setItem('db_v22', JSON.stringify(db));
         nav(3);
     }
-
-    function render() {
-        let total = db.reduce((a, b) => a + b.hrs, 0);
-        document.getElementById('txt-y').innerText = `${total} / 600h`;
-        document.getElementById('bar-y').style.width = Math.min((total/600)*100, 100) + '%';
-        
-        let mTotal = db.filter(i => new Date(i.ms).getMonth() === new Date().getMonth()).reduce((a,b) => a+b.hrs, 0);
-        document.getElementById('txt-m').innerText = `${mTotal} / 50h`;
-        document.getElementById('bar-m').style.width = Math.min((mTotal/50)*100, 100) + '%';
-    }
-
-    window.onload = render;
 </script>
 </body>
 </html>
