@@ -9,6 +9,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
 <link rel="manifest" href="favicon_io/site.webmanifest">
+    
     <title>PrecuApp</title>
     <style>
         :root {
@@ -24,20 +25,16 @@
 
         .app-container { width: 100%; max-width: 430px; height: 100vh; margin: 0 auto; position: relative; }
 
-        /* Pantallas con transiciones fijas */
         .screen {
-            position: absolute; inset: 0; 
-            display: flex; flex-direction: column; padding: 20px;
-            padding-top: env(safe-area-inset-top);
-            background: var(--bg);
-            transition: transform 0.3s ease-out, opacity 0.3s;
-            pointer-events: none; opacity: 0; transform: translateX(50px);
+            position: absolute; inset: 0; display: flex; flex-direction: column; padding: 20px;
+            padding-top: env(safe-area-inset-top); background: var(--bg);
+            transition: transform 0.3s ease-out, opacity 0.3s; pointer-events: none; opacity: 0; transform: translateX(30px);
         }
         .screen.active { opacity: 1; transform: translateX(0); pointer-events: all; z-index: 10; }
 
         /* Dashboard */
         .scroll-area { flex: 1; overflow-y: auto; padding-bottom: 100px; -webkit-overflow-scrolling: touch; }
-        .stat-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .stat-card { background: var(--card); border-radius: 22px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .progress-bar { width: 100%; height: 10px; background: var(--gray); border-radius: 5px; overflow: hidden; margin-top: 10px; }
         .fill { height: 100%; background: var(--accent); transition: width 0.8s ease; }
         
@@ -50,21 +47,21 @@
 
         /* Formulario */
         .bottom-card { background: var(--card); border-radius: 30px; padding: 22px; margin-top: auto; margin-bottom: calc(15px + var(--safe-bottom)); box-shadow: 0 -10px 30px rgba(0,0,0,0.05); }
-        .photo-area { width: 100%; height: 120px; background: #f2f2f7; border-radius: 20px; margin-bottom: 15px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #c7c7cc; }
-        #photo-preview { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .photo-area { width: 100%; height: 110px; background: #f2f2f7; border-radius: 18px; margin-bottom: 15px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #c7c7cc; }
+        #p-pre { width: 100%; height: 100%; object-fit: cover; display: none; }
         
-        .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
-        .chip { background: var(--gray); padding: 10px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+        .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 15px 0; }
+        .chip { background: var(--gray); padding: 8px 14px; border-radius: 15px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; color: #333; }
         .chip.active { background: var(--accent); color: white; }
 
-        input { width: 100%; border: none; border-bottom: 2px solid var(--gray); padding: 12px 0; font-size: 17px; margin-bottom: 15px; background: transparent; }
+        input { width: 100%; border: none; border-bottom: 2px solid var(--gray); padding: 10px 0; font-size: 17px; margin-bottom: 12px; background: transparent; }
         
-        .btn-main { width: 100%; padding: 20px; border-radius: 20px; background: #000; color: #fff; border: none; font-size: 17px; font-weight: 700; cursor: pointer; }
+        .btn-main { width: 100%; padding: 18px; border-radius: 18px; background: #000; color: #fff; border: none; font-size: 17px; font-weight: 700; cursor: pointer; }
         .btn-main:active { opacity: 0.6; transform: scale(0.98); }
 
         .fab { position: fixed; bottom: calc(30px + var(--safe-bottom)); right: 20px; width: 64px; height: 64px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 100; border: none; }
 
-        .hour-display { font-size: 80px; font-weight: 900; text-align: center; margin: 20px 0; }
+        .hour-display { font-size: 70px; font-weight: 900; text-align: center; margin: 15px 0; }
 
         /* Detalle Modal */
         #detail-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; display: none; align-items: flex-end; }
@@ -95,7 +92,7 @@
     <section id="scr-entry" class="screen">
         <div style="flex:1"><h1>Registrar</h1></div>
         <div class="bottom-card">
-            <div class="chips">
+            <div class="chips" style="display: grid; grid-template-columns: 1fr 1fr;">
                 <button id="t-day" class="chip active" onclick="setMode('day')">Día</button>
                 <button id="t-month" class="chip" onclick="setMode('month')">Ajuste Mes</button>
             </div>
@@ -106,6 +103,15 @@
                     <img id="p-pre">
                     <span id="p-lbl">📸 Añadir Foto</span>
                 </div>
+                
+                <div class="chips">
+                    <button class="chip cat" onclick="setCat(this)">Casa en casa</button>
+                    <button class="chip cat" onclick="setCat(this)">Carritos</button>
+                    <button class="chip cat" onclick="setCat(this)">Informal</button>
+                    <button class="chip cat" onclick="setCat(this)">Cartas</button>
+                    <button class="chip cat" onclick="setCat(this)">Telefónico</button>
+                </div>
+                
                 <input type="text" id="a-name" placeholder="Nombre de actividad">
                 <input type="date" id="a-date">
             </div>
@@ -115,7 +121,7 @@
             </div>
             
             <button class="btn-main" onclick="nav('hours')">Continuar</button>
-            <button onclick="nav('dash')" style="width:100%; background:none; border:none; color:#8e8e93; margin-top:15px">Cancelar</button>
+            <button onclick="nav('dash')" style="width:100%; background:none; border:none; color:#8e8e93; margin-top:10px">Cerrar</button>
         </div>
     </section>
 
@@ -123,7 +129,7 @@
         <div style="flex:1"><h1>Horas</h1></div>
         <div class="bottom-card">
             <div class="hour-display" id="h-val">1h</div>
-            <div style="display:flex; justify-content:center; gap:30px; margin-bottom:40px">
+            <div style="display:flex; justify-content:center; gap:25px; margin-bottom:30px">
                 <button onclick="modH(-1)" style="width:70px; height:70px; border-radius:50%; border:none; background:#eee; font-size:30px">−</button>
                 <button onclick="modH(1)" style="width:70px; height:70px; border-radius:50%; border:none; background:#eee; font-size:30px">+</button>
             </div>
@@ -133,17 +139,17 @@
 
     <div id="detail-modal" onclick="clsMod()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="m-img" style="width:100%; border-radius:20px; margin-bottom:20px">
+            <img id="m-img" style="width:100%; border-radius:20px; margin-bottom:20px; max-height:250px; object-fit: cover;">
             <h2 id="m-tit"></h2>
             <p id="m-met" style="color:#8e8e93"></p>
             <button class="btn-main" style="background:#ff3b30; margin-bottom:10px" id="m-del">Eliminar</button>
-            <button class="btn-main" style="background:#eee; color:#000" onclick="clsMod()">Cerrar</button>
+            <button class="btn-main" style="background:#eee; color:#000" onclick="clsMod()">Volver</button>
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('db_v31')) || [];
+    let db = JSON.parse(localStorage.getItem('db_v32')) || [];
     let cur = { mode: 'day', name: '', hrs: 1, img: null, ms: Date.now() };
     const mNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
     const mTeo = ["Sep 25", "Oct 25", "Nov 25", "Dic 25", "Ene 26", "Feb 26", "Mar 26", "Abr 26", "May 26", "Jun 26", "Jul 26", "Ago 26"];
@@ -165,6 +171,7 @@
         document.getElementById('p-lbl').style.display = 'block';
         document.getElementById('a-name').value = '';
         document.getElementById('a-date').valueAsDate = new Date();
+        document.querySelectorAll('.chip.cat').forEach(c => c.classList.remove('active'));
         document.getElementById('h-val').innerText = '1h';
         setMode('day');
         nav('entry');
@@ -175,12 +182,18 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 cur.img = e.target.result;
-                document.getElementById('p-pre').src = e.target.result;
-                document.getElementById('p-pre').style.display = 'block';
+                const p = document.getElementById('p-pre');
+                p.src = e.target.result; p.style.display = 'block';
                 document.getElementById('p-lbl').style.display = 'none';
             };
             reader.readAsDataURL(input.files[0]);
         }
+    }
+
+    function setCat(el) {
+        document.querySelectorAll('.chip.cat').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('a-name').value = el.innerText;
     }
 
     function setMode(m) {
@@ -206,7 +219,7 @@
             cur.ms = new Date(document.getElementById('a-date').value).getTime() + 43200000;
         }
         db.unshift({...cur});
-        localStorage.setItem('db_v31', JSON.stringify(db));
+        localStorage.setItem('db_v32', JSON.stringify(db));
         render();
         nav('dash');
     }
@@ -242,7 +255,7 @@
         document.getElementById('m-img').style.display = item.img ? 'block' : 'none';
         document.getElementById('m-tit').innerText = item.name;
         document.getElementById('m-met').innerText = `${new Date(item.ms).toLocaleDateString()} • ${item.hrs}h`;
-        document.getElementById('m-del').onclick = () => { if(confirm('¿Borrar?')) { db.splice(i, 1); localStorage.setItem('db_v31', JSON.stringify(db)); render(); clsMod(); }};
+        document.getElementById('m-del').onclick = () => { if(confirm('¿Borrar registro?')) { db.splice(i, 1); localStorage.setItem('db_v32', JSON.stringify(db)); render(); clsMod(); }};
         document.getElementById('detail-modal').style.display = 'flex';
         setTimeout(() => document.querySelector('.modal-content').style.transform = 'translateY(0)', 10);
     }
