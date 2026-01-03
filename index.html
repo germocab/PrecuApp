@@ -3,241 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Servicio Pro">
-    <meta name="apple-mobile-web-app-title" content="PrecuApp">
-    <meta name="mobile-web-app-capable" content="yes">
-
+    <link rel="manifest" href="data:application/manifest+json,{'name':'PrecuApp','display':'standalone','background_color':'#d1d1d1'}">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
 <link rel="manifest" href="favicon_io/site.webmanifest">
-
-    <link rel="manifest" href="data:application/manifest+json,{'name':'Servicio Pro','short_name':'Servicio','start_url':'.','display':'standalone','background_color':'#f2f2f7','theme_color':'#f2f2f7'}">
-
- 
+    
     <title>PrecuApp</title>
     <style>
         :root {
-            --bg-color: #f2f2f7;
-            --accent-color: #007aff;
-            --ios-gray: #e5e5ea;
-            --text-main: #000000;
-            /* Soporte para el notch de iPhone */
-            --safe-top: env(safe-area-inset-top);
+            --bg-main: #d1d1d1; /* El gris de fondo de tu imagen */
+            --card-bg: #e0e0e0;
+            --accent: #007aff;
             --safe-bottom: env(safe-area-inset-bottom);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: white; overflow: hidden; }
 
-        body, html { 
-            margin: 0; padding: 0; height: 100%; 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            overflow: hidden; 
-            /* Evita el rebote del scroll en iOS */
-            position: fixed;
-            width: 100%;
+        .app-container { width: 100%; max-width: 430px; height: 100vh; margin: 0 auto; display: flex; align-items: center; justify-content: center; background: #fff; }
+
+        .screen { 
+            position: absolute; width: 90%; max-width: 380px; 
+            background: var(--bg-main); border-radius: 50px; 
+            padding: 30px 20px; box-sizing: border-box;
+            display: flex; flex-direction: column; align-items: center;
+            transition: 0.4s ease; visibility: hidden; opacity: 0;
+        }
+        .screen.active { visibility: visible; opacity: 1; }
+
+        h2 { font-size: 24px; font-weight: 700; margin-top: 0; margin-bottom: 20px; color: #000; }
+
+        /* --- Zona de Foto --- */
+        .photo-placeholder {
+            width: 100%; height: 150px; background: #bdbdbd; border-radius: 25px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #666; cursor: pointer; margin-bottom: 20px;
         }
 
-        .app-container { 
-            width: 100%; max-width: 430px; height: 100vh; 
-            margin: 0 auto; position: relative; 
-            padding-top: var(--safe-top);
+        /* --- Input Estilo Imagen --- */
+        .input-group { width: 100%; margin-bottom: 20px; }
+        input[type="text"], input[type="date"], input[type="number"] {
+            width: 100%; background: transparent; border: none;
+            border-bottom: 2px solid #9e9e9e; font-size: 20px; padding: 10px 0;
+            outline: none; color: #333;
         }
 
-        .screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            visibility: hidden; padding: 20px; background: var(--bg-color);
+        /* --- Chips de Actividad --- */
+        .chips-container { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 30px; }
+        .chip {
+            background: white; padding: 10px 18px; border-radius: 25px;
+            font-size: 14px; font-weight: 500; color: #000; cursor: pointer;
+            transition: all 0.2s; border: 2px solid transparent;
+        }
+        .chip.selected { background: var(--accent); color: white; }
+
+        /* --- Botón Continuar --- */
+        .btn-continue {
+            width: 100%; background: white; border-radius: 30px; padding: 18px;
+            border: none; font-size: 20px; font-weight: 600; color: #000;
+            cursor: pointer; margin-top: auto;
         }
 
-        .screen.active { transform: translateX(0); visibility: visible; z-index: 10; }
-        .screen.next { transform: translateX(100%); }
-        .screen.prev { transform: translateX(-30%); opacity: 0; }
+        /* Pantalla 2: Horas */
+        .hour-display { font-size: 80px; font-weight: 800; background: transparent; border: none; text-align: center; width: 150px; }
+        .controls { display: flex; align-items: center; gap: 30px; margin: 40px 0; }
+        .btn-circle { width: 60px; height: 60px; border-radius: 50%; background: #bdbdbd; border: none; font-size: 30px; cursor: pointer; }
 
-        .content { flex: 1; overflow-y: auto; padding-top: 20px; padding-bottom: 20px; }
-        h1 { font-size: 28px; font-weight: 800; margin-bottom: 15px; letter-spacing: -0.5px; }
-
-        .bottom-panel { 
-            background: white; 
-            border-radius: 30px; 
-            padding: 25px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
-            margin-bottom: calc(40px + var(--safe-bottom)); /* Ajuste dinámico para el botón Home */
-            margin-top: 10px;
-        }
-
-        .field-label { display: block; font-size: 11px; font-weight: 700; color: #8e8e93; text-transform: uppercase; margin-bottom: 8px; }
-        input { width: 100%; border: none; background: #f2f2f7; padding: 14px; border-radius: 12px; font-size: 17px; outline: none; margin-bottom: 15px; font-family: inherit; }
-
-        .mode-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .mode-btn { background: #fff; border: 1.5px solid var(--ios-gray); padding: 12px; border-radius: 12px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; }
-        .mode-btn.selected { border-color: var(--accent-color); color: var(--accent-color); background: #f0f7ff; }
-
-        .month-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
-        .month-chip { background: #f2f2f7; padding: 10px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 500; cursor: pointer; border: 1.5px solid transparent; }
-        .month-chip.selected { border-color: var(--accent-color); background: #fff; color: var(--accent-color); }
-
-        .btn-ios { width: 100%; padding: 18px; border-radius: 16px; background: var(--text-main); color: white; border: none; font-size: 17px; font-weight: 600; cursor: pointer; }
-
-        .hour-selector { display: flex; align-items: center; justify-content: space-around; margin: 30px 0; }
-        .btn-circle { width: 60px; height: 60px; border-radius: 50%; background: #e5e5ea; border: none; font-size: 30px; cursor: pointer;}
-        #hour-input { width: 140px; background: transparent; border: none; font-size: 80px; font-weight: 800; text-align: center; color: var(--text-main); }
-
-        .goals-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; }
-        .goal-label { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; font-weight: 600; }
-        .progress-bar { width: 100%; height: 10px; background: var(--ios-gray); border-radius: 5px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--accent-color); transition: width 0.8s ease-out; }
-        .progress-fill.annual { background: #34c759; }
-
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f2f2f7; }
-        .fab { position: fixed; bottom: calc(30px + var(--safe-bottom)); right: 20px; width: 60px; height: 60px; background: var(--text-main); color: white; border-radius: 50%; border: none; font-size: 35px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 100; cursor: pointer;}
+        /* Pantalla 3: Resumen */
+        .mini-card { background: white; border-radius: 20px; padding: 15px; width: 100%; margin-bottom: 10px; }
+        .progress-bg { background: #eee; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+        .progress-fill { background: var(--accent); height: 100%; width: 0%; transition: 0.5s; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-
+    
     <section id="screen1" class="screen active">
-        <div class="content"><h1>Nuevo registro</h1></div>
-        <div class="bottom-panel">
-            <span class="field-label">Tipo de entrada</span>
-            <div class="mode-selector">
-                <div id="mode-day" class="mode-btn selected" onclick="setMode('day')">Día Individual</div>
-                <div id="mode-month" class="mode-btn" onclick="setMode('month')">Ajuste de Mes</div>
-            </div>
-
-            <div id="form-day">
-                <span class="field-label">Título</span>
-                <input type="text" id="act-name" placeholder="Ej. Predicación">
-                <span class="field-label">Fecha</span>
-                <input type="date" id="act-date">
-            </div>
-
-            <div id="form-month" style="display:none">
-                <span class="field-label">Mes de Servicio</span>
-                <div class="month-selector" id="month-grid"></div>
-            </div>
-
-            <button class="btn-ios" onclick="nav(2)">Continuar</button>
+        <h2>Datos de la actividad</h2>
+        
+        <div class="photo-placeholder" onclick="alert('Cámara no disponible en este demo')">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span>Añadir una foto</span>
         </div>
+
+        <div class="input-group">
+            <input type="text" id="act-name" placeholder="Nombre">
+        </div>
+
+        <div class="chips-container">
+            <div class="chip" onclick="selectChip(this)">Casa en casa</div>
+            <div class="chip" onclick="selectChip(this)">Informal</div>
+            <div class="chip" onclick="selectChip(this)">Estudio</div>
+            <div class="chip" onclick="selectChip(this)">Carrito</div>
+            <div class="chip" onclick="selectChip(this)">Revisita</div>
+            <div class="chip" style="background:#000; color:#fff" onclick="nav(4)">Ajuste Mes</div>
+        </div>
+
+        <button class="btn-continue" onclick="nav(2)">Continuar</button>
     </section>
 
-    <section id="screen2" class="screen next">
-        <div class="content"><h1>Horas totales</h1></div>
-        <div class="bottom-panel">
-            <div class="hour-selector">
-                <button class="btn-circle" onclick="modH(-1)">−</button>
-                <input type="number" id="hour-input" value="1" pattern="[0-9]*" inputmode="numeric">
-                <button class="btn-circle" onclick="modH(1)">+</button>
-            </div>
-            <button class="btn-ios" onclick="save()">Confirmar y Guardar</button>
+    <section id="screen2" class="screen">
+        <h2>¿Cuántas horas?</h2>
+        <div class="controls">
+            <button class="btn-circle" onclick="modH(-1)">-</button>
+            <input type="number" id="hour-input" class="hour-display" value="1" inputmode="numeric">
+            <button class="btn-circle" onclick="modH(1)">+</button>
         </div>
+        <button class="btn-continue" onclick="save()">Confirmar</button>
     </section>
 
-    <section id="screen3" class="screen next">
-        <div class="content">
-            <h1>Resumen</h1>
-            <div class="goals-card">
-                <div class="goal-item"><div class="goal-label"><span>Meta Mensual</span><span id="txt-month">0 / 50h</span></div><div class="progress-bar"><div id="bar-month" class="progress-fill" style="width: 0%"></div></div></div>
-                <div class="goal-item" style="margin-top:15px"><div class="goal-label"><span>Año de Servicio 2026</span><span id="txt-year">0 / 600h</span></div><div class="progress-bar"><div id="bar-year" class="progress-fill annual" style="width: 0%"></div></div></div>
-            </div>
-            <div class="goals-card" style="margin-bottom: 100px;"><div id="history-list"></div></div>
+    <section id="screen3" class="screen">
+        <h2>Resumen</h2>
+        <div class="mini-card">
+            <div style="display:flex; justify-content:space-between"><span>Mes</span><strong id="txt-m">0/50</strong></div>
+            <div class="progress-bg"><div id="bar-m" class="progress-fill"></div></div>
         </div>
-        <button class="fab" onclick="reset()">+</button>
+        <div class="mini-card">
+            <div style="display:flex; justify-content:space-between"><span>Año</span><strong id="txt-y">0/600</strong></div>
+            <div class="progress-bg"><div id="bar-y" class="progress-fill" style="background:#34c759"></div></div>
+        </div>
+        <button class="btn-continue" onclick="location.reload()">Nuevo Registro</button>
     </section>
+
+    <section id="screen4" class="screen">
+        <h2>Elegir Mes</h2>
+        <div class="chips-container" id="month-grid"></div>
+        <button class="btn-continue" onclick="nav(2)">Siguiente</button>
+    </section>
+
 </div>
 
 <script>
-    // Se ha actualizado la clave de base de datos para esta versión nativa
-    let db = JSON.parse(localStorage.getItem('db_v12_pwa')) || [];
-    let cur = { name: '', hrs: 1, ms: 0, mode: 'day' };
-    const mesesLabel = ["Sep 25", "Oct 25", "Nov 25", "Dic 25", "Ene 26", "Feb 26", "Mar 26", "Abr 26", "May 26", "Jun 26", "Jul 26", "Ago 26"];
-    const mesesFecha = [new Date(2025,8,1), new Date(2025,9,1), new Date(2025,10,1), new Date(2025,11,1), new Date(2026,0,1), new Date(2026,1,1), new Date(2026,2,1), new Date(2026,3,1), new Date(2026,4,1), new Date(2026,5,1), new Date(2026,6,1), new Date(2026,7,1)];
+    let db = JSON.parse(localStorage.getItem('db_v20')) || [];
+    let cur = { name: '', hrs: 1, ms: Date.now() };
 
-    window.onload = () => {
-        document.getElementById('act-date').value = new Date().toISOString().split('T')[0];
-        const grid = document.getElementById('month-grid');
-        mesesLabel.forEach((m, i) => grid.innerHTML += `<div class="month-chip" onclick="selMonth(this, ${i})">${m}</div>`);
-        if(db.length > 0) { render(); nav(3, true); }
-        document.getElementById('hour-input').addEventListener('input', (e) => { cur.hrs = parseInt(e.target.value) || 0; });
-    };
+    // Generar Meses
+    const meses = ["Sep 25", "Oct 25", "Nov 25", "Dic 25", "Ene 26", "Feb 26", "Mar 26", "Abr 26", "May 26", "Jun 26", "Jul 26", "Ago 26"];
+    const grid = document.getElementById('month-grid');
+    meses.forEach(m => {
+        grid.innerHTML += `<div class="chip" onclick="selectMonth(this, '${m}')">${m}</div>`;
+    });
 
-    function setMode(m) {
-        cur.mode = m;
-        document.getElementById('mode-day').className = `mode-btn ${m === 'day' ? 'selected' : ''}`;
-        document.getElementById('mode-month').className = `mode-btn ${m === 'month' ? 'selected' : ''}`;
-        document.getElementById('form-day').style.display = m === 'day' ? 'block' : 'none';
-        document.getElementById('form-month').style.display = m === 'month' ? 'block' : 'none';
-    }
-
-    function selMonth(el, i) {
-        document.querySelectorAll('.month-chip').forEach(c => c.classList.remove('selected'));
+    function selectChip(el) {
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected');
-        cur.ms = mesesFecha[i].getTime();
-        cur.name = "Total " + mesesLabel[i];
+        document.getElementById('act-name').value = el.innerText;
     }
 
-    function nav(n, inst = false) {
-        if(n === 2 && cur.mode === 'day') {
-            const d = document.getElementById('act-date').value;
-            const dp = d.split('-');
-            cur.ms = new Date(dp[0], dp[1]-1, dp[2]).getTime();
-            cur.name = document.getElementById('act-name').value || 'Servicio';
-        }
-        if(n === 2 && cur.mode === 'month' && !cur.ms) return alert("Selecciona un mes");
-
-        const ss = document.querySelectorAll('.screen');
-        ss.forEach((s, i) => {
-            s.style.transition = inst ? 'none' : 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-            s.className = `screen ${i+1 === n ? 'active' : (i+1 < n ? 'prev' : 'next')}`;
-        });
+    function selectMonth(el, m) {
+        document.querySelectorAll('#month-grid .chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        cur.name = "Total " + m;
+        cur.ms = new Date(2025, 8, 1).getTime(); // Simplificado para el ejemplo
     }
 
-    function modH(v) { cur.hrs = Math.max(0, cur.hrs + v); document.getElementById('hour-input').value = cur.hrs; }
+    function nav(n) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screen'+n).classList.add('active');
+    }
+
+    function modH(v) { 
+        let inp = document.getElementById('hour-input');
+        inp.value = Math.max(0, parseInt(inp.value) + v);
+    }
 
     function save() {
-        db.unshift({ id: Date.now(), n: cur.name, h: cur.hrs, ms: cur.ms, mode: cur.mode });
-        db.sort((a, b) => b.ms - a.ms);
-        localStorage.setItem('db_v12_pwa', JSON.stringify(db));
-        render(); nav(3);
+        cur.name = document.getElementById('act-name').value || cur.name || 'Servicio';
+        cur.hrs = parseInt(document.getElementById('hour-input').value);
+        db.push({...cur});
+        localStorage.setItem('db_v20', JSON.stringify(db));
+        updateUI();
+        nav(3);
     }
 
-    function render() {
-        const list = document.getElementById('history-list');
-        const now = new Date();
-        const start = new Date(2025, 8, 1).getTime();
-        const end = new Date(2026, 7, 31, 23, 59).getTime();
-        let mTotal = 0; let yTotal = 0;
-        list.innerHTML = '';
-        db.forEach(item => {
-            const d = new Date(item.ms);
-            if(d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) mTotal += item.h;
-            if(item.ms >= start && item.ms <= end) yTotal += item.h;
-            list.innerHTML += `<div class="history-item"><div><b>${item.n}</b><br><small style="color:#8e8e93">${d.toLocaleDateString('es-ES', {day:'2-digit', month:'short'})}</small></div><div style="display:flex; align-items:center"><strong>${item.h}h</strong><span style="color:#ff3b30; margin-left:15px; font-weight:bold; cursor:pointer" onclick="remove(${item.id})">×</span></div></div>`;
-        });
-        document.getElementById('txt-month').innerText = `${mTotal} / 50h`;
-        document.getElementById('bar-month').style.width = Math.min((mTotal / 50) * 100, 100) + '%';
-        document.getElementById('txt-year').innerText = `${yTotal} / 600h`;
-        document.getElementById('bar-year').style.width = Math.min((yTotal / 600) * 100, 100) + '%';
-    }
-
-    function remove(id) { if(confirm('¿Eliminar?')){ db = db.filter(i => i.id !== id); localStorage.setItem('db_v12_pwa', JSON.stringify(db)); render(); } }
-
-    function reset() {
-        cur = { name: '', hrs: 1, ms: 0, mode: 'day' };
-        document.getElementById('hour-input').value = 1;
-        document.getElementById('act-name').value = '';
-        document.querySelectorAll('.month-chip').forEach(c => c.classList.remove('selected'));
-        setMode('day');
-        nav(1);
+    function updateUI() {
+        let totalY = db.reduce((a, b) => a + b.hrs, 0);
+        document.getElementById('txt-y').innerText = totalY + '/600h';
+        document.getElementById('bar-y').style.width = (totalY/600*100) + '%';
+        document.getElementById('txt-m').innerText = (totalY % 50) + '/50h'; // Ejemplo
+        document.getElementById('bar-m').style.width = ((totalY % 50)/50*100) + '%';
     }
 </script>
 </body>
 </html>
-
