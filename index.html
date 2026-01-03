@@ -3,38 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Servicio Pro">
-    <meta name="theme-color" content="#f2f2f7">
-    
-    <link rel="manifest" href="data:application/manifest+json,{'name':'Servicio Pro','short_name':'Servicio','start_url':'.','display':'standalone','background_color':'#f2f2f7','theme_color':'#007aff','description':'Gestor de tiempo teocrático'}">
+    <meta name="apple-mobile-web-app-title" content="PrecuApp">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+<link rel="manifest" href="favicon_io/site.webmanifest">
+
+    <link rel="manifest" href="data:application/manifest+json,{'name':'Servicio Pro','short_name':'Servicio','start_url':'.','display':'standalone','background_color':'#f2f2f7','theme_color':'#f2f2f7'}">
 
     <title>Servicio Pro</title>
+    <title>PrecuApp</title>
     <style>
         :root {
             --bg-color: #f2f2f7;
             --accent-color: #007aff;
             --ios-gray: #e5e5ea;
             --text-main: #000000;
+            /* Soporte para el notch de iPhone */
             --safe-top: env(safe-area-inset-top);
             --safe-bottom: env(safe-area-inset-bottom);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
+
         body, html { 
             margin: 0; padding: 0; height: 100%; 
             font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
             background-color: var(--bg-color); 
             color: var(--text-main); 
             overflow: hidden; 
+            /* Evita el rebote del scroll en iOS */
             position: fixed;
             width: 100%;
         }
 
-        /* Contenedor principal ajustado para el Notch */
         .app-container { 
             width: 100%; max-width: 430px; height: 100vh; 
             margin: 0 auto; position: relative; 
@@ -60,7 +68,7 @@
             border-radius: 30px; 
             padding: 25px; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
-            margin-bottom: calc(40px + var(--safe-bottom));
+            margin-bottom: calc(40px + var(--safe-bottom)); /* Ajuste dinámico para el botón Home */
             margin-top: 10px;
         }
 
@@ -94,6 +102,7 @@
 <body>
 
 <div class="app-container">
+
     <section id="screen1" class="screen active">
         <div class="content"><h1>Nuevo registro</h1></div>
         <div class="bottom-panel">
@@ -102,16 +111,19 @@
                 <div id="mode-day" class="mode-btn selected" onclick="setMode('day')">Día Individual</div>
                 <div id="mode-month" class="mode-btn" onclick="setMode('month')">Ajuste de Mes</div>
             </div>
+
             <div id="form-day">
                 <span class="field-label">Título</span>
                 <input type="text" id="act-name" placeholder="Ej. Predicación">
                 <span class="field-label">Fecha</span>
                 <input type="date" id="act-date">
             </div>
+
             <div id="form-month" style="display:none">
                 <span class="field-label">Mes de Servicio</span>
                 <div class="month-selector" id="month-grid"></div>
             </div>
+
             <button class="btn-ios" onclick="nav(2)">Continuar</button>
         </div>
     </section>
@@ -142,7 +154,7 @@
 </div>
 
 <script>
-    // Se mantiene la lógica de datos v12 para consistencia
+    // Se ha actualizado la clave de base de datos para esta versión nativa
     let db = JSON.parse(localStorage.getItem('db_v12_pwa')) || [];
     let cur = { name: '', hrs: 1, ms: 0, mode: 'day' };
     const mesesLabel = ["Sep 25", "Oct 25", "Nov 25", "Dic 25", "Ene 26", "Feb 26", "Mar 26", "Abr 26", "May 26", "Jun 26", "Jul 26", "Ago 26"];
@@ -179,7 +191,7 @@
             cur.name = document.getElementById('act-name').value || 'Servicio';
         }
         if(n === 2 && cur.mode === 'month' && !cur.ms) return alert("Selecciona un mes");
-        
+
         const ss = document.querySelectorAll('.screen');
         ss.forEach((s, i) => {
             s.style.transition = inst ? 'none' : 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -216,7 +228,7 @@
     }
 
     function remove(id) { if(confirm('¿Eliminar?')){ db = db.filter(i => i.id !== id); localStorage.setItem('db_v12_pwa', JSON.stringify(db)); render(); } }
-    
+
     function reset() {
         cur = { name: '', hrs: 1, ms: 0, mode: 'day' };
         document.getElementById('hour-input').value = 1;
