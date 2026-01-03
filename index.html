@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Servicio Pro - Teclado</title>
+    <style>
+        :root {
+            --bg-color: #f2f2f7;
+            --accent-color: #007aff;
+            --ios-gray: #e5e5ea;
+            --text-main: #000000;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-main); overflow: hidden; }
+
+        .app-container { width: 100%; max-width: 430px; height: 100vh; margin: 0 auto; position: relative; }
+
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            visibility: hidden; padding: 20px; background: var(--bg-color);
+        }
+
+        .screen.active { transform: translateX(0); visibility: visible; z-index: 10; }
+        .screen.next { transform: translateX(100%); }
+        .screen.prev { transform: translateX(-30%); opacity: 0; }
+
+        .content { flex: 1; overflow-y: auto; padding-top: 10px; padding-bottom: 100px; }
+        h1 { font-size: 28px; font-weight: 700; margin-bottom: 15px; letter-spacing: -0.5px; }
+
+        .goals-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .goal-label { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; font-weight: 600; }
+        .progress-bar { width: 100%; height: 10px; background: var(--ios-gray); border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent-color); transition: width 0.8s ease-out; }
+        .progress-fill.annual { background: #34c759; }
+
+        .bottom-panel { background: white; border-top-left-radius: 30px; border-top-right-radius: 30px; padding: 25px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); margin-top: auto; }
+        .field-label { display: block; font-size: 11px; font-weight: 700; color: #8e8e93; text-transform: uppercase; margin-bottom: 8px; }
+        
+        input { width: 100%; border: none; background: #e5e5ea; padding: 14px; border-radius: 12px; font-size: 17px; outline: none; margin-bottom: 15px; font-family: inherit; }
+
+        .mode-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .mode-btn { background: #fff; border: 1.5px solid var(--ios-gray); padding: 12px; border-radius: 12px; text-align: center; font-size: 14px; font-weight: 600; color: var(--text-main); cursor: pointer; }
+        .mode-btn.selected { border-color: var(--accent-color); color: var(--accent-color); }
+
+        .month-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+        .month-chip { background: #f2f2f7; padding: 10px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 500; cursor: pointer; border: 1.5px solid transparent; }
+        .month-chip.selected { border-color: var(--accent-color); background: #fff; color: var(--accent-color); }
+
+        .btn-ios { width: 100%; padding: 18px; border-radius: 16px; background: var(--text-main); color: white; border: none; font-size: 17px; font-weight: 600; cursor: pointer; }
+
+        /* Selector de Horas con Input */
+        .hour-selector { display: flex; align-items: center; justify-content: space-around; margin: 30px 0; }
+        .btn-circle { width: 60px; height: 60px; border-radius: 50%; background: #e5e5ea; border: none; font-size: 30px; cursor: pointer;}
+        
+        /* Input invisible decorado como texto gigante */
+        #hour-input { 
+            width: 140px; background: transparent; border: none; 
+            font-size: 80px; font-weight: 800; text-align: center; 
+            margin: 0; padding: 0; color: var(--text-main);
+        }
+
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f2f2f7; }
+        .fab { position: fixed; bottom: 30px; right: 20px; width: 60px; height: 60px; background: var(--text-main); color: white; border-radius: 50%; border: none; font-size: 35px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 100; cursor: pointer;}
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <section id="screen1" class="screen active">
+        <div class="content"><h1>Nuevo registro</h1></div>
+        <div class="bottom-panel">
+            <span class="field-label">Tipo de entrada</span>
+            <div class="mode-selector">
+                <div id="mode-day" class="mode-btn selected" onclick="setMode('day')">Día Individual</div>
+                <div id="mode-month" class="mode-btn" onclick="setMode('month')">Ajuste de Mes</div>
+            </div>
+
+            <div id="form-day">
+                <span class="field-label">Título</span>
+                <input type="text" id="act-name" placeholder="Ej. Predicación">
+                <span class="field-label">Fecha</span>
+                <input type="date" id="act-date">
+            </div>
+
+            <div id="form-month" style="display:none">
+                <span class="field-label">Seleccionar Mes Teocrático</span>
+                <div class="month-selector" id="month-grid"></div>
+            </div>
+
+            <button class="btn-ios" onclick="nav(2)">Continuar</button>
+        </div>
+    </section>
+
+    <section id="screen2" class="screen next">
+        <div class="content"><h1>Horas totales</h1></div>
+        <div class="bottom-panel">
+            <div class="hour-selector">
+                <button class="btn-circle" onclick="modH(-1)">−</button>
+                <input type="number" id="hour-input" value="1" pattern="[0-9]*" inputmode="numeric">
+                <button class="btn-circle" onclick="modH(1)">+</button>
+            </div>
+            <p style="text-align: center; color: #8e8e93; font-size: 13px; margin-top: -20px; margin-bottom: 20px;">Toca el número para escribir</p>
+            <button class="btn-ios" onclick="save()">Confirmar y Guardar</button>
+        </div>
+    </section>
+
+    <section id="screen3" class="screen next">
+        <div class="content">
+            <h1>Resumen</h1>
+            <div class="goals-card">
+                <div class="goal-item">
+                    <div class="goal-label"><span>Meta Enero</span><span id="txt-month">0 / 50h</span></div>
+                    <div class="progress-bar"><div id="bar-month" class="progress-fill" style="width: 0%"></div></div>
+                </div>
+                <div class="goal-item" style="margin-top:15px">
+                    <div class="goal-label"><span>Año de Servicio 2026</span><span id="txt-year">0 / 600h</span></div>
+                    <div class="progress-bar"><div id="bar-year" class="progress-fill annual" style="width: 0%"></div></div>
+                </div>
+            </div>
+            <div class="goals-card"><div id="history-list"></div></div>
+        </div>
+        <button class="fab" onclick="reset()">+</button>
+    </section>
+</div>
+
+<script>
+    let db = JSON.parse(localStorage.getItem('db_v10_input')) || [];
+    let cur = { name: '', hrs: 1, ms: 0, mode: 'day' };
+    const mesesLabel = ["Sep 25", "Oct 25", "Nov 25", "Dic 25", "Ene 26", "Feb 26", "Mar 26", "Abr 26", "May 26", "Jun 26", "Jul 26", "Ago 26"];
+    const mesesFecha = [new Date(2025,8,1), new Date(2025,9,1), new Date(2025,10,1), new Date(2025,11,1), new Date(2026,0,1), new Date(2026,1,1), new Date(2026,2,1), new Date(2026,3,1), new Date(2026,4,1), new Date(2026,5,1), new Date(2026,6,1), new Date(2026,7,1)];
+
+    window.onload = () => {
+        document.getElementById('act-date').value = new Date().toISOString().split('T')[0];
+        const grid = document.getElementById('month-grid');
+        mesesLabel.forEach((m, i) => grid.innerHTML += `<div class="month-chip" onclick="selMonth(this, ${i})">${m}</div>`);
+        if(db.length > 0) { render(); nav(3, true); }
+        
+        // Sincronizar el input con la variable interna cuando el usuario escribe
+        const hInput = document.getElementById('hour-input');
+        hInput.addEventListener('input', (e) => {
+            let val = parseInt(e.target.value);
+            cur.hrs = isNaN(val) ? 0 : val;
+        });
+    };
+
+    function setMode(m) {
+        cur.mode = m;
+        document.getElementById('mode-day').className = `mode-btn ${m === 'day' ? 'selected' : ''}`;
+        document.getElementById('mode-month').className = `mode-btn ${m === 'month' ? 'selected' : ''}`;
+        document.getElementById('form-day').style.display = m === 'day' ? 'block' : 'none';
+        document.getElementById('form-month').style.display = m === 'month' ? 'block' : 'none';
+    }
+
+    function selMonth(el, i) {
+        document.querySelectorAll('.month-chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        cur.ms = mesesFecha[i].getTime();
+        cur.name = "Total " + mesesLabel[i];
+    }
+
+    function nav(n, inst = false) {
+        if(n === 2 && cur.mode === 'day') {
+            const d = document.getElementById('act-date').value;
+            const dp = d.split('-');
+            cur.ms = new Date(dp[0], dp[1]-1, dp[2]).getTime();
+            cur.name = document.getElementById('act-name').value || 'Servicio';
+        }
+        if(n === 2 && cur.mode === 'month' && !cur.ms) return alert("Selecciona un mes");
+        
+        const ss = document.querySelectorAll('.screen');
+        ss.forEach((s, i) => {
+            s.style.transition = inst ? 'none' : 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            s.className = `screen ${i+1 === n ? 'active' : (i+1 < n ? 'prev' : 'next')}`;
+        });
+    }
+
+    function modH(v) { 
+        cur.hrs = Math.max(0, cur.hrs + v); 
+        document.getElementById('hour-input').value = cur.hrs; 
+    }
+
+    function save() {
+        db.unshift({ id: Date.now(), n: cur.name, h: cur.hrs, ms: cur.ms, mode: cur.mode });
+        db.sort((a, b) => b.ms - a.ms);
+        localStorage.setItem('db_v10_input', JSON.stringify(db));
+        render(); nav(3);
+    }
+
+    function render() {
+        const list = document.getElementById('history-list');
+        const now = new Date();
+        const start = new Date(2025, 8, 1).getTime();
+        const end = new Date(2026, 7, 31, 23, 59).getTime();
+        let mTotal = 0; let yTotal = 0;
+        list.innerHTML = '';
+
+        db.forEach(item => {
+            const d = new Date(item.ms);
+            if(d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) mTotal += item.h;
+            if(item.ms >= start && item.ms <= end) yTotal += item.h;
+
+            list.innerHTML += `<div class="history-item">
+                <div><b>${item.n}</b><br><small style="color:#8e8e93">${d.toLocaleDateString('es-ES', {day:'2-digit', month:'short'})}</small></div>
+                <div style="display:flex; align-items:center"><strong>${item.h}h</strong><span style="color:#ff3b30; margin-left:15px; font-weight:bold; cursor:pointer" onclick="remove(${item.id})">×</span></div>
+            </div>`;
+        });
+
+        document.getElementById('txt-month').innerText = `${mTotal} / 50h`;
+        document.getElementById('bar-month').style.width = Math.min((mTotal / 50) * 100, 100) + '%';
+        document.getElementById('txt-year').innerText = `${yTotal} / 600h`;
+        document.getElementById('bar-year').style.width = Math.min((yTotal / 600) * 100, 100) + '%';
+    }
+
+    function remove(id) { if(confirm('¿Eliminar?')){ db = db.filter(i => i.id !== id); localStorage.setItem('db_v10_input', JSON.stringify(db)); render(); } }
+    
+    function reset() {
+        cur = { name: '', hrs: 1, ms: 0, mode: 'day' };
+        document.getElementById('hour-input').value = 1;
+        document.getElementById('act-name').value = '';
+        document.getElementById('act-date').value = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('.month-chip').forEach(c => c.classList.remove('selected'));
+        setMode('day');
+        nav(1);
+    }
+</script>
+</body>
+</html>
