@@ -9,6 +9,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
 <link rel="manifest" href="favicon_io/site.webmanifest">
+    
     <title>PrecuApp</title>
     <style>
         :root {
@@ -20,7 +21,7 @@
             --safe-bottom: env(safe-area-inset-bottom);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body, html { margin: 0; padding: 0; height: 100%; font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: #000; overflow: hidden; }
 
         .app-container { width: 100%; max-width: 430px; height: 100vh; margin: 0 auto; position: relative; }
@@ -29,15 +30,15 @@
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; padding: 20px; padding-top: calc(20px + var(--safe-top));
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            visibility: hidden; background: var(--bg-color);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+            visibility: hidden; background: var(--bg-color); opacity: 0;
         }
-        .screen.active { visibility: visible; z-index: 10; transform: translateX(0); }
+        .screen.active { visibility: visible; z-index: 10; transform: translateX(0); opacity: 1; }
         .screen.next { transform: translateX(100%); }
-        .screen.prev { transform: translateX(-30%); opacity: 0; }
+        .screen.prev { transform: translateX(-30%); }
 
         /* Dashboard */
-        .scroll-area { flex: 1; overflow-y: auto; padding-bottom: 100px; }
+        .scroll-area { flex: 1; overflow-y: auto; padding-bottom: 120px; -webkit-overflow-scrolling: touch; }
         .stat-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .progress-bar { width: 100%; height: 10px; background: var(--ios-gray); border-radius: 5px; overflow: hidden; margin-top: 10px; }
         .fill { height: 100%; background: var(--accent); transition: width 0.8s ease; }
@@ -51,21 +52,24 @@
         /* Modal */
         #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; display: none; justify-content: center; align-items: flex-end; }
         .modal-content { width: 100%; max-width: 430px; background: white; border-top-left-radius: 30px; border-top-right-radius: 30px; padding: 25px; padding-bottom: calc(30px + var(--safe-bottom)); transform: translateY(100%); transition: transform 0.3s ease-out; }
-        .modal-img { width: 100%; max-height: 300px; border-radius: 20px; object-fit: cover; margin-bottom: 20px; }
+        .modal-img { width: 100%; max-height: 280px; border-radius: 20px; object-fit: cover; margin-bottom: 20px; width: 100%; }
 
-        /* UI */
+        /* Formulario Inferior */
         .bottom-card { background: var(--card-bg); border-radius: 30px; padding: 22px; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); margin-top: auto; margin-bottom: calc(20px + var(--safe-bottom)); }
         .photo-area { width: 100%; height: 130px; background: #f2f2f7; border-radius: 20px; margin-bottom: 15px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px dashed #c7c7cc; }
         #photo-preview { width: 100%; height: 100%; object-fit: cover; display: none; }
         
         .chips-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
-        .chip { background: var(--ios-gray); padding: 8px 14px; border-radius: 18px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .chip { background: var(--ios-gray); padding: 10px 14px; border-radius: 18px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
         .chip.active { background: var(--accent); color: white; }
 
-        input[type="text"], input[type="date"] { width: 100%; border: none; border-bottom: 2px solid #eee; padding: 10px 0; font-size: 17px; outline: none; margin-bottom: 15px; background: transparent; }
-        .btn-main { width: 100%; padding: 18px; border-radius: 20px; background: black; color: white; border: none; font-size: 17px; font-weight: 700; cursor: pointer; }
-        .fab { position: fixed; bottom: calc(30px + var(--safe-bottom)); right: 20px; width: 60px; height: 60px; background: black; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 100; }
-        .hour-display { font-size: 70px; font-weight: 900; text-align: center; margin: 20px 0; }
+        input[type="text"], input[type="date"] { width: 100%; border: none; border-bottom: 2px solid #eee; padding: 12px 0; font-size: 17px; background: transparent; margin-bottom: 15px; }
+        
+        .btn-main { width: 100%; padding: 18px; border-radius: 20px; background: black; color: white; border: none; font-size: 17px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+        .btn-main:active { opacity: 0.7; }
+        
+        .fab { position: fixed; bottom: calc(30px + var(--safe-bottom)); right: 20px; width: 60px; height: 60px; background: black; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 100; cursor: pointer; }
+        .hour-display { font-size: 80px; font-weight: 900; text-align: center; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -74,36 +78,36 @@
     
     <section id="screen-dash" class="screen active">
         <div class="scroll-area">
-            <h1 id="dash-title">Servicio</h1>
+            <h1>Servicio</h1>
             <div class="stat-card">
-                <div style="display:flex; justify-content:space-between"><b id="label-m">Este Mes</b><span id="txt-m">0 / 50h</span></div>
+                <div style="display:flex; justify-content:space-between"><b id="label-m">Cargando...</b><span id="txt-m">0 / 50h</span></div>
                 <div class="progress-bar"><div id="bar-m" class="fill"></div></div>
             </div>
             <div class="stat-card">
                 <div style="display:flex; justify-content:space-between"><b>Año de Servicio</b><span id="txt-y">0 / 600h</span></div>
                 <div class="progress-bar"><div id="bar-y" class="fill" style="background:#34c759"></div></div>
             </div>
-            <h2 style="font-size: 18px; margin: 20px 0 10px">Historial</h2>
+            <h2 style="font-size: 18px; margin: 20px 0 10px">Actividad</h2>
             <div id="history-list"></div>
         </div>
-        <div class="fab" onclick="nav('entry')">+</div>
+        <div class="fab" onclick="openEntry()">+</div>
     </section>
 
     <section id="screen-entry" class="screen next">
         <div style="flex:1"><h1>Registrar</h1></div>
         <div class="bottom-card">
             <div class="chips-grid" style="grid-template-columns: 1fr 1fr; display: grid;">
-                <div id="tab-day" class="chip active" style="text-align:center" onclick="setMode('day')">Día Individual</div>
-                <div id="tab-month" class="chip" style="text-align:center" onclick="setMode('month')">Ajuste Mes</div>
+                <button id="tab-day" class="chip active" onclick="setMode('day')">Día Individual</button>
+                <button id="tab-month" class="chip" onclick="setMode('month')">Ajuste Mes</button>
             </div>
 
             <div id="view-day">
                 <input type="file" id="file-input" accept="image/*" style="display:none" onchange="previewImg(this)">
                 <div class="photo-area" onclick="document.getElementById('file-input').click()">
                     <img id="photo-preview">
-                    <span id="ph-label">🖼️ Seleccionar Foto</span>
+                    <span id="ph-label">🖼️ Añadir Foto</span>
                 </div>
-                <input type="text" id="act-name" placeholder="Nombre de actividad">
+                <input type="text" id="act-name" placeholder="¿Qué hiciste hoy?">
                 <div class="chips-grid">
                     <div class="chip" onclick="setCat(this)">Casa en casa</div>
                     <div class="chip" onclick="setCat(this)">Informal</div>
@@ -113,11 +117,12 @@
             </div>
 
             <div id="view-month" style="display:none">
+                <p style="font-size:13px; color:#8e8e93; margin-bottom:10px">Suma horas a un mes completo:</p>
                 <div class="chips-grid" id="month-chips"></div>
             </div>
             
             <button class="btn-main" onclick="nav('hours')">Continuar</button>
-            <button onclick="nav('dash')" style="width:100%; background:none; border:none; color:#8e8e93; margin-top:10px">Cerrar</button>
+            <button onclick="nav('dash')" style="width:100%; background:none; border:none; color:#8e8e93; margin-top:15px; font-weight:600">Cancelar</button>
         </div>
     </section>
 
@@ -125,11 +130,11 @@
         <div style="flex:1"><h1>Horas</h1></div>
         <div class="bottom-card">
             <div class="hour-display" id="h-val">1h</div>
-            <div style="display:flex; justify-content:center; gap:30px; margin-bottom:30px">
-                <button onclick="modH(-1)" style="width:65px; height:65px; border-radius:50%; border:none; background:#eee; font-size:28px">−</button>
-                <button onclick="modH(1)" style="width:65px; height:65px; border-radius:50%; border:none; background:#eee; font-size:28px">+</button>
+            <div style="display:flex; justify-content:center; gap:30px; margin-bottom:40px">
+                <button onclick="modH(-1)" style="width:70px; height:70px; border-radius:50%; border:none; background:#eee; font-size:30px; cursor:pointer">−</button>
+                <button onclick="modH(1)" style="width:70px; height:70px; border-radius:50%; border:none; background:#eee; font-size:30px; cursor:pointer">+</button>
             </div>
-            <button class="btn-main" onclick="save()">Guardar</button>
+            <button class="btn-main" onclick="saveData()">Confirmar y Guardar</button>
         </div>
     </section>
 
@@ -137,29 +142,44 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <img id="modal-img" class="modal-img">
             <h2 id="modal-title">Nombre</h2>
-            <p id="modal-meta">Meta</p>
-            <button class="btn-main" style="background:#ff3b30" id="btn-delete">Eliminar</button>
-            <button class="btn-main" style="background:#eee; color:black; margin-top:10px" onclick="closeModal()">Cerrar</button>
+            <p id="modal-meta" style="color:#8e8e93"></p>
+            <button class="btn-main" style="background:#ff3b30; margin-bottom:10px" id="btn-delete">Eliminar Registro</button>
+            <button class="btn-main" style="background:#eee; color:black" onclick="closeModal()">Volver</button>
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('db_v29')) || [];
+    let db = JSON.parse(localStorage.getItem('db_v30')) || [];
     let cur = { mode: 'day', name: '', hrs: 1, photo: null, ms: Date.now() };
-    const mesesNombres = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-    const mesesLista = ["Sep 25", "Oct 25", "Nov 25", "Dic 25", "Ene 26", "Feb 26", "Mar 26", "Abr 26", "May 26", "Jun 26", "Jul 26", "Ago 26"];
+    const mesesNombres = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    const mesesTeocraticos = ["Sep 25", "Oct 25", "Nov 25", "Dic 25", "Ene 26", "Feb 26", "Mar 26", "Abr 26", "May 26", "Jun 26", "Jul 26", "Ago 26"];
 
     window.onload = () => {
-        document.getElementById('act-date').valueAsDate = new Date();
         const mGrid = document.getElementById('month-chips');
-        mesesLista.forEach((m, i) => mGrid.innerHTML += `<div class="chip" onclick="setMonth(this, '${m}', ${i})">${m}</div>`);
+        mesesTeocraticos.forEach((m, i) => mGrid.innerHTML += `<div class="chip" onclick="setMonth(this, '${m}', ${i})">${m}</div>`);
         render();
     };
 
     function nav(target) {
-        document.querySelectorAll('.screen').forEach(s => s.className = 'screen next');
-        document.getElementById('screen-' + target).className = 'screen active';
+        document.querySelectorAll('.screen').forEach(s => {
+            s.classList.remove('active');
+            s.classList.add('next');
+        });
+        const activeScreen = document.getElementById('screen-' + target);
+        activeScreen.classList.remove('next', 'prev');
+        activeScreen.classList.add('active');
+    }
+
+    function openEntry() {
+        cur = { mode: 'day', name: '', hrs: 1, photo: null, ms: Date.now() };
+        document.getElementById('photo-preview').style.display = 'none';
+        document.getElementById('ph-label').style.display = 'block';
+        document.getElementById('act-name').value = '';
+        document.getElementById('act-date').valueAsDate = new Date();
+        document.getElementById('h-val').innerText = '1h';
+        setMode('day');
+        nav('entry');
     }
 
     function previewImg(input) {
@@ -173,23 +193,6 @@
             };
             reader.readAsDataURL(input.files[0]);
         }
-    }
-
-    function showDetail(index) {
-        const item = db[index];
-        const modal = document.getElementById('detail-modal');
-        document.getElementById('modal-img').src = item.photo || '';
-        document.getElementById('modal-img').style.display = item.photo ? 'block' : 'none';
-        document.getElementById('modal-title').innerText = item.name;
-        document.getElementById('modal-meta').innerText = `${new Date(item.ms).toLocaleDateString()} • ${item.hrs}h`;
-        document.getElementById('btn-delete').onclick = () => { remove(index); closeModal(); };
-        modal.style.display = 'flex';
-        setTimeout(() => modal.querySelector('.modal-content').style.transform = 'translateY(0)', 10);
-    }
-
-    function closeModal() {
-        document.getElementById('detail-modal').querySelector('.modal-content').style.transform = 'translateY(100%)';
-        setTimeout(() => document.getElementById('detail-modal').style.display = 'none', 300);
     }
 
     function setMode(m) {
@@ -210,22 +213,27 @@
         document.querySelectorAll('#month-chips .chip').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
         cur.name = "Ajuste " + m;
-        // Ajuste para el año teocrático (Sept 2025 - Ago 2026)
         let year = i < 4 ? 2025 : 2026;
         let month = (8 + i) % 12;
-        cur.ms = new Date(year, month, 1).getTime();
+        cur.ms = new Date(year, month, 2).getTime(); // Día 2 para evitar errores de zona horaria
     }
 
-    function modH(v) { cur.hrs = Math.max(0, cur.hrs + v); document.getElementById('h-val').innerText = cur.hrs + 'h'; }
+    function modH(v) { 
+        cur.hrs = Math.max(0, cur.hrs + v); 
+        document.getElementById('h-val').innerText = cur.hrs + 'h'; 
+    }
 
-    function save() {
+    function saveData() {
         if(cur.mode === 'day') {
             cur.name = document.getElementById('act-name').value || 'Servicio';
-            cur.ms = new Date(document.getElementById('act-date').value).getTime();
+            cur.ms = new Date(document.getElementById('act-date').value).getTime() + 43200000; // Offset mediodía
         }
         db.unshift({...cur});
-        localStorage.setItem('db_v29', JSON.stringify(db));
-        location.reload();
+        localStorage.setItem('db_v30', JSON.stringify(db));
+        
+        // La clave: renderizar y navegar sin recargar
+        render();
+        nav('dash');
     }
 
     function render() {
@@ -233,19 +241,15 @@
         list.innerHTML = '';
         let tY = 0, tM = 0;
         const now = new Date();
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
+        const cM = now.getMonth();
+        const cY = now.getFullYear();
 
-        // Actualizar etiqueta del mes
-        document.getElementById('label-m').innerText = mesesNombres[currentMonth] + " " + currentYear;
+        document.getElementById('label-m').innerText = mesesNombres[cM] + " " + cY;
 
         db.forEach((item, index) => {
             const d = new Date(item.ms);
             tY += item.hrs;
-            // Corregido: Comparación estricta de mes y año
-            if(d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
-                tM += item.hrs;
-            }
+            if(d.getMonth() === cM && d.getFullYear() === cY) tM += item.hrs;
 
             list.innerHTML += `
                 <div class="history-item" onclick="showDetail(${index})">
@@ -263,16 +267,29 @@
         document.getElementById('bar-y').style.width = Math.min((tY/600)*100, 100) + '%';
     }
 
+    function showDetail(index) {
+        const item = db[index];
+        document.getElementById('modal-img').src = item.photo || '';
+        document.getElementById('modal-img').style.display = item.photo ? 'block' : 'none';
+        document.getElementById('modal-title').innerText = item.name;
+        document.getElementById('modal-meta').innerText = `${new Date(item.ms).toLocaleDateString()} • ${item.hrs} horas`;
+        document.getElementById('btn-delete').onclick = () => { remove(index); closeModal(); };
+        document.getElementById('detail-modal').style.display = 'flex';
+        setTimeout(() => document.querySelector('.modal-content').style.transform = 'translateY(0)', 10);
+    }
+
+    function closeModal() {
+        document.querySelector('.modal-content').style.transform = 'translateY(100%)';
+        setTimeout(() => document.getElementById('detail-modal').style.display = 'none', 300);
+    }
+
     function remove(idx) {
-        if(confirm('¿Eliminar registro?')) {
+        if(confirm('¿Borrar registro?')) {
             db.splice(idx, 1);
-            localStorage.setItem('db_v29', JSON.stringify(db));
+            localStorage.setItem('db_v30', JSON.stringify(db));
             render();
         }
     }
 </script>
 </body>
 </html>
-
-
-
