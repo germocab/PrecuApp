@@ -2,20 +2,45 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Servicio Pro - Ajuste UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Servicio Pro">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <link rel="manifest" href="data:application/manifest+json,{'name':'Servicio Pro','short_name':'Servicio','start_url':'.','display':'standalone','background_color':'#f2f2f7','theme_color':'#f2f2f7'}">
+
+    <title>Servicio Pro</title>
     <style>
         :root {
             --bg-color: #f2f2f7;
             --accent-color: #007aff;
             --ios-gray: #e5e5ea;
             --text-main: #000000;
+            /* Soporte para el notch de iPhone */
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); color: var(--text-main); overflow: hidden; }
+        
+        body, html { 
+            margin: 0; padding: 0; height: 100%; 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            overflow: hidden; 
+            /* Evita el rebote del scroll en iOS */
+            position: fixed;
+            width: 100%;
+        }
 
-        .app-container { width: 100%; max-width: 430px; height: 100vh; margin: 0 auto; position: relative; }
+        .app-container { 
+            width: 100%; max-width: 430px; height: 100vh; 
+            margin: 0 auto; position: relative; 
+            padding-top: var(--safe-top);
+        }
 
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -28,16 +53,15 @@
         .screen.next { transform: translateX(100%); }
         .screen.prev { transform: translateX(-30%); opacity: 0; }
 
-        .content { flex: 1; overflow-y: auto; padding-top: 10px; padding-bottom: 20px; }
-        h1 { font-size: 28px; font-weight: 700; margin-bottom: 15px; letter-spacing: -0.5px; }
+        .content { flex: 1; overflow-y: auto; padding-top: 20px; padding-bottom: 20px; }
+        h1 { font-size: 28px; font-weight: 800; margin-bottom: 15px; letter-spacing: -0.5px; }
 
-        /* --- Panel Principal Elevado --- */
         .bottom-panel { 
             background: white; 
-            border-radius: 30px; /* Ahora es una tarjeta completa, no solo pegada abajo */
+            border-radius: 30px; 
             padding: 25px; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
-            margin-bottom: 80px; /* Esto la levanta de la barra de Chrome */
+            margin-bottom: calc(40px + var(--safe-bottom)); /* Ajuste dinámico para el botón Home */
             margin-top: 10px;
         }
 
@@ -54,12 +78,10 @@
 
         .btn-ios { width: 100%; padding: 18px; border-radius: 16px; background: var(--text-main); color: white; border: none; font-size: 17px; font-weight: 600; cursor: pointer; }
 
-        /* Pantalla Horas */
         .hour-selector { display: flex; align-items: center; justify-content: space-around; margin: 30px 0; }
         .btn-circle { width: 60px; height: 60px; border-radius: 50%; background: #e5e5ea; border: none; font-size: 30px; cursor: pointer;}
         #hour-input { width: 140px; background: transparent; border: none; font-size: 80px; font-weight: 800; text-align: center; color: var(--text-main); }
 
-        /* Metas y Resumen */
         .goals-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; }
         .goal-label { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; font-weight: 600; }
         .progress-bar { width: 100%; height: 10px; background: var(--ios-gray); border-radius: 5px; overflow: hidden; }
@@ -67,7 +89,7 @@
         .progress-fill.annual { background: #34c759; }
 
         .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f2f2f7; }
-        .fab { position: fixed; bottom: 40px; right: 20px; width: 60px; height: 60px; background: var(--text-main); color: white; border-radius: 50%; border: none; font-size: 35px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 100; cursor: pointer;}
+        .fab { position: fixed; bottom: calc(30px + var(--safe-bottom)); right: 20px; width: 60px; height: 60px; background: var(--text-main); color: white; border-radius: 50%; border: none; font-size: 35px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 100; cursor: pointer;}
     </style>
 </head>
 <body>
@@ -118,14 +140,15 @@
                 <div class="goal-item"><div class="goal-label"><span>Meta Mensual</span><span id="txt-month">0 / 50h</span></div><div class="progress-bar"><div id="bar-month" class="progress-fill" style="width: 0%"></div></div></div>
                 <div class="goal-item" style="margin-top:15px"><div class="goal-label"><span>Año de Servicio 2026</span><span id="txt-year">0 / 600h</span></div><div class="progress-bar"><div id="bar-year" class="progress-fill annual" style="width: 0%"></div></div></div>
             </div>
-            <div class="goals-card"><div id="history-list"></div></div>
+            <div class="goals-card" style="margin-bottom: 100px;"><div id="history-list"></div></div>
         </div>
         <button class="fab" onclick="reset()">+</button>
     </section>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('db_v11_ui')) || [];
+    // Se ha actualizado la clave de base de datos para esta versión nativa
+    let db = JSON.parse(localStorage.getItem('db_v12_pwa')) || [];
     let cur = { name: '', hrs: 1, ms: 0, mode: 'day' };
     const mesesLabel = ["Sep 25", "Oct 25", "Nov 25", "Dic 25", "Ene 26", "Feb 26", "Mar 26", "Abr 26", "May 26", "Jun 26", "Jul 26", "Ago 26"];
     const mesesFecha = [new Date(2025,8,1), new Date(2025,9,1), new Date(2025,10,1), new Date(2025,11,1), new Date(2026,0,1), new Date(2026,1,1), new Date(2026,2,1), new Date(2026,3,1), new Date(2026,4,1), new Date(2026,5,1), new Date(2026,6,1), new Date(2026,7,1)];
@@ -174,7 +197,7 @@
     function save() {
         db.unshift({ id: Date.now(), n: cur.name, h: cur.hrs, ms: cur.ms, mode: cur.mode });
         db.sort((a, b) => b.ms - a.ms);
-        localStorage.setItem('db_v11_ui', JSON.stringify(db));
+        localStorage.setItem('db_v12_pwa', JSON.stringify(db));
         render(); nav(3);
     }
 
@@ -197,7 +220,7 @@
         document.getElementById('bar-year').style.width = Math.min((yTotal / 600) * 100, 100) + '%';
     }
 
-    function remove(id) { if(confirm('¿Eliminar?')){ db = db.filter(i => i.id !== id); localStorage.setItem('db_v11_ui', JSON.stringify(db)); render(); } }
+    function remove(id) { if(confirm('¿Eliminar?')){ db = db.filter(i => i.id !== id); localStorage.setItem('db_v12_pwa', JSON.stringify(db)); render(); } }
     
     function reset() {
         cur = { name: '', hrs: 1, ms: 0, mode: 'day' };
