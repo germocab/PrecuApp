@@ -2,210 +2,506 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
-<link rel="manifest" href="favicon_io/site.webmanifest">
-    
-    <title>PrecuApp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PrecuApp - Año de Servicio 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #f2f2f7; --card: #ffffff; --accent: #007aff; --gray: #8e8e93; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
-        body { margin: 0; background: var(--bg); overflow: hidden; position: fixed; width: 100%; height: 100%; }
-
-        .page { position: absolute; inset: 0; display: none; flex-direction: column; padding: 20px; padding-top: calc(20px + env(safe-area-inset-top)); }
-        .page.active { display: flex; }
-        .scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 120px; }
+        :root {
+            --google-blue: #1a73e8;
+            --google-surface: #f8f9fa;
+        }
         
-        .card { background: var(--card); border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .progress-bg { background: #e5e5ea; height: 12px; border-radius: 6px; margin-top: 10px; overflow: hidden; }
-        .progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.6s ease; }
+        body {
+            font-family: 'Google Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-        .btn-main { background: #000; color: #fff; border: none; padding: 18px; border-radius: 15px; font-size: 17px; font-weight: 700; width: 100%; margin-top: 10px; }
-        .fab { position: fixed; bottom: calc(30px + env(safe-area-inset-bottom)); right: 20px; width: 65px; height: 65px; background: #000; color: #fff; border-radius: 50%; font-size: 35px; border: none; box-shadow: 0 8px 25px rgba(0,0,0,0.2); z-index: 100; }
+        /* Dark Mode Classes */
+        body.dark-mode {
+            background-color: #121212;
+            color: #e8eaed;
+        }
+        .dark-mode .bg-white {
+            background-color: #1e1e1e !important;
+        }
+        .dark-mode .bg-gray-50 {
+            background-color: #2d2d2d !important;
+        }
+        .dark-mode .text-gray-900 {
+            color: #f1f3f4 !important;
+        }
+        .dark-mode .text-gray-600 {
+            color: #bdc1c6 !important;
+        }
+        .dark-mode .border-gray-100 {
+            border-color: #333 !important;
+        }
+        .dark-mode .border-gray-200 {
+            border-color: #444 !important;
+        }
+        .dark-mode .bg-blue-50 {
+            background-color: #1a2736 !important;
+        }
+        .dark-mode .text-blue-800 {
+            color: #aecbfa !important;
+        }
+        .dark-mode header {
+            background-color: rgba(30, 30, 30, 0.8) !important;
+        }
+        .dark-mode nav {
+            background-color: #1e1e1e !important;
+            border-top-color: #333 !important;
+        }
 
-        .item { display: flex; align-items: center; background: #fff; padding: 12px; border-radius: 18px; margin-bottom: 10px; gap: 15px; border: none; width: 100%; text-align: left; }
-        .item-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; background: #eee; }
+        .progress-ring {
+            transition: stroke-dashoffset 0.6s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .bottom-sheet {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(100%);
+        }
+        .bottom-sheet.active {
+            transform: translateY(0);
+        }
+        .category-pill {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+        .active-press:active {
+            transform: scale(0.96);
+            opacity: 0.9;
+        }
 
-        .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
-        .chip { background: #e5e5ea; border: none; padding: 10px 14px; border-radius: 12px; font-size: 13px; font-weight: 600; }
-        .chip.active { background: var(--accent); color: white; }
-
-        input { width: 100%; padding: 14px; border: 1px solid #e5e5ea; border-radius: 12px; margin-bottom: 15px; font-size: 16px; background: #fafafa; }
-        
-        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: none; flex-direction: column; justify-content: flex-end; z-index: 1000; }
-        .modal-body { background: #fff; border-radius: 30px 30px 0 0; padding: 30px; }
-        
-        /* Indicador de carga para la imagen */
-        #img-status { font-size: 12px; color: var(--accent); display: none; margin-bottom: 10px; }
+        /* Toggle Switch Styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--google-blue); }
+        input:checked + .slider:before { transform: translateX(20px); }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-900 select-none">
 
-    <div id="p-dash" class="page active">
-        <div class="scroll">
-            <h1>PrecuApp</h1>
-            <div class="card">
-                <div style="display:flex; justify-content:space-between"><b>Mes</b> <span id="month-txt">0 / 50h</span></div>
-                <div class="progress-bg"><div id="month-bar" class="progress-fill"></div></div>
-            </div>
-            <div class="card">
-                <div style="display:flex; justify-content:space-between"><b>Año de Servicio</b> <span id="year-txt">0 / 600h</span></div>
-                <div class="progress-bg"><div id="year-bar" class="progress-fill" style="background:#34c759"></div></div>
-            </div>
-            <div id="history-list"></div>
+    <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-6 py-4 flex justify-between items-center border-b border-gray-100">
+        <div>
+            <p class="text-xs font-bold text-blue-600 uppercase tracking-widest">Año de Servicio 25/26</p>
+            <h1 class="text-xl font-bold">PrecuApp</h1>
         </div>
-        <button class="fab" onclick="showPage('entry')">+</button>
-    </div>
+        
+    </header>
 
-    <div id="p-entry" class="page">
-        <h1>Registrar</h1>
-        <div class="scroll">
-            <div class="card">
-                <div class="chip-group">
-                    <button class="chip" onclick="setAct('Casa en casa', this)">Casa en casa</button>
-                    <button class="chip" onclick="setAct('Carritos', this)">Carritos</button>
-                    <button class="chip" onclick="setAct('Informal', this)">Informal</button>
+    <main class="max-w-md mx-auto p-4 space-y-6 pb-32">
+        <section class="grid grid-cols-2 gap-4">
+            <div class="bg-white rounded-[32px] p-5 shadow-sm border border-gray-100 flex flex-col items-center text-center">
+                <div class="relative flex items-center justify-center mb-2">
+                    <svg class="w-24 h-24">
+                        <circle class="text-gray-100 dark:opacity-20" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48"/>
+                        <circle id="monthProgressRing" class="text-blue-600 progress-ring" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48" stroke-dasharray="251.32" stroke-dashoffset="251.32"/>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span id="monthHoursLabel" class="text-xl font-bold leading-none">0</span>
+                        <span class="text-[10px] text-gray-400 font-bold uppercase">Horas</span>
+                    </div>
                 </div>
-                <input type="text" id="in-name" placeholder="Actividad">
-                <label>Foto (se comprimirá automáticamente):</label>
-                <input type="file" id="in-file" accept="image/*">
-                <div id="img-status">⌛ Procesando imagen...</div>
-                <input type="date" id="in-date">
+                <p class="text-xs font-medium text-gray-500">Meta: 50h</p>
+                <p class="text-sm font-bold mt-1">Este Mes</p>
             </div>
-            <button class="btn-main" onclick="showPage('hours')">Continuar</button>
-            <button onclick="showPage('dash')" style="width:100%; background:none; border:none; color:var(--gray); margin-top:10px">Cancelar</button>
+
+            <div class="bg-white rounded-[32px] p-5 shadow-sm border border-gray-100 flex flex-col items-center text-center">
+                <div class="relative flex items-center justify-center mb-2">
+                    <svg class="w-24 h-24">
+                        <circle class="text-gray-100 dark:opacity-20" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48"/>
+                        <circle id="yearProgressRing" class="text-green-500 progress-ring" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48" stroke-dasharray="251.32" stroke-dashoffset="251.32"/>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span id="yearHoursLabel" class="text-xl font-bold leading-none">0</span>
+                        <span class="text-[10px] text-gray-400 font-bold uppercase">Total</span>
+                    </div>
+                </div>
+                <p class="text-xs font-medium text-gray-500">Meta: 600h</p>
+                <p class="text-sm font-bold mt-1">Año '25-'26</p>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <h2 class="text-lg font-bold px-2">Actividad Reciente</h2>
+            <div id="activitiesList" class="space-y-4"></div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-8 py-3 flex justify-center items-center safe-area-bottom z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+        <div class="flex items-center gap-12">
+            <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center gap-1 text-blue-600 active-press">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span class="text-[10px] font-bold">Inicio</span>
+            </button>
+            
+            <button onclick="openActivitySheet()" class="bg-blue-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg active-press -mt-10 border-4 border-white dark:border-[#1e1e1e]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
+
+            <button onclick="toggleSheet('settingsSheet')" class="flex flex-col items-center gap-1 text-gray-400 active-press">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                </svg>
+                <span class="text-[10px] font-bold">Ajustes</span>
+            </button>
+        </div>
+    </nav>
+
+    <div id="activitySheetOverlay" onclick="toggleSheet('activitySheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[60]"></div>
+    <div id="activitySheet" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-[32px] z-[70] bottom-sheet max-h-[92vh] overflow-y-auto safe-area-bottom">
+        <div class="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto my-4"></div>
+        <div class="px-6 pb-10 space-y-6">
+            <h3 class="text-xl font-bold">Nueva Actividad</h3>
+            <form id="activityForm" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-gray-400 uppercase ml-1">Título</label>
+                    <input type="text" id="title" required placeholder="Ej: Territorio" class="w-full bg-gray-50 p-4 rounded-2xl border-none focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 dark:text-white">
+                </div>
+                
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-gray-400 uppercase ml-1">Fecha</label>
+                    <input type="date" id="date" required class="w-full bg-gray-50 p-4 rounded-2xl border-none focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 dark:text-white">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-gray-400 uppercase ml-1">Horas</label>
+                        <input type="number" id="hours" step="0.5" required placeholder="0.0" class="w-full bg-gray-50 p-4 rounded-2xl border-none focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 dark:text-white">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-gray-400 uppercase ml-1">Tipo</label>
+                        <select id="category" class="w-full bg-gray-50 p-4 rounded-2xl border-none focus:ring-2 focus:ring-blue-500 outline-none appearance-none text-gray-900 dark:text-white">
+                            <option value="Casa en Casa">Casa en Casa</option>
+                            <option value="Carritos">Carritos</option>
+                            <option value="Pública">Pública</option>
+                            <option value="Informal">Informal</option>
+                            <option value="Telefónico">Telefónico</option>
+                            <option value="Cartas">Cartas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-gray-400 uppercase ml-1">Imagen de Galería</label>
+                    <input type="file" id="imageFile" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
+                    <label for="imageFile" class="flex items-center justify-center w-full bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-600 text-gray-500 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span id="fileNameDisplay">Seleccionar foto</span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg active-press mt-4">Registrar jornada</button>
+            </form>
         </div>
     </div>
 
-    <div id="p-hours" class="page">
-        <h1>Tiempo</h1>
-        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-            <div id="display-h" style="font-size:100px; font-weight:900;">1h</div>
-            <div style="display:flex; gap:30px; margin-top:20px">
-                <button onclick="addH(-1)" style="width:80px; height:80px; border-radius:50%; border:none; background:#e5e5ea; font-size:35px">−</button>
-                <button onclick="addH(1)" style="width:80px; height:80px; border-radius:50%; border:none; background:#e5e5ea; font-size:35px">+</button>
+    <div id="settingsSheetOverlay" onclick="toggleSheet('settingsSheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[60]"></div>
+    <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-[32px] z-[70] bottom-sheet safe-area-bottom max-h-[90vh] overflow-y-auto">
+        <div class="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto my-4"></div>
+        <div class="px-6 pb-10 space-y-6">
+            <h3 class="text-xl font-bold">Configuración</h3>
+            
+            <div class="flex justify-between items-center p-5 bg-gray-50 rounded-3xl">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-xl text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </div>
+                    <div><p class="text-sm font-bold">Modo Oscuro</p></div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                    <span class="slider"></span>
+                </label>
             </div>
-        </div>
-        <button class="btn-main" onclick="save()">Confirmar y Guardar</button>
-    </div>
 
-    <div id="modal" onclick="closeModal()">
-        <div class="modal-body" onclick="event.stopPropagation()">
-            <img id="m-img" style="width:100%; border-radius:20px; margin-bottom:20px; max-height:250px; object-fit:cover; display:none">
-            <h2 id="m-name" style="margin:0"></h2>
-            <p id="m-info" style="color:var(--gray)"></p>
-            <button class="btn-main" style="background:#ff3b30" id="m-del">Eliminar</button>
-            <button class="btn-main" style="background:#f2f2f7; color:#000; margin-top:12px" onclick="closeModal()">Volver</button>
+            <div class="bg-blue-50 p-5 rounded-3xl space-y-4 border border-blue-100">
+                <div>
+                    <h4 class="text-sm font-bold text-blue-800">Cargar horas pasadas</h4>
+                    <p class="text-[10px] text-blue-600 font-bold uppercase tracking-tight">Año de Servicio 2025 - 2026</p>
+                </div>
+                <div class="space-y-3">
+                    <select id="historyMonthSelect" class="w-full p-3 rounded-xl border-none bg-white dark:bg-gray-800 shadow-sm outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+                        <option value="2025-08">Septiembre 2025</option>
+                        <option value="2025-09">Octubre 2025</option>
+                        <option value="2025-10">Noviembre 2025</option>
+                        <option value="2025-11">Diciembre 2025</option>
+                        <option value="2026-00">Enero 2026</option>
+                        <option value="2026-01">Febrero 2026</option>
+                        <option value="2026-02">Marzo 2026</option>
+                        <option value="2026-03">Abril 2026</option>
+                        <option value="2026-04">Mayo 2026</option>
+                        <option value="2026-05">Junio 2026</option>
+                        <option value="2026-06">Julio 2026</option>
+                        <option value="2026-07">Agosto 2026</option>
+                    </select>
+                    <div class="flex gap-2">
+                        <input type="number" id="manualHistoryHours" placeholder="Horas" class="flex-1 p-3 rounded-xl border-none bg-white dark:bg-gray-800 shadow-sm outline-none focus:ring-2 focus:ring-blue-400">
+                        <button onclick="addHistoricalHours()" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-sm font-bold active-press">Guardar</button>
+                    </div>
+                </div>
+                <div id="historySummary" class="pt-2 text-[11px] font-bold text-blue-800 space-y-1 border-t border-blue-200 mt-2"></div>
+            </div>
+
+            <button onclick="clearData()" class="w-full py-3 text-red-500 font-bold text-sm border border-red-100 dark:border-red-900/50 rounded-2xl active-press">Restablecer aplicación</button>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('precuapp_db_v2')) || [];
-        let temp = { name: '', date: '', hours: 1, img: null };
+        let activities = JSON.parse(localStorage.getItem('precursor_activities')) || [];
+        let historicalData = JSON.parse(localStorage.getItem('historical_data_map')) || {}; 
+        let isDarkMode = localStorage.getItem('dark_mode') === 'true';
+        let currentImageData = ""; // Variable temporal para la imagen
 
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('p-' + id).classList.add('active');
-            if(id === 'entry') {
-                document.getElementById('in-date').valueAsDate = new Date();
-                document.getElementById('img-status').style.display = 'none';
-                temp = { name: '', date: '', hours: 1, img: null };
+        const MONTHLY_GOAL = 50;
+        const YEARLY_GOAL = 600;
+
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeToggle').checked = true;
+        }
+
+        // Función para manejar la selección del archivo y convertirlo a Base64
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            if (file) {
+                document.getElementById('fileNameDisplay').innerText = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentImageData = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
         }
 
-        // --- COMPRESIÓN DE IMAGEN ---
-        document.getElementById('in-file').onchange = function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+        function toggleDarkMode() {
+            const body = document.body;
+            const toggle = document.getElementById('darkModeToggle');
+            if (toggle.checked) {
+                body.classList.add('dark-mode');
+                localStorage.setItem('dark_mode', 'true');
+            } else {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('dark_mode', 'false');
+            }
+        }
 
-            document.getElementById('img-status').style.display = 'block';
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = function(event) {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 400; // Tamaño pequeño para no bloquear el móvil
-                    const scaleSize = MAX_WIDTH / img.width;
-                    canvas.width = MAX_WIDTH;
-                    canvas.height = img.height * scaleSize;
+        function openActivitySheet() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+            document.getElementById('fileNameDisplay').innerText = "Seleccionar foto";
+            currentImageData = ""; 
+            toggleSheet('activitySheet');
+        }
 
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    
-                    // Comprimimos a calidad 0.6 (60%)
-                    temp.img = canvas.toDataURL('image/jpeg', 0.6);
-                    document.getElementById('img-status').innerText = '✅ Imagen optimizada';
-                };
+        function updateDashboard() {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            const currentMonthKey = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+
+            const activitiesMonth = activities.filter(a => {
+                const d = new Date(a.date);
+                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+            }).reduce((sum, a) => sum + parseFloat(a.hours), 0);
+            
+            const historyMonth = parseFloat(historicalData[currentMonthKey] || 0);
+            const totalMonth = activitiesMonth + historyMonth;
+
+            const serviceYearActivities = activities.filter(a => {
+                const d = new Date(a.date);
+                const dateVal = d.getFullYear() * 100 + d.getMonth();
+                return (dateVal >= 202508 && dateVal <= 202607);
+            }).reduce((sum, a) => sum + parseFloat(a.hours), 0);
+
+            const serviceYearHistory = Object.values(historicalData).reduce((sum, val) => sum + val, 0);
+            const totalYear = serviceYearActivities + serviceYearHistory;
+
+            document.getElementById('monthHoursLabel').innerText = totalMonth;
+            document.getElementById('yearHoursLabel').innerText = Math.round(totalYear);
+
+            const updateRing = (id, current, goal) => {
+                const ring = document.getElementById(id);
+                const circ = 2 * Math.PI * 40;
+                const offset = circ - (Math.min(current / goal, 1) * circ);
+                ring.style.strokeDashoffset = offset;
             };
+
+            updateRing('monthProgressRing', totalMonth, MONTHLY_GOAL);
+            updateRing('yearProgressRing', totalYear, YEARLY_GOAL);
+
+            renderActivities();
+            renderHistorySummary();
+        }
+
+        function renderHistorySummary() {
+            const summaryDiv = document.getElementById('historySummary');
+            const months = [
+                {k: "2025-08", n: "Sep '25"}, {k: "2025-09", n: "Oct '25"},
+                {k: "2025-10", n: "Nov '25"}, {k: "2025-11", n: "Dic '25"},
+                {k: "2026-00", n: "Ene '26"}, {k: "2026-01", n: "Feb '26"},
+                {k: "2026-02", n: "Mar '26"}, {k: "2026-03", n: "Abr '26"},
+                {k: "2026-04", n: "May '26"}, {k: "2026-05", n: "Jun '26"},
+                {k: "2026-06", n: "Jul '26"}, {k: "2026-07", n: "Ago '26"}
+            ];
+            const activeHistory = months.filter(m => historicalData[m.k] > 0);
+            if (activeHistory.length === 0) {
+                summaryDiv.innerHTML = "Sin horas cargadas manualmente.";
+                return;
+            }
+            summaryDiv.innerHTML = `<p class="mb-1 uppercase">Horas Manuales:</p>` + 
+                activeHistory.map(m => `
+                    <div class="flex justify-between items-center bg-white/50 dark:bg-black/20 px-2 py-1 rounded">
+                        <span>${m.n}</span>
+                        <span>${historicalData[m.k]}h</span>
+                    </div>
+                `).join('');
+        }
+
+        function addHistoricalHours() {
+            const monthKey = document.getElementById('historyMonthSelect').value;
+            const hoursVal = parseFloat(document.getElementById('manualHistoryHours').value);
+            if (!isNaN(hoursVal)) {
+                historicalData[monthKey] = (historicalData[monthKey] || 0) + hoursVal;
+                localStorage.setItem('historical_data_map', JSON.stringify(historicalData));
+                document.getElementById('manualHistoryHours').value = '';
+                updateDashboard();
+            }
+        }
+
+        function renderActivities() {
+            const list = document.getElementById('activitiesList');
+            if (activities.length === 0) {
+                list.innerHTML = `<div class="bg-white p-8 rounded-[32px] text-center text-gray-400 italic text-sm border border-gray-100">Registra tu actividad de hoy ✨</div>`;
+                return;
+            }
+            const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+            list.innerHTML = sorted.map((act) => {
+                const originalIndex = activities.indexOf(act);
+                const dateObj = new Date(act.date);
+                const displayDate = new Date(dateObj.getTime() + dateObj.getTimezoneOffset() * 60000);
+                
+                // Generar HTML de la imagen si existe
+                const imageHtml = act.image ? `<img src="${act.image}" class="w-full h-48 object-cover rounded-2xl mb-4">` : '';
+
+                return `
+                <div class="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 p-5">
+                    ${imageHtml}
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="category-pill ${getCatStyle(act.category)}">${act.category}</span>
+                            <h3 class="text-md font-bold mt-2 leading-tight">${act.title}</h3>
+                        </div>
+                        <div class="bg-gray-50 px-3 py-1 rounded-xl text-center">
+                            <span class="text-lg font-bold text-blue-600">${act.hours}h</span>
+                            <p class="text-[9px] text-gray-400 font-black uppercase">${displayDate.toLocaleDateString('es-ES', {day: '2-digit', month: 'short'})}</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button onclick="deleteActivity(${originalIndex})" class="text-[10px] font-bold text-gray-300 hover:text-red-400 uppercase tracking-widest active-press">Eliminar</button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function getCatStyle(c) {
+            const styles = {
+                'Casa en Casa': 'bg-blue-50 text-blue-600',
+                'Carritos': 'bg-purple-50 text-purple-600',
+                'Pública': 'bg-green-50 text-green-600',
+                'Informal': 'bg-orange-50 text-orange-600',
+                'Telefónico': 'bg-red-50 text-red-600',
+                'Cartas': 'bg-indigo-50 text-indigo-600'
+            };
+            return styles[c] || 'bg-gray-100 text-gray-600';
+        }
+
+        function toggleSheet(id) {
+            const sheet = document.getElementById(id);
+            const overlay = document.getElementById(id + 'Overlay');
+            if (!sheet.classList.contains('active')) {
+                sheet.classList.add('active');
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                sheet.classList.remove('active');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        document.getElementById('activityForm').onsubmit = (e) => {
+            e.preventDefault();
+            activities.push({
+                title: document.getElementById('title').value,
+                date: document.getElementById('date').value,
+                hours: document.getElementById('hours').value,
+                category: document.getElementById('category').value,
+                image: currentImageData // Guardar la imagen en el objeto
+            });
+            localStorage.setItem('precursor_activities', JSON.stringify(activities));
+            e.target.reset();
+            currentImageData = ""; // Limpiar imagen temporal
+            toggleSheet('activitySheet');
+            updateDashboard();
         };
 
-        function setAct(name, el) {
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            document.getElementById('in-name').value = name;
+        function deleteActivity(i) {
+            if (confirm('¿Eliminar registro?')) {
+                activities.splice(i, 1);
+                localStorage.setItem('precursor_activities', JSON.stringify(activities));
+                updateDashboard();
+            }
         }
 
-        function addH(val) {
-            temp.hours = Math.max(0, temp.hours + val);
-            document.getElementById('display-h').innerText = temp.hours + 'h';
+        function clearData() {
+            if (confirm('Se borrarán todos los datos. ¿Estás seguro?')) {
+                localStorage.clear();
+                location.reload();
+            }
         }
 
-        function save() {
-            temp.name = document.getElementById('in-name').value || 'Servicio';
-            temp.date = document.getElementById('in-date').value;
-            db.unshift({...temp});
-            localStorage.setItem('precuapp_db_v2', JSON.stringify(db));
-            render();
-            showPage('dash');
-        }
-
-        function render() {
-            const list = document.getElementById('history-list');
-            list.innerHTML = '<h3>Historial</h3>';
-            let tM = 0, tY = 0;
-            const now = new Date();
-
-            db.forEach((item, i) => {
-                const d = new Date(item.date + "T12:00:00");
-                tY += item.hours;
-                if(d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) tM += item.hours;
-
-                const btn = document.createElement('button');
-                btn.className = 'item';
-                btn.onclick = () => showDetail(i);
-                btn.innerHTML = `
-                    <img src="${item.img || ''}" class="item-img" style="${!item.img ? 'background:#e5e5ea' : ''}">
-                    <div style="flex:1">
-                        <b>${item.name}</b><br>
-                        <small>${d.toLocaleDateString()} • ${item.hours}h</small>
-                    </div>
-                `;
-                list.appendChild(btn);
-            });
-
-            document.getElementById('month-txt').innerText = `${tM} / 50h`;
-            document.getElementById('month-bar').style.width = Math.min((tM/50)*100, 100) + '%';
-            document.getElementById('year-txt').innerText = `${tY} / 600h`;
-            document.getElementById('year-bar').style.width = Math.min((tY/600)*100, 100) + '%';
-        }
-
-        function showDetail(i) {
-            const item = db[i];
-            const m = document.getElementById('modal');
-            document.getElementById('m-img').src = item.img || '';
-            document.getElementById('m-img').style.display = item.img ? 'block' : 'none';
-            document.getElementById('m-name').innerText = item.name;
-            document.getElementById('m-info').innerText = `${item.date} • ${item.hours}h`;
-            document.getElementById('m-del').onclick = () => { if(confirm('¿Borrar?')) { db.splice(i, 1); localStorage.setItem('precuapp_db_v2', JSON.stringify(db)); render(); closeModal(); }};
-            m.style.display = 'flex';
-        }
-
-        function closeModal() { document.getElementById('modal').style.display = 'none'; }
-        render();
+        window.onload = updateDashboard;
     </script>
 </body>
 </html>
