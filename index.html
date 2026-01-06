@@ -301,22 +301,41 @@
     }
 
     function handleFileSelect(input) {
-        const file = input.files[0];
-        if (file) {
-            // Validar que el archivo no sea demasiado grande para localStorage (aprox 2MB máx recomendado)
-            if (file.size > 1500000) { 
-                alert("La imagen es muy pesada. Intenta con una más pequeña.");
-                input.value = "";
-                return;
-            }
-            document.getElementById('fileNameDisplay').innerText = file.name;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentImageData = e.target.result;
+    const file = input.files[0];
+    if (file) {
+        document.getElementById('fileNameDisplay').innerText = "Procesando...";
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const img = new Image();
+            img.src = e.target.result;
+            
+            img.onload = function() {
+                // Configuramos el lienzo para comprimir
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800; // Reducimos el ancho a 800px (suficiente para móvil)
+                let width = img.width;
+                let height = img.height;
+
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Convertimos a JPEG con calidad 0.7 (reduce el peso un 80-90%)
+                currentImageData = canvas.toDataURL('image/jpeg', 0.7);
+                document.getElementById('fileNameDisplay').innerText = file.name + " (Optimizada)";
             };
-            reader.readAsDataURL(file);
-        }
+        };
+        reader.readAsDataURL(file);
     }
+}
 
     function toggleDarkMode() {
         const body = document.body;
