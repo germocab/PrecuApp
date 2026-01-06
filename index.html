@@ -287,221 +287,232 @@
     </div>
 
     <script>
-        let activities = JSON.parse(localStorage.getItem('precursor_activities')) || [];
-        let historicalData = JSON.parse(localStorage.getItem('historical_data_map')) || {}; 
-        let isDarkMode = localStorage.getItem('dark_mode') === 'true';
-        let currentImageData = ""; // Variable temporal para la imagen
+    let activities = JSON.parse(localStorage.getItem('precursor_activities')) || [];
+    let historicalData = JSON.parse(localStorage.getItem('historical_data_map')) || {}; 
+    let isDarkMode = localStorage.getItem('dark_mode') === 'true';
+    let currentImageData = ""; 
 
-        const MONTHLY_GOAL = 50;
-        const YEARLY_GOAL = 600;
+    const MONTHLY_GOAL = 50;
+    const YEARLY_GOAL = 600;
 
-        if (isDarkMode) {
-            document.body.classList.add('dark-mode');
-            document.getElementById('darkModeToggle').checked = true;
-        }
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('darkModeToggle').checked = true;
+    }
 
-        // Función para manejar la selección del archivo y convertirlo a Base64
-        function handleFileSelect(input) {
-            const file = input.files[0];
-            if (file) {
-                document.getElementById('fileNameDisplay').innerText = file.name;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentImageData = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function toggleDarkMode() {
-            const body = document.body;
-            const toggle = document.getElementById('darkModeToggle');
-            if (toggle.checked) {
-                body.classList.add('dark-mode');
-                localStorage.setItem('dark_mode', 'true');
-            } else {
-                body.classList.remove('dark-mode');
-                localStorage.setItem('dark_mode', 'false');
-            }
-        }
-
-        function openActivitySheet() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('date').value = today;
-            document.getElementById('fileNameDisplay').innerText = "Seleccionar foto";
-            currentImageData = ""; 
-            toggleSheet('activitySheet');
-        }
-
-        function updateDashboard() {
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-            const currentMonthKey = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
-
-            const activitiesMonth = activities.filter(a => {
-                const d = new Date(a.date);
-                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-            }).reduce((sum, a) => sum + parseFloat(a.hours), 0);
-            
-            const historyMonth = parseFloat(historicalData[currentMonthKey] || 0);
-            const totalMonth = activitiesMonth + historyMonth;
-
-            const serviceYearActivities = activities.filter(a => {
-                const d = new Date(a.date);
-                const dateVal = d.getFullYear() * 100 + d.getMonth();
-                return (dateVal >= 202508 && dateVal <= 202607);
-            }).reduce((sum, a) => sum + parseFloat(a.hours), 0);
-
-            const serviceYearHistory = Object.values(historicalData).reduce((sum, val) => sum + val, 0);
-            const totalYear = serviceYearActivities + serviceYearHistory;
-
-            document.getElementById('monthHoursLabel').innerText = totalMonth;
-            document.getElementById('yearHoursLabel').innerText = Math.round(totalYear);
-
-            const updateRing = (id, current, goal) => {
-                const ring = document.getElementById(id);
-                const circ = 2 * Math.PI * 40;
-                const offset = circ - (Math.min(current / goal, 1) * circ);
-                ring.style.strokeDashoffset = offset;
-            };
-
-            updateRing('monthProgressRing', totalMonth, MONTHLY_GOAL);
-            updateRing('yearProgressRing', totalYear, YEARLY_GOAL);
-
-            renderActivities();
-            renderHistorySummary();
-        }
-
-        function renderHistorySummary() {
-            const summaryDiv = document.getElementById('historySummary');
-            const months = [
-                {k: "2025-08", n: "Sep '25"}, {k: "2025-09", n: "Oct '25"},
-                {k: "2025-10", n: "Nov '25"}, {k: "2025-11", n: "Dic '25"},
-                {k: "2026-00", n: "Ene '26"}, {k: "2026-01", n: "Feb '26"},
-                {k: "2026-02", n: "Mar '26"}, {k: "2026-03", n: "Abr '26"},
-                {k: "2026-04", n: "May '26"}, {k: "2026-05", n: "Jun '26"},
-                {k: "2026-06", n: "Jul '26"}, {k: "2026-07", n: "Ago '26"}
-            ];
-            const activeHistory = months.filter(m => historicalData[m.k] > 0);
-            if (activeHistory.length === 0) {
-                summaryDiv.innerHTML = "Sin horas cargadas manualmente.";
+    function handleFileSelect(input) {
+        const file = input.files[0];
+        if (file) {
+            // Validar que el archivo no sea demasiado grande para localStorage (aprox 2MB máx recomendado)
+            if (file.size > 1500000) { 
+                alert("La imagen es muy pesada. Intenta con una más pequeña.");
+                input.value = "";
                 return;
             }
-            summaryDiv.innerHTML = `<p class="mb-1 uppercase">Horas Manuales:</p>` + 
-                activeHistory.map(m => `
-                    <div class="flex justify-between items-center bg-white/50 dark:bg-black/20 px-2 py-1 rounded">
-                        <span>${m.n}</span>
-                        <span>${historicalData[m.k]}h</span>
-                    </div>
-                `).join('');
-        }
-
-        function addHistoricalHours() {
-            const monthKey = document.getElementById('historyMonthSelect').value;
-            const hoursVal = parseFloat(document.getElementById('manualHistoryHours').value);
-            if (!isNaN(hoursVal)) {
-                historicalData[monthKey] = (historicalData[monthKey] || 0) + hoursVal;
-                localStorage.setItem('historical_data_map', JSON.stringify(historicalData));
-                document.getElementById('manualHistoryHours').value = '';
-                updateDashboard();
-            }
-        }
-
-        function renderActivities() {
-            const list = document.getElementById('activitiesList');
-            if (activities.length === 0) {
-                list.innerHTML = `<div class="bg-white p-8 rounded-[32px] text-center text-gray-400 italic text-sm border border-gray-100">Registra tu actividad de hoy ✨</div>`;
-                return;
-            }
-            const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
-            list.innerHTML = sorted.map((act) => {
-                const originalIndex = activities.indexOf(act);
-                const dateObj = new Date(act.date);
-                const displayDate = new Date(dateObj.getTime() + dateObj.getTimezoneOffset() * 60000);
-                
-                // Generar HTML de la imagen si existe
-                const imageHtml = act.image ? `<img src="${act.image}" class="w-full h-48 object-cover rounded-2xl mb-4">` : '';
-
-                return `
-                <div class="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 p-5">
-                    ${imageHtml}
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="category-pill ${getCatStyle(act.category)}">${act.category}</span>
-                            <h3 class="text-md font-bold mt-2 leading-tight">${act.title}</h3>
-                        </div>
-                        <div class="bg-gray-50 px-3 py-1 rounded-xl text-center">
-                            <span class="text-lg font-bold text-blue-600">${act.hours}h</span>
-                            <p class="text-[9px] text-gray-400 font-black uppercase">${displayDate.toLocaleDateString('es-ES', {day: '2-digit', month: 'short'})}</p>
-                        </div>
-                    </div>
-                    <div class="mt-4 flex justify-end">
-                        <button onclick="deleteActivity(${originalIndex})" class="text-[10px] font-bold text-gray-300 hover:text-red-400 uppercase tracking-widest active-press">Eliminar</button>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
-
-        function getCatStyle(c) {
-            const styles = {
-                'Casa en Casa': 'bg-blue-50 text-blue-600',
-                'Carritos': 'bg-purple-50 text-purple-600',
-                'Pública': 'bg-green-50 text-green-600',
-                'Informal': 'bg-orange-50 text-orange-600',
-                'Telefónico': 'bg-red-50 text-red-600',
-                'Cartas': 'bg-indigo-50 text-indigo-600'
+            document.getElementById('fileNameDisplay').innerText = file.name;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentImageData = e.target.result;
             };
-            return styles[c] || 'bg-gray-100 text-gray-600';
+            reader.readAsDataURL(file);
         }
+    }
 
-        function toggleSheet(id) {
-            const sheet = document.getElementById(id);
-            const overlay = document.getElementById(id + 'Overlay');
-            if (!sheet.classList.contains('active')) {
-                sheet.classList.add('active');
-                overlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            } else {
-                sheet.classList.remove('active');
-                overlay.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            }
+    function toggleDarkMode() {
+        const body = document.body;
+        const toggle = document.getElementById('darkModeToggle');
+        if (toggle.checked) {
+            body.classList.add('dark-mode');
+            localStorage.setItem('dark_mode', 'true');
+        } else {
+            body.classList.remove('dark-mode');
+            localStorage.setItem('dark_mode', 'false');
         }
+    }
 
-        document.getElementById('activityForm').onsubmit = (e) => {
-            e.preventDefault();
-            activities.push({
-                title: document.getElementById('title').value,
-                date: document.getElementById('date').value,
-                hours: document.getElementById('hours').value,
-                category: document.getElementById('category').value,
-                image: currentImageData // Guardar la imagen en el objeto
-            });
-            localStorage.setItem('precursor_activities', JSON.stringify(activities));
-            e.target.reset();
-            currentImageData = ""; // Limpiar imagen temporal
-            toggleSheet('activitySheet');
-            updateDashboard();
+    function openActivitySheet() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').value = today;
+        document.getElementById('fileNameDisplay').innerText = "Seleccionar foto";
+        currentImageData = ""; 
+        toggleSheet('activitySheet');
+    }
+
+    function updateDashboard() {
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        const currentMonthKey = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+
+        const activitiesMonth = activities.filter(a => {
+            const d = new Date(a.date);
+            return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+        }).reduce((sum, a) => sum + parseFloat(a.hours || 0), 0);
+        
+        const historyMonth = parseFloat(historicalData[currentMonthKey] || 0);
+        const totalMonth = activitiesMonth + historyMonth;
+
+        const serviceYearActivities = activities.filter(a => {
+            const d = new Date(a.date);
+            const dateVal = d.getFullYear() * 100 + d.getMonth();
+            return (dateVal >= 202508 && dateVal <= 202607);
+        }).reduce((sum, a) => sum + parseFloat(a.hours || 0), 0);
+
+        const serviceYearHistory = Object.values(historicalData).reduce((sum, val) => sum + val, 0);
+        const totalYear = serviceYearActivities + serviceYearHistory;
+
+        document.getElementById('monthHoursLabel').innerText = totalMonth;
+        document.getElementById('yearHoursLabel').innerText = Math.round(totalYear);
+
+        const updateRing = (id, current, goal) => {
+            const ring = document.getElementById(id);
+            const circ = 2 * Math.PI * 40;
+            const offset = circ - (Math.min(current / goal, 1) * circ);
+            ring.style.strokeDashoffset = offset;
         };
 
-        function deleteActivity(i) {
-            if (confirm('¿Eliminar registro?')) {
-                activities.splice(i, 1);
-                localStorage.setItem('precursor_activities', JSON.stringify(activities));
-                updateDashboard();
-            }
-        }
+        updateRing('monthProgressRing', totalMonth, MONTHLY_GOAL);
+        updateRing('yearProgressRing', totalYear, YEARLY_GOAL);
 
-        function clearData() {
-            if (confirm('Se borrarán todos los datos. ¿Estás seguro?')) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
+        renderActivities();
+        renderHistorySummary();
+    }
 
-        window.onload = updateDashboard;
-    </script>
+    function renderHistorySummary() {
+        const summaryDiv = document.getElementById('historySummary');
+        const months = [
+            {k: "2025-08", n: "Sep '25"}, {k: "2025-09", n: "Oct '25"},
+            {k: "2025-10", n: "Nov '25"}, {k: "2025-11", n: "Dic '25"},
+            {k: "2026-00", n: "Ene '26"}, {k: "2026-01", n: "Feb '26"},
+            {k: "2026-02", n: "Mar '26"}, {k: "2026-03", n: "Abr '26"},
+            {k: "2026-04", n: "May '26"}, {k: "2026-05", n: "Jun '26"},
+            {k: "2026-06", n: "Jul '26"}, {k: "2026-07", n: "Ago '26"}
+        ];
+        const activeHistory = months.filter(m => historicalData[m.k] > 0);
+        if (activeHistory.length === 0) {
+            summaryDiv.innerHTML = "Sin horas cargadas manualmente.";
+            return;
+        }
+        summaryDiv.innerHTML = `<p class="mb-1 uppercase">Horas Manuales:</p>` + 
+            activeHistory.map(m => `
+                <div class="flex justify-between items-center bg-white/50 dark:bg-black/20 px-2 py-1 rounded">
+                    <span>${m.n}</span>
+                    <span>${historicalData[m.k]}h</span>
+                </div>
+            `).join('');
+    }
+
+    function addHistoricalHours() {
+        const monthKey = document.getElementById('historyMonthSelect').value;
+        const hoursVal = parseFloat(document.getElementById('manualHistoryHours').value);
+        if (!isNaN(hoursVal)) {
+            historicalData[monthKey] = (historicalData[monthKey] || 0) + hoursVal;
+            localStorage.setItem('historical_data_map', JSON.stringify(historicalData));
+            document.getElementById('manualHistoryHours').value = '';
+            updateDashboard();
+        }
+    }
+
+    function renderActivities() {
+        const list = document.getElementById('activitiesList');
+        if (activities.length === 0) {
+            list.innerHTML = `<div class="bg-white p-8 rounded-[32px] text-center text-gray-400 italic text-sm border border-gray-100">Registra tu actividad de hoy ✨</div>`;
+            return;
+        }
+        const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+        list.innerHTML = sorted.map((act) => {
+            const dateObj = new Date(act.date);
+            const displayDate = new Date(dateObj.getTime() + dateObj.getTimezoneOffset() * 60000);
+            const imageHtml = act.image ? `<img src="${act.image}" class="w-full h-48 object-cover rounded-2xl mb-4">` : '';
+
+            return `
+            <div class="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 p-5 dark:bg-gray-800">
+                ${imageHtml}
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="category-pill ${getCatStyle(act.category)}">${act.category}</span>
+                        <h3 class="text-md font-bold mt-2 leading-tight">${act.title}</h3>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 px-3 py-1 rounded-xl text-center">
+                        <span class="text-lg font-bold text-blue-600">${act.hours}h</span>
+                        <p class="text-[9px] text-gray-400 font-black uppercase">${displayDate.toLocaleDateString('es-ES', {day: '2-digit', month: 'short'})}</p>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-end">
+                    <button onclick="deleteActivity('${act.id}')" class="text-[10px] font-bold text-gray-300 hover:text-red-400 uppercase tracking-widest active-press">Eliminar</button>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function getCatStyle(c) {
+        const styles = {
+            'Casa en Casa': 'bg-blue-50 text-blue-600',
+            'Carritos': 'bg-purple-50 text-purple-600',
+            'Pública': 'bg-green-50 text-green-600',
+            'Informal': 'bg-orange-50 text-orange-600',
+            'Telefónico': 'bg-red-50 text-red-600',
+            'Cartas': 'bg-indigo-50 text-indigo-600'
+        };
+        return styles[c] || 'bg-gray-100 text-gray-600';
+    }
+
+    function toggleSheet(id) {
+        const sheet = document.getElementById(id);
+        const overlay = document.getElementById(id + 'Overlay');
+        if (!sheet.classList.contains('active')) {
+            sheet.classList.add('active');
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        } else {
+            sheet.classList.remove('active');
+            overlay.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    document.getElementById('activityForm').onsubmit = (e) => {
+        e.preventDefault();
+        
+        const newActivity = {
+            id: Date.now().toString(), // ID Único para evitar errores al borrar
+            title: document.getElementById('title').value,
+            date: document.getElementById('date').value,
+            hours: document.getElementById('hours').value,
+            category: document.getElementById('category').value,
+            image: currentImageData 
+        };
+
+        activities.push(newActivity);
+        
+        try {
+            localStorage.setItem('precursor_activities', JSON.stringify(activities));
+            e.target.reset();
+            currentImageData = ""; 
+            toggleSheet('activitySheet');
+            updateDashboard();
+        } catch (error) {
+            alert("Error: El almacenamiento está lleno. Borra algunas fotos o registros.");
+        }
+    };
+
+    function deleteActivity(id) {
+        if (confirm('¿Eliminar registro?')) {
+            activities = activities.filter(a => a.id !== id);
+            localStorage.setItem('precursor_activities', JSON.stringify(activities));
+            updateDashboard();
+        }
+    }
+
+    function clearData() {
+        if (confirm('Se borrarán todos los datos. ¿Estás seguro?')) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
+    window.onload = updateDashboard;
+</script>
 </body>
 </html>
