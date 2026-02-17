@@ -1,0 +1,17 @@
+{
+  "name": "PrecuApp",
+  "short_name": "PrecuApp",
+  "description": "Gestión de horas para el año de servicio 2026",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a73e8",
+  "icons": [
+    {
+      "src": "favicon_io/android-chrome-192x192.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
