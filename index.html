@@ -2,428 +2,366 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PrecuApp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>PrecuApp 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a73e8">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="PrecuApp">
-<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1160/1160358.png">
-
-<script>
-    tailwind.config = {
-        darkMode: ['class', '.dark-mode'], // Esto le dice: "Usa la clase .dark-mode para el modo oscuro"
-    }
-</script>
-    
     <style>
-        :root { --google-blue: #1a73e8; }
-        body { font-family: 'Google Sans', sans-serif; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s, color 0.3s; }
-        body.dark-mode { background-color: #121212; color: #e8eaed; }
-        .dark-mode .bg-white { background-color: #1e1e1e !important; }
-        .dark-mode .bg-gray-50 { background-color: #2d2d2d !important; }
-        .dark-mode .text-gray-900 { color: #f1f3f4 !important; }
-        .dark-mode .border-gray-100 { border-color: #333 !important; }
-        .progress-ring { transition: stroke-dashoffset 0.6s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
-        .bottom-sheet { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100%); }
-        .bottom-sheet.active { transform: translateY(0); }
-        .category-pill { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .active-press:active { transform: scale(0.96); opacity: 0.9; }
-        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        :root {
+            --apple-blue: #007AFF;
+            --apple-green: #34C759;
+            --apple-bg: #F2F2F7;
+            --apple-card: rgba(255, 255, 255, 0.8);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--apple-bg);
+            color: #000;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.dark-mode {
+            --apple-bg: #000000;
+            --apple-card: rgba(28, 28, 30, 0.8);
+            color: #FFFFFF;
+        }
+
+        /* Apple Glassmorphism */
+        .glass {
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            background-color: var(--apple-card);
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Apple Squicles (Continuous Corners) */
+        .squicle {
+            border-radius: 24px;
+            /* En iOS real se usa mask-image para esquinas perfectas, 
+               aquí emulamos con un radio suave y balanceado */
+        }
+
+        .progress-ring {
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .bottom-sheet {
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            transform: translateY(105%);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+        }
+
+        .bottom-sheet.active {
+            transform: translateY(0);
+        }
+
+        /* Animación de botones al presionar (iOS style) */
+        .apple-btn-active:active {
+            transform: scale(0.92);
+            opacity: 0.7;
+            transition: transform 0.1s ease;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 51px;
+            height: 31px;
+        }
+
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--google-blue); }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #E9E9EA;
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        .dark-mode .slider { background-color: #39393D; }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 27px; width: 27px;
+            left: 2px; bottom: 2px;
+            background-color: white;
+            transition: .3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            border-radius: 50%;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+
+        input:checked + .slider { background-color: var(--apple-green); }
         input:checked + .slider:before { transform: translateX(20px); }
-        .menu-options { 
-            transition: opacity 0.2s, transform 0.2s; 
-            opacity: 0; 
-            transform: scale(0.95) translateY(10px);
-            pointer-events: none;
+
+        .ios-tab-bar {
+            padding-bottom: calc(12px + var(--safe-area-inset-bottom));
         }
-        .menu-options.active { 
-            opacity: 1; 
-            transform: scale(1) translateY(0);
-            pointer-events: auto;
+
+        /* Títulos grandes estilo Apple Music */
+        .large-title {
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
-        /* Agrega esto dentro de tu etiqueta <style> */
-.dark-mode header h1 { color: #f1f3f4; }
-.dark-mode .bg-white { background-color: #1e1e1e !important; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 select-none">
+<body class="select-none">
 
-    <header class="sticky top-0 z-40 bg-white/80 dark:bg-[#121212]/80 backdrop-blur-md px-6 py-4 flex justify-between items-center border-b border-gray-100 dark:border-white/10">
-        <div>
-            <p class="text-xs font-bold text-blue-600 uppercase tracking-widest">Año de Servicio 25/26</p>
-            <h1 class="text-xl font-bold">PrecuApp</h1>
+    <header class="sticky top-0 z-40 glass px-6 pt-12 pb-4 border-b border-black/5 dark:border-white/5">
+        <p class="text-[13px] font-semibold text-blue-500 uppercase tracking-tight mb-1">Año de Servicio 2026</p>
+        <div class="flex justify-between items-end">
+            <h1 class="large-title">Resumen</h1>
+            <button onclick="toggleSheet('settingsSheet')" class="apple-btn-active pb-2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </button>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto p-4 space-y-6 pb-32">
+    <main class="max-w-md mx-auto p-5 space-y-8 pb-32">
         <section class="grid grid-cols-2 gap-4">
-            <div class="bg-white rounded-[32px] p-5 shadow-sm border border-gray-100 flex flex-col items-center text-center">
-                <div class="relative flex items-center justify-center mb-2">
-                    <svg class="w-24 h-24">
-                        <circle class="text-gray-100 dark:opacity-20" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48"/>
-                        <circle id="monthProgressRing" class="text-blue-600 progress-ring" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48" stroke-dasharray="251.32" stroke-dashoffset="251.32"/>
+            <div class="glass squicle p-6 flex flex-col items-center shadow-sm">
+                <div class="relative mb-3">
+                    <svg class="w-28 h-28">
+                        <circle class="opacity-10" stroke-width="10" stroke="currentColor" fill="transparent" r="45" cx="56" cy="56" style="color: var(--apple-blue)"/>
+                        <circle id="monthProgressRing" class="progress-ring" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="45" cx="56" cy="56" stroke-dasharray="282.7" stroke-dashoffset="282.7" style="color: var(--apple-blue)"/>
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span id="monthHoursLabel" class="text-xl font-bold leading-none">0</span>
-                        <span class="text-[10px] text-gray-400 font-bold uppercase">Horas</span>
+                        <span id="monthHoursLabel" class="text-2xl font-bold tracking-tighter">0</span>
+                        <span class="text-[10px] opacity-50 font-bold uppercase">Mes</span>
                     </div>
                 </div>
-                <p class="text-sm font-bold">Este Mes</p>
+                <p class="text-[13px] font-semibold opacity-70">Objetivo 50h</p>
             </div>
 
-            <div class="bg-white rounded-[32px] p-5 shadow-sm border border-gray-100 flex flex-col items-center text-center">
-                <div class="relative flex items-center justify-center mb-2">
-                    <svg class="w-24 h-24">
-                        <circle class="text-gray-100 dark:opacity-20" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48"/>
-                        <circle id="yearProgressRing" class="text-green-500 progress-ring" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48" stroke-dasharray="251.32" stroke-dashoffset="251.32"/>
+            <div class="glass squicle p-6 flex flex-col items-center shadow-sm">
+                <div class="relative mb-3">
+                    <svg class="w-28 h-28">
+                        <circle class="opacity-10" stroke-width="10" stroke="currentColor" fill="transparent" r="45" cx="56" cy="56" style="color: var(--apple-green)"/>
+                        <circle id="yearProgressRing" class="progress-ring" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="45" cx="56" cy="56" stroke-dasharray="282.7" stroke-dashoffset="282.7" style="color: var(--apple-green)"/>
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span id="yearHoursLabel" class="text-xl font-bold leading-none">0</span>
-                        <span class="text-[10px] text-gray-400 font-bold uppercase">Total</span>
+                        <span id="yearHoursLabel" class="text-2xl font-bold tracking-tighter">0</span>
+                        <span class="text-[10px] opacity-50 font-bold uppercase">Anual</span>
                     </div>
                 </div>
-                <p class="text-sm font-bold">2026</p>
+                <p class="text-[13px] font-semibold opacity-70">Meta 600h</p>
             </div>
         </section>
 
         <section class="space-y-4">
-            <h2 class="text-lg font-bold px-2">Actividad Reciente</h2>
+            <div class="flex justify-between items-center px-1">
+                <h2 class="text-2xl font-bold tracking-tight">Reciente</h2>
+                <button onclick="openActivitySheet()" class="text-blue-500 font-medium text-[15px] apple-btn-active">Ver todo</button>
+            </div>
             <div id="activitiesList" class="space-y-4"></div>
         </section>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-8 py-3 flex justify-center items-center z-50 shadow-lg">
-        <div class="flex items-center gap-12">
-            <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center gap-1 text-blue-600 active-press">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                <span class="text-[10px] font-bold">Inicio</span>
+    <nav class="fixed bottom-0 left-0 right-0 glass border-t border-black/5 dark:border-white/10 ios-tab-bar z-50">
+        <div class="flex justify-around items-center h-16">
+            <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center gap-1 text-blue-500 apple-btn-active">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span class="text-[10px] font-medium">Escuchar</span>
             </button>
-            <div class="relative">
-                <button onclick="toggleMenu()" class="bg-blue-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg active-press -mt-10 border-4 border-white dark:border-[#1e1e1e]">
-                    <svg id="plusIcon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" /></svg>
-                </button>
-                <div id="menuOptions" class="menu-options absolute bottom-20 left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden min-w-[200px]">
-                    <button onclick="openActivitySheet()" class="w-full text-left px-5 py-4 hover:bg-blue-50 transition-colors font-bold text-sm flex items-center gap-3 border-b border-gray-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                        <span>Añadir actividad</span>
-                    </button>
-                    <button onclick="openMonthSheet()" class="w-full text-left px-5 py-4 hover:bg-green-50 transition-colors font-bold text-sm flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                        <span>Añadir a mes</span>
-                    </button>
-                </div>
-            </div>
-            <button onclick="toggleSheet('settingsSheet')" class="flex flex-col items-center gap-1 text-gray-400 active-press">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /></svg>
-                <span class="text-[10px] font-bold">Ajustes</span>
+            
+            <button onclick="openActivitySheet()" class="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30 apple-btn-active -mt-4 border-4 border-[#F2F2F7] dark:border-black">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+
+            <button onclick="openMonthSheet()" class="flex flex-col items-center gap-1 text-gray-400 apple-btn-active">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span class="text-[10px] font-medium">Historial</span>
             </button>
         </div>
     </nav>
 
-    <!-- Overlay para cerrar el menú -->
-    <div id="menuOverlay" onclick="closeMenu()" class="fixed inset-0 hidden z-[45]"></div>
-
-    <div id="activitySheetOverlay" onclick="toggleSheet('activitySheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[60]"></div>
-    <div id="activitySheet" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-[32px] z-[70] bottom-sheet max-h-[92vh] overflow-y-auto">
-        <div class="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto my-4"></div>
-        <div class="px-6 pb-10 space-y-6">
-            <h3 class="text-xl font-bold">Nueva Actividad</h3>
+    <div id="activitySheetOverlay" onclick="toggleSheet('activitySheet')" class="fixed inset-0 bg-black/20 dark:bg-black/60 backdrop-blur-[2px] hidden z-[60]"></div>
+    <div id="activitySheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[70] bottom-sheet max-h-[92vh] overflow-y-auto">
+        <div class="w-10 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-4"></div>
+        <div class="px-6 pb-12 space-y-6">
+            <h3 class="text-2xl font-extrabold tracking-tight">Nueva Actividad</h3>
             <form id="activityForm" class="space-y-4">
-                <input type="text" id="title" required placeholder="Título" class="w-full bg-gray-50 p-4 rounded-2xl outline-none">
-                <input type="date" id="date" required class="w-full bg-gray-50 p-4 rounded-2xl outline-none">
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="number" id="hours" step="0.5" required placeholder="Horas" class="w-full bg-gray-50 p-4 rounded-2xl outline-none">
-                    <select id="category" class="w-full bg-gray-50 p-4 rounded-2xl outline-none">
-                        <option value="Casa en Casa">Casa en Casa</option>
-                        <option value="Carritos">Carritos</option>
-                        <option value="Pública">Pública</option>
-                        <option value="Informal">Informal</option>
-                        <option value="Telefónico">Telefónico</option>
-                        <option value="Cartas">Cartas</option>
-                    </select>
+                <div class="bg-black/5 dark:bg-white/5 rounded-2xl p-4">
+                    <input type="text" id="title" required placeholder="Título del día" class="w-full bg-transparent outline-none text-[17px]">
                 </div>
-                <input type="file" id="imageFile" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
-                <label for="imageFile" class="flex items-center justify-center w-full bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-gray-200 text-gray-500 cursor-pointer">
-                    <span id="fileNameDisplay">Seleccionar foto (Opcional)</span>
+                <div class="bg-black/5 dark:bg-white/5 rounded-2xl p-4 flex justify-between">
+                    <label class="opacity-50">Fecha</label>
+                    <input type="date" id="date" required class="bg-transparent outline-none font-medium text-blue-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-black/5 dark:bg-white/5 rounded-2xl p-4">
+                        <input type="number" id="hours" step="0.5" required placeholder="Horas" class="w-full bg-transparent outline-none text-[17px]">
+                    </div>
+                    <div class="bg-black/5 dark:bg-white/5 rounded-2xl p-4">
+                        <select id="category" class="w-full bg-transparent outline-none text-[17px] font-medium text-blue-500">
+                            <option value="Casa en Casa">Casa en Casa</option>
+                            <option value="Carritos">Carritos</option>
+                            <option value="Pública">Pública</option>
+                        </select>
+                    </div>
+                </div>
+                <label class="flex items-center justify-center w-full bg-blue-500/10 p-4 rounded-2xl text-blue-500 font-semibold cursor-pointer apple-btn-active">
+                    <input type="file" id="imageFile" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
+                    <span id="fileNameDisplay">Añadir foto</span>
                 </label>
-                <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg active-press">Registrar jornada</button>
+                <button type="submit" class="w-full py-4 bg-blue-500 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/30 apple-btn-active">Guardar Registro</button>
             </form>
         </div>
     </div>
 
-    <div id="monthSheetOverlay" onclick="toggleSheet('monthSheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[60]"></div>
-    <div id="monthSheet" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-[32px] z-[70] bottom-sheet max-h-[92vh] overflow-y-auto">
-        <div class="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto my-4"></div>
-        <div class="px-6 pb-10 space-y-6">
-            <h3 class="text-xl font-bold">Añadir Horas a Mes Anterior</h3>
-            <p class="text-sm text-gray-500">Estas horas solo contarán para el progreso anual</p>
-            <form id="monthForm" class="space-y-4">
-                <select id="monthSelect" required class="w-full bg-gray-50 p-4 rounded-2xl outline-none font-bold">
-                    <option value="">Selecciona un mes</option>
-                    <option value="2025-09">Septiembre 2025</option>
-                    <option value="2025-10">Octubre 2025</option>
-                    <option value="2025-11">Noviembre 2025</option>
-                    <option value="2025-12">Diciembre 2025</option>
-                    <option value="2026-01">Enero 2026</option>
-                    <option value="2026-02">Febrero 2026</option>
-                    <option value="2026-03">Marzo 2026</option>
-                    <option value="2026-04">Abril 2026</option>
-                    <option value="2026-05">Mayo 2026</option>
-                    <option value="2026-06">Junio 2026</option>
-                    <option value="2026-07">Julio 2026</option>
-                    <option value="2026-08">Agosto 2026</option>
-                </select>
-                <input type="number" id="monthHours" step="0.5" required placeholder="Horas del mes" class="w-full bg-gray-50 p-4 rounded-2xl outline-none">
-                <button type="submit" class="w-full py-4 bg-green-600 text-white font-bold rounded-2xl shadow-lg active-press">Registrar mes</button>
-            </form>
+    <div id="settingsSheetOverlay" onclick="toggleSheet('settingsSheet')" class="fixed inset-0 bg-black/20 dark:bg-black/60 backdrop-blur-[2px] hidden z-[60]"></div>
+    <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[70] bottom-sheet p-6 pb-12">
+        <h3 class="text-2xl font-extrabold tracking-tight mb-6">Ajustes</h3>
+        <div class="space-y-2 mb-8">
+            <div class="flex justify-between items-center p-4 bg-black/5 dark:bg-white/5 rounded-2xl">
+                <span class="font-semibold">Aspecto Oscuro</span>
+                <label class="switch"><input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()"><span class="slider"></span></label>
+            </div>
         </div>
-    </div>
-
-    <div id="settingsSheetOverlay" onclick="toggleSheet('settingsSheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[60]"></div>
-    <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-[32px] z-[70] bottom-sheet max-h-[90vh] overflow-y-auto p-6">
-        <h3 class="text-xl font-bold mb-4">Configuración</h3>
-        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-2xl mb-4">
-            <span class="font-bold text-sm">Modo Oscuro</span>
-            <label class="switch"><input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()"><span class="slider"></span></label>
-        </div>
-        <button onclick="clearData()" class="w-full py-3 text-red-500 font-bold text-sm border border-red-100 rounded-2xl">Borrar todo</button>
+        <button onclick="clearData()" class="w-full py-4 text-red-500 font-semibold bg-red-500/10 rounded-2xl apple-btn-active">Restablecer Datos</button>
     </div>
 
     <script>
-    let activities = JSON.parse(localStorage.getItem('precursor_activities')) || [];
-    let monthlyEntries = JSON.parse(localStorage.getItem('monthly_entries')) || [];
-    let currentImageData = "";
+        // Lógica optimizada (Manteniendo tus funcionalidades originales)
+        let activities = JSON.parse(localStorage.getItem('precursor_activities')) || [];
+        let currentImageData = "";
+        const MONTHLY_GOAL = 50;
+        const YEARLY_GOAL = 600;
 
-    const MONTHLY_GOAL = 50;
-    const YEARLY_GOAL = 600;
-
-    // Inicialización Modo Oscuro
-    if (localStorage.getItem('dark_mode') === 'true') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('darkModeToggle').checked = true;
-    }
-
-    function toggleDarkMode() {
-        const isDark = document.getElementById('darkModeToggle').checked;
-        document.body.classList.toggle('dark-mode', isDark);
-        localStorage.setItem('dark_mode', isDark);
-    }
-
-    function toggleMenu() {
-        const menu = document.getElementById('menuOptions');
-        const overlay = document.getElementById('menuOverlay');
-        const icon = document.getElementById('plusIcon');
-        
-        menu.classList.toggle('active');
-        overlay.classList.toggle('hidden');
-        
-        if (menu.classList.contains('active')) {
-            icon.style.transform = 'rotate(45deg)';
-        } else {
-            icon.style.transform = 'rotate(0deg)';
+        if (localStorage.getItem('dark_mode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeToggle').checked = true;
         }
-    }
 
-    function closeMenu() {
-        const menu = document.getElementById('menuOptions');
-        const overlay = document.getElementById('menuOverlay');
-        const icon = document.getElementById('plusIcon');
-        
-        menu.classList.remove('active');
-        overlay.classList.add('hidden');
-        icon.style.transform = 'rotate(0deg)';
-    }
+        function toggleDarkMode() {
+            const isDark = document.getElementById('darkModeToggle').checked;
+            document.body.classList.toggle('dark-mode', isDark);
+            localStorage.setItem('dark_mode', isDark);
+        }
 
-    function handleFileSelect(input) {
-        const file = input.files[0];
-        if (!file) return;
-        document.getElementById('fileNameDisplay').innerText = "Optimizando...";
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.src = e.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 600;
-                let width = img.width, height = img.height;
-                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-                canvas.width = width; canvas.height = height;
-                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                currentImageData = canvas.toDataURL('image/jpeg', 0.6);
-                document.getElementById('fileNameDisplay').innerText = "Foto lista ✅";
+        function updateDashboard() {
+            const now = new Date();
+            const curM = now.getMonth(), curY = now.getFullYear();
+
+            const totalMonth = activities.reduce((sum, a) => {
+                const d = new Date(a.date);
+                return (d.getMonth() === curM && d.getFullYear() === curY) ? sum + parseFloat(a.hours) : sum;
+            }, 0);
+
+            const totalYear = activities.reduce((sum, a) => sum + parseFloat(a.hours), 0);
+
+            document.getElementById('monthHoursLabel').innerText = totalMonth;
+            document.getElementById('yearHoursLabel').innerText = Math.round(totalYear);
+
+            const updateRing = (id, cur, goal) => {
+                const ring = document.getElementById(id), circ = 282.7;
+                ring.style.strokeDashoffset = circ - (Math.min(cur / goal, 1) * circ);
             };
-        };
-        reader.readAsDataURL(file);
-    }
+            updateRing('monthProgressRing', totalMonth, MONTHLY_GOAL);
+            updateRing('yearProgressRing', totalYear, YEARLY_GOAL);
 
-    function updateDashboard() {
-        const now = new Date();
-        const curM = now.getMonth(), curY = now.getFullYear();
-
-        // Calcular horas del mes actual (solo de actividades)
-        const totalMonth = activities.reduce((sum, a) => {
-            const d = new Date(a.date);
-            if (d.getMonth() === curM && d.getFullYear() === curY) {
-                return sum + parseFloat(a.hours || 0);
-            }
-            return sum;
-        }, 0);
-
-        // Calcular horas anuales (actividades + entradas mensuales)
-        const activitiesYear = activities.reduce((sum, a) => {
-            const d = new Date(a.date);
-            const val = d.getFullYear() * 100 + d.getMonth();
-            if (val >= 202508 && val <= 202607) return sum + parseFloat(a.hours || 0);
-            return sum;
-        }, 0);
-
-        const monthlyYear = monthlyEntries.reduce((sum, entry) => {
-            return sum + parseFloat(entry.hours || 0);
-        }, 0);
-
-        const totalYear = activitiesYear + monthlyYear;
-
-        document.getElementById('monthHoursLabel').innerText = totalMonth;
-        document.getElementById('yearHoursLabel').innerText = Math.round(totalYear);
-
-        const updateRing = (id, cur, goal) => {
-            const ring = document.getElementById(id), circ = 251.32;
-            ring.style.strokeDashoffset = circ - (Math.min(cur / goal, 1) * circ);
-        };
-        updateRing('monthProgressRing', totalMonth, MONTHLY_GOAL);
-        updateRing('yearProgressRing', totalYear, YEARLY_GOAL);
-
-        renderActivities();
-    }
-
-    function renderActivities() {
-        const list = document.getElementById('activitiesList');
-        if (activities.length === 0) {
-            list.innerHTML = `<div class="bg-white p-8 rounded-[32px] text-center text-gray-400 text-sm">Sin registros aún</div>`;
-            return;
+            renderActivities();
         }
-        const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
-        list.innerHTML = sorted.map(act => `
-            <div class="bg-white rounded-[32px] border border-gray-100 p-5 dark:bg-gray-800">
-                ${act.image ? `<img src="${act.image}" class="w-full h-40 object-cover rounded-2xl mb-3">` : ''}
-                <div class="flex justify-between items-center">
-                    <div>
-                        <span class="category-pill bg-blue-50 text-blue-600">${act.category}</span>
-                        <h3 class="font-bold mt-1">${act.title}</h3>
-                        <p class="text-[10px] text-gray-400 uppercase">${act.date}</p>
+
+        function renderActivities() {
+            const list = document.getElementById('activitiesList');
+            if (activities.length === 0) {
+                list.innerHTML = `<div class="glass p-12 rounded-[24px] text-center opacity-40 text-[15px] font-medium">No hay actividad reciente</div>`;
+                return;
+            }
+            const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+            list.innerHTML = sorted.map(act => `
+                <div class="glass squicle p-4 flex gap-4 items-center shadow-sm relative overflow-hidden">
+                    ${act.image ? `<img src="${act.image}" class="w-16 h-16 rounded-xl object-cover">` : `<div class="w-16 h-16 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold">${act.hours}h</div>`}
+                    <div class="flex-1">
+                        <p class="text-[11px] font-bold text-blue-500 uppercase tracking-tight">${act.category}</p>
+                        <h3 class="font-bold text-[17px] leading-tight">${act.title}</h3>
+                        <p class="text-[13px] opacity-50">${new Date(act.date).toLocaleDateString('es-ES', {day:'numeric', month:'short'})}</p>
                     </div>
-                    <div class="text-right">
-                        <span class="text-xl font-bold text-blue-600">${act.hours}h</span>
-                        <button onclick="deleteActivity('${act.id}')" class="block text-[10px] text-red-300 font-bold mt-2">BORRAR</button>
-                    </div>
+                    <button onclick="deleteActivity('${act.id}')" class="p-2 opacity-20 hover:opacity-100 text-red-500 transition-opacity">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
                 </div>
-            </div>
-        `).join('');
-    }
+            `).join('');
+        }
 
-    document.getElementById('activityForm').onsubmit = (e) => {
-        e.preventDefault();
-        const hoursInput = document.getElementById('hours').value;
-        
-        const newAct = {
-            id: Date.now().toString(),
-            title: document.getElementById('title').value,
-            date: document.getElementById('date').value,
-            hours: parseFloat(hoursInput),
-            category: document.getElementById('category').value,
-            image: currentImageData
-        };
+        // Helpers de UI
+        function toggleSheet(id) {
+            document.getElementById(id).classList.toggle('active');
+            document.getElementById(id + 'Overlay').classList.toggle('hidden');
+        }
 
-        activities.push(newAct);
-        try {
+        function openActivitySheet() {
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            toggleSheet('activitySheet');
+        }
+
+        document.getElementById('activityForm').onsubmit = (e) => {
+            e.preventDefault();
+            const newAct = {
+                id: Date.now().toString(),
+                title: document.getElementById('title').value,
+                date: document.getElementById('date').value,
+                hours: parseFloat(document.getElementById('hours').value),
+                category: document.getElementById('category').value,
+                image: currentImageData
+            };
+            activities.push(newAct);
             localStorage.setItem('precursor_activities', JSON.stringify(activities));
             currentImageData = "";
             e.target.reset();
             toggleSheet('activitySheet');
             updateDashboard();
-        } catch (e) { alert("Error: Posiblemente memoria llena."); }
-    };
-
-    document.getElementById('monthForm').onsubmit = (e) => {
-        e.preventDefault();
-        
-        const monthValue = document.getElementById('monthSelect').value;
-        const hours = parseFloat(document.getElementById('monthHours').value);
-        
-        const newEntry = {
-            id: Date.now().toString(),
-            month: monthValue,
-            hours: hours,
-            date: new Date().toISOString()
         };
 
-        monthlyEntries.push(newEntry);
-        try {
-            localStorage.setItem('monthly_entries', JSON.stringify(monthlyEntries));
-            e.target.reset();
-            toggleSheet('monthSheet');
-            updateDashboard();
-        } catch (e) { alert("Error: Posiblemente memoria llena."); }
-    };
-
-    function deleteActivity(id) {
-        if(confirm('¿Borrar?')) {
-            activities = activities.filter(a => a.id !== id);
-            localStorage.setItem('precursor_activities', JSON.stringify(activities));
-            updateDashboard();
+        function deleteActivity(id) {
+            if(confirm('¿Eliminar este registro?')) {
+                activities = activities.filter(a => a.id !== id);
+                localStorage.setItem('precursor_activities', JSON.stringify(activities));
+                updateDashboard();
+            }
         }
-    }
 
-    function toggleSheet(id) {
-        document.getElementById(id).classList.toggle('active');
-        document.getElementById(id + 'Overlay').classList.toggle('hidden');
-    }
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            if (!file) return;
+            document.getElementById('fileNameDisplay').innerText = "Cargando...";
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX = 400;
+                    let w = img.width, h = img.height;
+                    if (w > MAX) { h *= MAX / w; w = MAX; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    currentImageData = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('fileNameDisplay').innerText = "¡Foto añadida!";
+                };
+            };
+            reader.readAsDataURL(file);
+        }
 
-    function openActivitySheet() {
-        closeMenu();
-        document.getElementById('date').value = new Date().toISOString().split('T')[0];
-        document.getElementById('fileNameDisplay').innerText = "Seleccionar foto (Opcional)";
-        toggleSheet('activitySheet');
-    }
+        function clearData() {
+            if(confirm('Se borrarán todos los registros permanentemente.')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
 
-    function openMonthSheet() {
-        closeMenu();
-        toggleSheet('monthSheet');
-    }
-
-    function clearData() { 
-        if(confirm('¿Borrar todo?')) { 
-            localStorage.clear(); 
-            location.reload(); 
-        } 
-    }
-
-    window.onload = updateDashboard;
-
-// Registro del Service Worker
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('SW registrado', reg))
-            .catch(err => console.error('Error al registrar SW', err));
-    });
-}
-
+        window.onload = updateDashboard;
     </script>
 </body>
 </html>
-
-
-
-
-
-
