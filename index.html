@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PrecuApp 2026</title>
+    <title>PrecuApp</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
@@ -80,9 +80,9 @@
 <body class="select-none">
 
     <header class="sticky top-0 z-40 glass px-6 pt-12 pb-4 border-b border-black/5 dark:border-white/5">
-        <p class="text-[13px] font-semibold text-blue-500 uppercase tracking-tight mb-1">Servicio 2026</p>
+        <p class="text-[13px] font-semibold text-blue-500 uppercase tracking-tight mb-1">Año de Servicio 2026</p>
         <div class="flex justify-between items-end">
-            <h1 class="large-title">Actividad</h1>
+            <h1 class="large-title">Tu Actividad</h1>
             <button onclick="toggleSheet('settingsSheet')" class="apple-btn-active pb-2">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             </button>
@@ -161,6 +161,8 @@
                     <option value="Carritos">Carritos</option>
                     <option value="Pública">Pública</option>
                     <option value="Informal">Informal</option>
+                    <option value="Telefónica">Telefónica</option>
+                    <option value="Curso Bíblico">Curso Bíblico</option>
                 </select>
                 <label class="flex items-center justify-center w-full bg-blue-500/10 p-4 rounded-xl text-blue-500 font-semibold cursor-pointer apple-btn-active">
                     <input type="file" id="imageFile" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
@@ -360,3 +362,4 @@
     </script>
 </body>
 </html>
+
