@@ -44,11 +44,14 @@
             transform: scale(1) translateY(0);
             pointer-events: auto;
         }
+        /* Agrega esto dentro de tu etiqueta <style> */
+.dark-mode header h1 { color: #f1f3f4; }
+.dark-mode .bg-white { background-color: #1e1e1e !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 select-none">
 
-    <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-6 py-4 flex justify-between items-center border-b border-gray-100">
+    <header class="sticky top-0 z-40 bg-white/80 dark:bg-[#121212]/80 backdrop-blur-md px-6 py-4 flex justify-between items-center border-b border-gray-100 dark:border-white/10">
         <div>
             <p class="text-xs font-bold text-blue-600 uppercase tracking-widest">Año de Servicio 25/26</p>
             <h1 class="text-xl font-bold">PrecuApp</h1>
@@ -412,3 +415,4 @@ if ('serviceWorker' in navigator) {
     </script>
 </body>
 </html>
+
