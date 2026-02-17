@@ -11,18 +11,18 @@
             --apple-green: #34C759;
             --apple-bg: #F2F2F7;
             --apple-card: rgba(255, 255, 255, 0.8);
-            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+            --safe-area-bottom: env(safe-area-inset-bottom);
         }
 
         * {
             -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
         }
 
         body {
             background-color: var(--apple-bg);
             color: #000;
-            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background-color 0.4s ease;
         }
 
         body.dark-mode {
@@ -31,23 +31,16 @@
             color: #FFFFFF;
         }
 
-        /* Apple Glassmorphism */
         .glass {
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
             background-color: var(--apple-card);
-            border: 0.5px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Apple Squicles (Continuous Corners) */
-        .squicle {
-            border-radius: 24px;
-            /* En iOS real se usa mask-image para esquinas perfectas, 
-               aquí emulamos con un radio suave y balanceado */
-        }
+        .squicle { border-radius: 22px; }
 
         .progress-ring {
-            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
             transform: rotate(-90deg);
             transform-origin: 50% 50%;
         }
@@ -55,189 +48,174 @@
         .bottom-sheet {
             transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
             transform: translateY(105%);
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
         }
 
-        .bottom-sheet.active {
-            transform: translateY(0);
-        }
+        .bottom-sheet.active { transform: translateY(0); }
 
-        /* Animación de botones al presionar (iOS style) */
         .apple-btn-active:active {
-            transform: scale(0.92);
+            transform: scale(0.94);
             opacity: 0.7;
-            transition: transform 0.1s ease;
         }
 
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 51px;
-            height: 31px;
+        .ios-input {
+            width: 100%;
+            background: rgba(0,0,0,0.05);
+            border-radius: 12px;
+            padding: 12px 16px;
+            outline: none;
+            font-size: 17px;
         }
+        .dark-mode .ios-input { background: rgba(255,255,255,0.1); }
 
-        .switch input { opacity: 0; width: 0; height: 0; }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #E9E9EA;
-            transition: .3s;
-            border-radius: 34px;
-        }
-
-        .dark-mode .slider { background-color: #39393D; }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 27px; width: 27px;
-            left: 2px; bottom: 2px;
-            background-color: white;
-            transition: .3s cubic-bezier(0.25, 0.1, 0.25, 1);
-            border-radius: 50%;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-        }
-
-        input:checked + .slider { background-color: var(--apple-green); }
-        input:checked + .slider:before { transform: translateX(20px); }
-
-        .ios-tab-bar {
-            padding-bottom: calc(12px + var(--safe-area-inset-bottom));
-        }
-
-        /* Títulos grandes estilo Apple Music */
         .large-title {
             font-size: 34px;
             font-weight: 800;
             letter-spacing: -0.5px;
         }
+
+        /* Ocultar scrollbar */
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="select-none">
 
     <header class="sticky top-0 z-40 glass px-6 pt-12 pb-4 border-b border-black/5 dark:border-white/5">
-        <p class="text-[13px] font-semibold text-blue-500 uppercase tracking-tight mb-1">Año de Servicio 2026</p>
+        <p class="text-[13px] font-semibold text-blue-500 uppercase tracking-tight mb-1">Servicio 2026</p>
         <div class="flex justify-between items-end">
-            <h1 class="large-title">Resumen</h1>
+            <h1 class="large-title">Actividad</h1>
             <button onclick="toggleSheet('settingsSheet')" class="apple-btn-active pb-2">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             </button>
         </div>
     </header>
 
     <main class="max-w-md mx-auto p-5 space-y-8 pb-32">
         <section class="grid grid-cols-2 gap-4">
-            <div class="glass squicle p-6 flex flex-col items-center shadow-sm">
-                <div class="relative mb-3">
-                    <svg class="w-28 h-28">
-                        <circle class="opacity-10" stroke-width="10" stroke="currentColor" fill="transparent" r="45" cx="56" cy="56" style="color: var(--apple-blue)"/>
-                        <circle id="monthProgressRing" class="progress-ring" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="45" cx="56" cy="56" stroke-dasharray="282.7" stroke-dashoffset="282.7" style="color: var(--apple-blue)"/>
+            <div class="glass squicle p-6 flex flex-col items-center shadow-sm border border-white/20">
+                <div class="relative mb-2">
+                    <svg class="w-24 h-24">
+                        <circle class="opacity-10" stroke-width="9" stroke="currentColor" fill="transparent" r="42" cx="48" cy="48" style="color: var(--apple-blue)"/>
+                        <circle id="monthRing" class="progress-ring" stroke-width="9" stroke-linecap="round" stroke="currentColor" fill="transparent" r="42" cx="48" cy="48" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="color: var(--apple-blue)"/>
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span id="monthHoursLabel" class="text-2xl font-bold tracking-tighter">0</span>
-                        <span class="text-[10px] opacity-50 font-bold uppercase">Mes</span>
+                        <span id="labelMonth" class="text-xl font-bold tracking-tight">0</span>
                     </div>
                 </div>
-                <p class="text-[13px] font-semibold opacity-70">Objetivo 50h</p>
+                <p class="text-[12px] font-bold opacity-60">ESTE MES</p>
             </div>
 
-            <div class="glass squicle p-6 flex flex-col items-center shadow-sm">
-                <div class="relative mb-3">
-                    <svg class="w-28 h-28">
-                        <circle class="opacity-10" stroke-width="10" stroke="currentColor" fill="transparent" r="45" cx="56" cy="56" style="color: var(--apple-green)"/>
-                        <circle id="yearProgressRing" class="progress-ring" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="45" cx="56" cy="56" stroke-dasharray="282.7" stroke-dashoffset="282.7" style="color: var(--apple-green)"/>
+            <div class="glass squicle p-6 flex flex-col items-center shadow-sm border border-white/20">
+                <div class="relative mb-2">
+                    <svg class="w-24 h-24">
+                        <circle class="opacity-10" stroke-width="9" stroke="currentColor" fill="transparent" r="42" cx="48" cy="48" style="color: var(--apple-green)"/>
+                        <circle id="yearRing" class="progress-ring" stroke-width="9" stroke-linecap="round" stroke="currentColor" fill="transparent" r="42" cx="48" cy="48" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="color: var(--apple-green)"/>
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span id="yearHoursLabel" class="text-2xl font-bold tracking-tighter">0</span>
-                        <span class="text-[10px] opacity-50 font-bold uppercase">Anual</span>
+                        <span id="labelYear" class="text-xl font-bold tracking-tight">0</span>
                     </div>
                 </div>
-                <p class="text-[13px] font-semibold opacity-70">Meta 600h</p>
+                <p class="text-[12px] font-bold opacity-60">AÑO TOTAL</p>
             </div>
         </section>
 
         <section class="space-y-4">
-            <div class="flex justify-between items-center px-1">
-                <h2 class="text-2xl font-bold tracking-tight">Reciente</h2>
-                <button onclick="openActivitySheet()" class="text-blue-500 font-medium text-[15px] apple-btn-active">Ver todo</button>
-            </div>
-            <div id="activitiesList" class="space-y-4"></div>
+            <h2 class="text-2xl font-bold tracking-tight px-1">Recientes</h2>
+            <div id="activitiesList" class="space-y-3"></div>
         </section>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 glass border-t border-black/5 dark:border-white/10 ios-tab-bar z-50">
+    <nav class="fixed bottom-0 left-0 right-0 glass border-t border-black/5 dark:border-white/10 z-50 px-6" style="padding-bottom: var(--safe-area-bottom);">
         <div class="flex justify-around items-center h-16">
-            <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center gap-1 text-blue-500 apple-btn-active">
+            <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center gap-0.5 text-blue-500 apple-btn-active">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                <span class="text-[10px] font-medium">Escuchar</span>
+                <span class="text-[10px] font-medium">Inicio</span>
             </button>
             
-            <button onclick="openActivitySheet()" class="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30 apple-btn-active -mt-4 border-4 border-[#F2F2F7] dark:border-black">
+            <button onclick="openActivitySheet()" class="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-xl apple-btn-active -mt-6 border-4 border-[#F2F2F7] dark:border-black">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </button>
 
-            <button onclick="openMonthSheet()" class="flex flex-col items-center gap-1 text-gray-400 apple-btn-active">
+            <button onclick="toggleSheet('monthSheet')" class="flex flex-col items-center gap-0.5 text-gray-400 apple-btn-active">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <span class="text-[10px] font-medium">Historial</span>
+                <span class="text-[10px] font-medium">Meses</span>
             </button>
         </div>
     </nav>
 
-    <div id="activitySheetOverlay" onclick="toggleSheet('activitySheet')" class="fixed inset-0 bg-black/20 dark:bg-black/60 backdrop-blur-[2px] hidden z-[60]"></div>
+    <div id="activitySheetOverlay" onclick="toggleSheet('activitySheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[60]"></div>
     <div id="activitySheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[70] bottom-sheet max-h-[92vh] overflow-y-auto">
-        <div class="w-10 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-4"></div>
+        <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
         <div class="px-6 pb-12 space-y-6">
-            <h3 class="text-2xl font-extrabold tracking-tight">Nueva Actividad</h3>
+            <div class="flex justify-between items-center">
+                <h3 class="text-2xl font-bold tracking-tight">Nueva Jornada</h3>
+                <button onclick="toggleSheet('activitySheet')" class="text-blue-500 font-medium">Listo</button>
+            </div>
             <form id="activityForm" class="space-y-4">
-                <div class="bg-black/5 dark:bg-white/5 rounded-2xl p-4">
-                    <input type="text" id="title" required placeholder="Título del día" class="w-full bg-transparent outline-none text-[17px]">
+                <input type="text" id="title" required placeholder="¿Dónde predicaste?" class="ios-input">
+                <div class="flex gap-3">
+                    <input type="date" id="date" required class="ios-input flex-1">
+                    <input type="number" id="hours" step="0.5" required placeholder="Horas" class="ios-input w-24">
                 </div>
-                <div class="bg-black/5 dark:bg-white/5 rounded-2xl p-4 flex justify-between">
-                    <label class="opacity-50">Fecha</label>
-                    <input type="date" id="date" required class="bg-transparent outline-none font-medium text-blue-500">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-black/5 dark:bg-white/5 rounded-2xl p-4">
-                        <input type="number" id="hours" step="0.5" required placeholder="Horas" class="w-full bg-transparent outline-none text-[17px]">
-                    </div>
-                    <div class="bg-black/5 dark:bg-white/5 rounded-2xl p-4">
-                        <select id="category" class="w-full bg-transparent outline-none text-[17px] font-medium text-blue-500">
-                            <option value="Casa en Casa">Casa en Casa</option>
-                            <option value="Carritos">Carritos</option>
-                            <option value="Pública">Pública</option>
-                        </select>
-                    </div>
-                </div>
-                <label class="flex items-center justify-center w-full bg-blue-500/10 p-4 rounded-2xl text-blue-500 font-semibold cursor-pointer apple-btn-active">
+                <select id="category" class="ios-input text-blue-500 font-medium">
+                    <option value="Casa en Casa">Casa en Casa</option>
+                    <option value="Carritos">Carritos</option>
+                    <option value="Pública">Pública</option>
+                    <option value="Informal">Informal</option>
+                </select>
+                <label class="flex items-center justify-center w-full bg-blue-500/10 p-4 rounded-xl text-blue-500 font-semibold cursor-pointer apple-btn-active">
                     <input type="file" id="imageFile" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
-                    <span id="fileNameDisplay">Añadir foto</span>
+                    <span id="fileNameDisplay">Añadir Foto</span>
                 </label>
-                <button type="submit" class="w-full py-4 bg-blue-500 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/30 apple-btn-active">Guardar Registro</button>
+                <button type="submit" class="w-full py-4 bg-blue-500 text-white font-bold rounded-xl shadow-lg apple-btn-active">Guardar Registro</button>
             </form>
         </div>
     </div>
 
-    <div id="settingsSheetOverlay" onclick="toggleSheet('settingsSheet')" class="fixed inset-0 bg-black/20 dark:bg-black/60 backdrop-blur-[2px] hidden z-[60]"></div>
-    <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[70] bottom-sheet p-6 pb-12">
-        <h3 class="text-2xl font-extrabold tracking-tight mb-6">Ajustes</h3>
-        <div class="space-y-2 mb-8">
-            <div class="flex justify-between items-center p-4 bg-black/5 dark:bg-white/5 rounded-2xl">
-                <span class="font-semibold">Aspecto Oscuro</span>
-                <label class="switch"><input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()"><span class="slider"></span></label>
-            </div>
+    <div id="monthSheetOverlay" onclick="toggleSheet('monthSheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[60]"></div>
+    <div id="monthSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[70] bottom-sheet">
+        <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
+        <div class="px-6 pb-12 space-y-6">
+            <h3 class="text-2xl font-bold tracking-tight">Añadir Mes Completo</h3>
+            <p class="text-[13px] opacity-60 -mt-4">Ideal para migrar datos de meses anteriores.</p>
+            <form id="monthForm" class="space-y-4">
+                <select id="monthSelect" required class="ios-input font-medium">
+                    <option value="">Selecciona el Mes</option>
+                    <option value="2025-09">Septiembre 2025</option>
+                    <option value="2025-10">Octubre 2025</option>
+                    <option value="2025-11">Noviembre 2025</option>
+                    <option value="2025-12">Diciembre 2025</option>
+                    <option value="2026-01">Enero 2026</option>
+                    <option value="2026-02">Febrero 2026</option>
+                    <option value="2026-03">Marzo 2026</option>
+                    <option value="2026-04">Abril 2026</option>
+                </select>
+                <input type="number" id="monthHours" step="0.5" required placeholder="Total horas del mes" class="ios-input">
+                <button type="submit" class="w-full py-4 bg-green-500 text-white font-bold rounded-xl shadow-lg apple-btn-active">Registrar Mes</button>
+            </form>
         </div>
-        <button onclick="clearData()" class="w-full py-4 text-red-500 font-semibold bg-red-500/10 rounded-2xl apple-btn-active">Restablecer Datos</button>
+    </div>
+
+    <div id="settingsSheetOverlay" onclick="toggleSheet('settingsSheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[60]"></div>
+    <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[70] bottom-sheet p-6 pb-12">
+        <h3 class="text-2xl font-bold tracking-tight mb-6">Configuración</h3>
+        <div class="bg-white/50 dark:bg-white/5 rounded-xl overflow-hidden mb-6">
+            <div class="flex justify-between items-center p-4 border-b border-black/5 dark:border-white/5">
+                <span class="font-medium">Modo Oscuro</span>
+                <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()" class="w-10 h-5 bg-gray-300 rounded-full appearance-none checked:bg-green-500 transition-all relative after:content-[''] after:absolute after:w-4 after:h-4 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 after:transition-all checked:after:left-5">
+            </div>
+            <button onclick="clearData()" class="w-full p-4 text-red-500 font-bold text-left">Borrar todos los datos</button>
+        </div>
     </div>
 
     <script>
-        // Lógica optimizada (Manteniendo tus funcionalidades originales)
         let activities = JSON.parse(localStorage.getItem('precursor_activities')) || [];
+        let monthlyEntries = JSON.parse(localStorage.getItem('monthly_entries')) || [];
         let currentImageData = "";
-        const MONTHLY_GOAL = 50;
-        const YEARLY_GOAL = 600;
+        
+        const GOAL_MONTH = 50;
+        const GOAL_YEAR = 600;
 
+        // Dark Mode init
         if (localStorage.getItem('dark_mode') === 'true') {
             document.body.classList.add('dark-mode');
             document.getElementById('darkModeToggle').checked = true;
@@ -249,53 +227,6 @@
             localStorage.setItem('dark_mode', isDark);
         }
 
-        function updateDashboard() {
-            const now = new Date();
-            const curM = now.getMonth(), curY = now.getFullYear();
-
-            const totalMonth = activities.reduce((sum, a) => {
-                const d = new Date(a.date);
-                return (d.getMonth() === curM && d.getFullYear() === curY) ? sum + parseFloat(a.hours) : sum;
-            }, 0);
-
-            const totalYear = activities.reduce((sum, a) => sum + parseFloat(a.hours), 0);
-
-            document.getElementById('monthHoursLabel').innerText = totalMonth;
-            document.getElementById('yearHoursLabel').innerText = Math.round(totalYear);
-
-            const updateRing = (id, cur, goal) => {
-                const ring = document.getElementById(id), circ = 282.7;
-                ring.style.strokeDashoffset = circ - (Math.min(cur / goal, 1) * circ);
-            };
-            updateRing('monthProgressRing', totalMonth, MONTHLY_GOAL);
-            updateRing('yearProgressRing', totalYear, YEARLY_GOAL);
-
-            renderActivities();
-        }
-
-        function renderActivities() {
-            const list = document.getElementById('activitiesList');
-            if (activities.length === 0) {
-                list.innerHTML = `<div class="glass p-12 rounded-[24px] text-center opacity-40 text-[15px] font-medium">No hay actividad reciente</div>`;
-                return;
-            }
-            const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
-            list.innerHTML = sorted.map(act => `
-                <div class="glass squicle p-4 flex gap-4 items-center shadow-sm relative overflow-hidden">
-                    ${act.image ? `<img src="${act.image}" class="w-16 h-16 rounded-xl object-cover">` : `<div class="w-16 h-16 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold">${act.hours}h</div>`}
-                    <div class="flex-1">
-                        <p class="text-[11px] font-bold text-blue-500 uppercase tracking-tight">${act.category}</p>
-                        <h3 class="font-bold text-[17px] leading-tight">${act.title}</h3>
-                        <p class="text-[13px] opacity-50">${new Date(act.date).toLocaleDateString('es-ES', {day:'numeric', month:'short'})}</p>
-                    </div>
-                    <button onclick="deleteActivity('${act.id}')" class="p-2 opacity-20 hover:opacity-100 text-red-500 transition-opacity">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        // Helpers de UI
         function toggleSheet(id) {
             document.getElementById(id).classList.toggle('active');
             document.getElementById(id + 'Overlay').classList.toggle('hidden');
@@ -306,17 +237,67 @@
             toggleSheet('activitySheet');
         }
 
+        function updateDashboard() {
+            const now = new Date();
+            const curM = now.getMonth(), curY = now.getFullYear();
+
+            // Horas mes actual (solo actividades)
+            const totalMonth = activities.reduce((sum, a) => {
+                const d = new Date(a.date);
+                return (d.getMonth() === curM && d.getFullYear() === curY) ? sum + parseFloat(a.hours) : sum;
+            }, 0);
+
+            // Horas año (actividades + entradas manuales de meses)
+            const actYear = activities.reduce((sum, a) => sum + parseFloat(a.hours), 0);
+            const manualYear = monthlyEntries.reduce((sum, m) => sum + parseFloat(m.hours), 0);
+            const totalYear = actYear + manualYear;
+
+            document.getElementById('labelMonth').innerText = totalMonth;
+            document.getElementById('labelYear').innerText = Math.round(totalYear);
+
+            const updateRing = (id, cur, goal) => {
+                const ring = document.getElementById(id), circ = 263.9;
+                ring.style.strokeDashoffset = circ - (Math.min(cur / goal, 1) * circ);
+            };
+            updateRing('monthRing', totalMonth, GOAL_MONTH);
+            updateRing('yearRing', totalYear, GOAL_YEAR);
+
+            renderActivities();
+        }
+
+        function renderActivities() {
+            const list = document.getElementById('activitiesList');
+            if (activities.length === 0) {
+                list.innerHTML = `<div class="p-10 text-center opacity-30 font-medium">Sin registros recientes</div>`;
+                return;
+            }
+            const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+            list.innerHTML = sorted.map(act => `
+                <div class="glass squicle p-4 flex gap-4 items-center shadow-sm border border-white/10 relative overflow-hidden apple-btn-active">
+                    ${act.image ? `<img src="${act.image}" class="w-14 h-14 rounded-lg object-cover">` : `<div class="w-14 h-14 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold">${act.hours}</div>`}
+                    <div class="flex-1">
+                        <p class="text-[10px] font-extrabold text-blue-500 uppercase">${act.category}</p>
+                        <h3 class="font-bold text-[16px]">${act.title}</h3>
+                        <p class="text-[12px] opacity-40">${new Date(act.date).toLocaleDateString('es-ES', {day:'numeric', month:'short'})}</p>
+                    </div>
+                    <button onclick="deleteActivity('${act.id}')" class="p-2 text-red-500/30 hover:text-red-500">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Form Activity
         document.getElementById('activityForm').onsubmit = (e) => {
             e.preventDefault();
-            const newAct = {
+            activities.push({
                 id: Date.now().toString(),
                 title: document.getElementById('title').value,
                 date: document.getElementById('date').value,
                 hours: parseFloat(document.getElementById('hours').value),
                 category: document.getElementById('category').value,
                 image: currentImageData
-            };
-            activities.push(newAct);
+            });
             localStorage.setItem('precursor_activities', JSON.stringify(activities));
             currentImageData = "";
             e.target.reset();
@@ -324,8 +305,22 @@
             updateDashboard();
         };
 
+        // Form Month
+        document.getElementById('monthForm').onsubmit = (e) => {
+            e.preventDefault();
+            monthlyEntries.push({
+                id: Date.now().toString(),
+                month: document.getElementById('monthSelect').value,
+                hours: parseFloat(document.getElementById('monthHours').value)
+            });
+            localStorage.setItem('monthly_entries', JSON.stringify(monthlyEntries));
+            e.target.reset();
+            toggleSheet('monthSheet');
+            updateDashboard();
+        };
+
         function deleteActivity(id) {
-            if(confirm('¿Eliminar este registro?')) {
+            if(confirm('¿Eliminar registro?')) {
                 activities = activities.filter(a => a.id !== id);
                 localStorage.setItem('precursor_activities', JSON.stringify(activities));
                 updateDashboard();
@@ -344,18 +339,18 @@
                     const canvas = document.createElement('canvas');
                     const MAX = 400;
                     let w = img.width, h = img.height;
-                    if (w > MAX) { h *= MAX / w; w = MAX; }
+                    if (w > MAX) { h *= MAX/w; w = MAX; }
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    currentImageData = canvas.toDataURL('image/jpeg', 0.7);
-                    document.getElementById('fileNameDisplay').innerText = "¡Foto añadida!";
+                    currentImageData = canvas.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('fileNameDisplay').innerText = "¡Foto lista!";
                 };
             };
             reader.readAsDataURL(file);
         }
 
         function clearData() {
-            if(confirm('Se borrarán todos los registros permanentemente.')) {
+            if(confirm('Se borrarán todos los datos definitivamente.')) {
                 localStorage.clear();
                 location.reload();
             }
