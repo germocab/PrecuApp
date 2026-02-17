@@ -280,283 +280,322 @@
     </div>
 
     <script>
-        let activities = JSON.parse(localStorage.getItem('precursor_activities')) || [];
-        let monthlyEntries = JSON.parse(localStorage.getItem('monthly_entries')) || [];
-        let currentImageData = "";
-        let editImageData = "";
-        let currentDetailId = null;
-        let isEditMode = false;
+    let activities = JSON.parse(localStorage.getItem('precursor_activities')) || [];
+    let monthlyEntries = JSON.parse(localStorage.getItem('monthly_entries')) || [];
+    let currentImageData = "";
+    let editImageData = "";
+    let currentDetailId = null;
+    let isEditMode = false;
 
-        const GOAL_MONTH = 50;
-        const GOAL_YEAR = 600;
+    const GOAL_MONTH = 50;
+    const GOAL_YEAR = 600;
 
-        if (localStorage.getItem('dark_mode') === 'true') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('darkModeToggle').checked = true;
+    if (localStorage.getItem('dark_mode') === 'true') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('darkModeToggle').checked = true;
+    }
+
+    function toggleDarkMode() {
+        const isDark = document.getElementById('darkModeToggle').checked;
+        document.body.classList.toggle('dark-mode', isDark);
+        localStorage.setItem('dark_mode', isDark);
+    }
+
+    // ── History API para gestos "atrás" ───────────────────
+    let activeSheet = null;
+
+    function pushSheetState(sheetId) {
+        history.pushState({ sheet: sheetId }, '');
+    }
+
+    window.addEventListener('popstate', (e) => {
+        // El usuario hizo gesto/botón atrás
+        if (activeSheet === 'detailSheet') {
+            _closeDetailSheet();
+        } else if (activeSheet) {
+            _toggleSheetClose(activeSheet);
+        }
+    });
+
+    // Versiones internas (sin tocar history)
+    function _toggleSheetClose(id) {
+        document.getElementById(id).classList.remove('active');
+        document.getElementById(id + 'Overlay').classList.add('hidden');
+        activeSheet = null;
+    }
+
+    function _closeDetailSheet() {
+        document.getElementById('detailSheet').classList.remove('active');
+        document.getElementById('detailSheetOverlay').classList.add('hidden');
+        currentDetailId = null;
+        isEditMode = false;
+        editImageData = "";
+        activeSheet = null;
+    }
+
+    // ── Funciones públicas (usan history) ─────────────────
+    function toggleSheet(id) {
+        const sheet = document.getElementById(id);
+        const isOpen = sheet.classList.contains('active');
+        if (isOpen) {
+            history.back(); // dispara popstate → cierra
+        } else {
+            sheet.classList.add('active');
+            document.getElementById(id + 'Overlay').classList.remove('hidden');
+            activeSheet = id;
+            pushSheetState(id);
+        }
+    }
+
+    function openActivitySheet() {
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        toggleSheet('activitySheet');
+    }
+
+    function openDetailSheet(id) {
+        const act = activities.find(a => a.id === id);
+        if (!act) return;
+        currentDetailId = id;
+        isEditMode = false;
+
+        document.getElementById('detailSheetTitle').innerText = act.title;
+        document.getElementById('detailTitleLabel').innerText = act.title;
+        document.getElementById('detailHours').innerText = act.hours;
+        document.getElementById('detailCategory').innerText = act.category;
+        document.getElementById('detailDate').innerText = new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {
+            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
+
+        const imgWrap = document.getElementById('detailImageWrap');
+        if (act.image) {
+            imgWrap.innerHTML = `<img src="${act.image}" class="detail-hero">`;
+        } else {
+            imgWrap.innerHTML = `
+                <div class="detail-hero-placeholder">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-20">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                </div>`;
         }
 
-        function toggleDarkMode() {
-            const isDark = document.getElementById('darkModeToggle').checked;
-            document.body.classList.toggle('dark-mode', isDark);
-            localStorage.setItem('dark_mode', isDark);
-        }
+        document.getElementById('detailViewMode').classList.remove('hidden');
+        document.getElementById('detailEditMode').classList.add('hidden');
+        document.getElementById('editToggleBtn').innerText = 'Editar';
+        document.getElementById('detailSheet').classList.add('active');
+        document.getElementById('detailSheetOverlay').classList.remove('hidden');
+        activeSheet = 'detailSheet';
+        pushSheetState('detailSheet');
+    }
 
-        function toggleSheet(id) {
-            document.getElementById(id).classList.toggle('active');
-            document.getElementById(id + 'Overlay').classList.toggle('hidden');
-        }
+    function closeDetailSheet() {
+        history.back(); // dispara popstate → cierra
+    }
 
-        function openActivitySheet() {
-            document.getElementById('date').value = new Date().toISOString().split('T')[0];
-            toggleSheet('activitySheet');
-        }
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+        const act = activities.find(a => a.id === currentDetailId);
 
-        // ── Detail Sheet ──────────────────────────────────
-        function openDetailSheet(id) {
-            const act = activities.find(a => a.id === id);
-            if (!act) return;
-            currentDetailId = id;
-            isEditMode = false;
+        if (isEditMode) {
+            document.getElementById('editTitle').value = act.title;
+            document.getElementById('editDate').value = act.date;
+            document.getElementById('editHours').value = act.hours;
+            document.getElementById('editCategory').value = act.category;
+            editImageData = "";
+            document.getElementById('editFileNameDisplay').innerText = 'Cambiar Foto';
 
-            document.getElementById('detailSheetTitle').innerText = act.title;
-            document.getElementById('detailTitleLabel').innerText = act.title;
-            document.getElementById('detailHours').innerText = act.hours;
-            document.getElementById('detailCategory').innerText = act.category;
-            document.getElementById('detailDate').innerText = new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {
-                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-            });
-
-            const imgWrap = document.getElementById('detailImageWrap');
+            const wrap = document.getElementById('editCurrentImageWrap');
+            const img = document.getElementById('editCurrentImage');
             if (act.image) {
-                imgWrap.innerHTML = `<img src="${act.image}" class="detail-hero">`;
+                img.src = act.image;
+                wrap.classList.remove('hidden');
             } else {
-                imgWrap.innerHTML = `
-                    <div class="detail-hero-placeholder">
-                        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-20">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                            <polyline points="9 22 9 12 15 12 15 22"/>
-                        </svg>
-                    </div>`;
+                wrap.classList.add('hidden');
             }
 
+            document.getElementById('detailViewMode').classList.add('hidden');
+            document.getElementById('detailEditMode').classList.remove('hidden');
+            document.getElementById('editToggleBtn').innerText = 'Cancelar';
+            document.getElementById('detailSheetTitle').innerText = 'Editar';
+        } else {
             document.getElementById('detailViewMode').classList.remove('hidden');
             document.getElementById('detailEditMode').classList.add('hidden');
             document.getElementById('editToggleBtn').innerText = 'Editar';
-            document.getElementById('detailSheet').classList.add('active');
-            document.getElementById('detailSheetOverlay').classList.remove('hidden');
+            document.getElementById('detailSheetTitle').innerText = act.title;
         }
+    }
 
-        function closeDetailSheet() {
-            document.getElementById('detailSheet').classList.remove('active');
-            document.getElementById('detailSheetOverlay').classList.add('hidden');
-            currentDetailId = null;
-            isEditMode = false;
-            editImageData = "";
+    document.getElementById('editForm').onsubmit = (e) => {
+        e.preventDefault();
+        const idx = activities.findIndex(a => a.id === currentDetailId);
+        if (idx === -1) return;
+        activities[idx] = {
+            ...activities[idx],
+            title: document.getElementById('editTitle').value,
+            date: document.getElementById('editDate').value,
+            hours: parseFloat(document.getElementById('editHours').value),
+            category: document.getElementById('editCategory').value,
+            image: editImageData || activities[idx].image
+        };
+        localStorage.setItem('precursor_activities', JSON.stringify(activities));
+        history.back(); // cierra con gesto natural
+        updateDashboard();
+    };
+
+    function deleteFromDetail() {
+        if (confirm('¿Eliminar registro?')) {
+            activities = activities.filter(a => a.id !== currentDetailId);
+            localStorage.setItem('precursor_activities', JSON.stringify(activities));
+            history.back();
+            updateDashboard();
         }
+    }
 
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            const act = activities.find(a => a.id === currentDetailId);
+    function handleEditFileSelect(input) {
+        const file = input.files[0];
+        if (!file) return;
+        document.getElementById('editFileNameDisplay').innerText = 'Cargando...';
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX = 400;
+                let w = img.width, h = img.height;
+                if (w > MAX) { h *= MAX / w; w = MAX; }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                editImageData = canvas.toDataURL('image/jpeg', 0.6);
+                document.getElementById('editCurrentImage').src = editImageData;
+                document.getElementById('editCurrentImageWrap').classList.remove('hidden');
+                document.getElementById('editFileNameDisplay').innerText = '¡Foto lista!';
+            };
+        };
+        reader.readAsDataURL(file);
+    }
 
-            if (isEditMode) {
-                document.getElementById('editTitle').value = act.title;
-                document.getElementById('editDate').value = act.date;
-                document.getElementById('editHours').value = act.hours;
-                document.getElementById('editCategory').value = act.category;
-                editImageData = "";
-                document.getElementById('editFileNameDisplay').innerText = 'Cambiar Foto';
+    // ── Dashboard ─────────────────────────────────────────
+    function updateDashboard() {
+        const now = new Date();
+        const curM = now.getMonth(), curY = now.getFullYear();
 
-                const wrap = document.getElementById('editCurrentImageWrap');
-                const img = document.getElementById('editCurrentImage');
-                if (act.image) {
-                    img.src = act.image;
-                    wrap.classList.remove('hidden');
-                } else {
-                    wrap.classList.add('hidden');
+        const totalMonth = activities.reduce((sum, a) => {
+            const d = new Date(a.date);
+            return (d.getMonth() === curM && d.getFullYear() === curY) ? sum + parseFloat(a.hours) : sum;
+        }, 0);
+
+        const actYear = activities.reduce((sum, a) => sum + parseFloat(a.hours), 0);
+        const manualYear = monthlyEntries.reduce((sum, m) => sum + parseFloat(m.hours), 0);
+        const totalYear = actYear + manualYear;
+
+        document.getElementById('labelMonth').innerText = totalMonth;
+        document.getElementById('labelYear').innerText = Math.round(totalYear);
+
+        const updateRing = (id, cur, goal) => {
+            const ring = document.getElementById(id), circ = 263.9;
+            ring.style.strokeDashoffset = circ - (Math.min(cur / goal, 1) * circ);
+        };
+        updateRing('monthRing', totalMonth, GOAL_MONTH);
+        updateRing('yearRing', totalYear, GOAL_YEAR);
+
+        renderActivities();
+    }
+
+    function renderActivities() {
+        const list = document.getElementById('activitiesList');
+        if (activities.length === 0) {
+            list.innerHTML = `<div class="p-10 text-center opacity-30 font-medium">Sin registros recientes</div>`;
+            return;
+        }
+        const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+        list.innerHTML = sorted.map(act => `
+            <div onclick="openDetailSheet('${act.id}')" class="glass squicle p-4 flex gap-4 items-center shadow-sm border border-white/10 relative overflow-hidden apple-btn-active cursor-pointer">
+                ${act.image
+                    ? `<img src="${act.image}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">`
+                    : `<div class="w-14 h-14 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold flex-shrink-0">${act.hours}</div>`
                 }
-
-                document.getElementById('detailViewMode').classList.add('hidden');
-                document.getElementById('detailEditMode').classList.remove('hidden');
-                document.getElementById('editToggleBtn').innerText = 'Cancelar';
-                document.getElementById('detailSheetTitle').innerText = 'Editar';
-            } else {
-                document.getElementById('detailViewMode').classList.remove('hidden');
-                document.getElementById('detailEditMode').classList.add('hidden');
-                document.getElementById('editToggleBtn').innerText = 'Editar';
-                document.getElementById('detailSheetTitle').innerText = act.title;
-            }
-        }
-
-        document.getElementById('editForm').onsubmit = (e) => {
-            e.preventDefault();
-            const idx = activities.findIndex(a => a.id === currentDetailId);
-            if (idx === -1) return;
-            activities[idx] = {
-                ...activities[idx],
-                title: document.getElementById('editTitle').value,
-                date: document.getElementById('editDate').value,
-                hours: parseFloat(document.getElementById('editHours').value),
-                category: document.getElementById('editCategory').value,
-                image: editImageData || activities[idx].image
-            };
-            localStorage.setItem('precursor_activities', JSON.stringify(activities));
-            closeDetailSheet();
-            updateDashboard();
-        };
-
-        function deleteFromDetail() {
-            if (confirm('¿Eliminar registro?')) {
-                activities = activities.filter(a => a.id !== currentDetailId);
-                localStorage.setItem('precursor_activities', JSON.stringify(activities));
-                closeDetailSheet();
-                updateDashboard();
-            }
-        }
-
-        function handleEditFileSelect(input) {
-            const file = input.files[0];
-            if (!file) return;
-            document.getElementById('editFileNameDisplay').innerText = 'Cargando...';
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX = 400;
-                    let w = img.width, h = img.height;
-                    if (w > MAX) { h *= MAX / w; w = MAX; }
-                    canvas.width = w; canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    editImageData = canvas.toDataURL('image/jpeg', 0.6);
-                    document.getElementById('editCurrentImage').src = editImageData;
-                    document.getElementById('editCurrentImageWrap').classList.remove('hidden');
-                    document.getElementById('editFileNameDisplay').innerText = '¡Foto lista!';
-                };
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // ── Dashboard ─────────────────────────────────────
-        function updateDashboard() {
-            const now = new Date();
-            const curM = now.getMonth(), curY = now.getFullYear();
-
-            const totalMonth = activities.reduce((sum, a) => {
-                const d = new Date(a.date);
-                return (d.getMonth() === curM && d.getFullYear() === curY) ? sum + parseFloat(a.hours) : sum;
-            }, 0);
-
-            const actYear = activities.reduce((sum, a) => sum + parseFloat(a.hours), 0);
-            const manualYear = monthlyEntries.reduce((sum, m) => sum + parseFloat(m.hours), 0);
-            const totalYear = actYear + manualYear;
-
-            document.getElementById('labelMonth').innerText = totalMonth;
-            document.getElementById('labelYear').innerText = Math.round(totalYear);
-
-            const updateRing = (id, cur, goal) => {
-                const ring = document.getElementById(id), circ = 263.9;
-                ring.style.strokeDashoffset = circ - (Math.min(cur / goal, 1) * circ);
-            };
-            updateRing('monthRing', totalMonth, GOAL_MONTH);
-            updateRing('yearRing', totalYear, GOAL_YEAR);
-
-            renderActivities();
-        }
-
-        function renderActivities() {
-            const list = document.getElementById('activitiesList');
-            if (activities.length === 0) {
-                list.innerHTML = `<div class="p-10 text-center opacity-30 font-medium">Sin registros recientes</div>`;
-                return;
-            }
-            const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
-            list.innerHTML = sorted.map(act => `
-                <div onclick="openDetailSheet('${act.id}')" class="glass squicle p-4 flex gap-4 items-center shadow-sm border border-white/10 relative overflow-hidden apple-btn-active cursor-pointer">
-                    ${act.image
-                        ? `<img src="${act.image}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">`
-                        : `<div class="w-14 h-14 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold flex-shrink-0">${act.hours}</div>`
-                    }
-                    <div class="flex-1 min-w-0">
-                        <p class="text-[10px] font-extrabold text-blue-500 uppercase">${act.category}</p>
-                        <h3 class="font-bold text-[16px] truncate">${act.title}</h3>
-                        <p class="text-[12px] opacity-40">${new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {day:'numeric', month:'short'})}</p>
-                    </div>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-20 flex-shrink-0"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <div class="flex-1 min-w-0">
+                    <p class="text-[10px] font-extrabold text-blue-500 uppercase">${act.category}</p>
+                    <h3 class="font-bold text-[16px] truncate">${act.title}</h3>
+                    <p class="text-[12px] opacity-40">${new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {day:'numeric', month:'short'})}</p>
                 </div>
-            `).join('');
-        }
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-20 flex-shrink-0"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+        `).join('');
+    }
 
-        document.getElementById('activityForm').onsubmit = (e) => {
-            e.preventDefault();
-            activities.push({
-                id: Date.now().toString(),
-                title: document.getElementById('title').value,
-                date: document.getElementById('date').value,
-                hours: parseFloat(document.getElementById('hours').value),
-                category: document.getElementById('category').value,
-                image: currentImageData
-            });
+    document.getElementById('activityForm').onsubmit = (e) => {
+        e.preventDefault();
+        activities.push({
+            id: Date.now().toString(),
+            title: document.getElementById('title').value,
+            date: document.getElementById('date').value,
+            hours: parseFloat(document.getElementById('hours').value),
+            category: document.getElementById('category').value,
+            image: currentImageData
+        });
+        localStorage.setItem('precursor_activities', JSON.stringify(activities));
+        currentImageData = "";
+        document.getElementById('fileNameDisplay').innerText = 'Añadir Foto';
+        e.target.reset();
+        history.back(); // cierra con gesto natural
+        updateDashboard();
+    };
+
+    document.getElementById('monthForm').onsubmit = (e) => {
+        e.preventDefault();
+        monthlyEntries.push({
+            id: Date.now().toString(),
+            month: document.getElementById('monthSelect').value,
+            hours: parseFloat(document.getElementById('monthHours').value)
+        });
+        localStorage.setItem('monthly_entries', JSON.stringify(monthlyEntries));
+        e.target.reset();
+        history.back(); // cierra con gesto natural
+        updateDashboard();
+    };
+
+    function deleteActivity(id) {
+        if(confirm('¿Eliminar registro?')) {
+            activities = activities.filter(a => a.id !== id);
             localStorage.setItem('precursor_activities', JSON.stringify(activities));
-            currentImageData = "";
-            document.getElementById('fileNameDisplay').innerText = 'Añadir Foto';
-            e.target.reset();
-            toggleSheet('activitySheet');
             updateDashboard();
-        };
-
-        document.getElementById('monthForm').onsubmit = (e) => {
-            e.preventDefault();
-            monthlyEntries.push({
-                id: Date.now().toString(),
-                month: document.getElementById('monthSelect').value,
-                hours: parseFloat(document.getElementById('monthHours').value)
-            });
-            localStorage.setItem('monthly_entries', JSON.stringify(monthlyEntries));
-            e.target.reset();
-            toggleSheet('monthSheet');
-            updateDashboard();
-        };
-
-        function deleteActivity(id) {
-            if(confirm('¿Eliminar registro?')) {
-                activities = activities.filter(a => a.id !== id);
-                localStorage.setItem('precursor_activities', JSON.stringify(activities));
-                updateDashboard();
-            }
         }
+    }
 
-        function handleFileSelect(input) {
-            const file = input.files[0];
-            if (!file) return;
-            document.getElementById('fileNameDisplay').innerText = "Cargando...";
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX = 400;
-                    let w = img.width, h = img.height;
-                    if (w > MAX) { h *= MAX/w; w = MAX; }
-                    canvas.width = w; canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    currentImageData = canvas.toDataURL('image/jpeg', 0.6);
-                    document.getElementById('fileNameDisplay').innerText = "¡Foto lista!";
-                };
+    function handleFileSelect(input) {
+        const file = input.files[0];
+        if (!file) return;
+        document.getElementById('fileNameDisplay').innerText = "Cargando...";
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX = 400;
+                let w = img.width, h = img.height;
+                if (w > MAX) { h *= MAX/w; w = MAX; }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                currentImageData = canvas.toDataURL('image/jpeg', 0.6);
+                document.getElementById('fileNameDisplay').innerText = "¡Foto lista!";
             };
-            reader.readAsDataURL(file);
-        }
+        };
+        reader.readAsDataURL(file);
+    }
 
-        function clearData() {
-            if(confirm('Se borrarán todos los datos definitivamente.')) {
-                localStorage.clear();
-                location.reload();
-            }
+    function clearData() {
+        if(confirm('Se borrarán todos los datos definitivamente.')) {
+            localStorage.clear();
+            location.reload();
         }
+    }
 
-        window.onload = updateDashboard;
-    </script>
+    window.onload = updateDashboard;
+</script>
 </body>
 </html>
+
 
