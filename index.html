@@ -15,9 +15,9 @@
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1160/1160358.png">
 
 <script>
-  tailwind.config = {
-    darkMode: 'class', // Esto es vital para que dark: funcione con tu clase .dark-mode
-  }
+    tailwind.config = {
+        darkMode: ['class', '.dark-mode'], // Esto le dice: "Usa la clase .dark-mode para el modo oscuro"
+    }
 </script>
     
     <style>
@@ -421,5 +421,6 @@ if ('serviceWorker' in navigator) {
     </script>
 </body>
 </html>
+
 
 
