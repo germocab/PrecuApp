@@ -19,7 +19,7 @@
         .ios-input { width: 100%; background: rgba(0,0,0,0.05); border-radius: 12px; padding: 14px; outline: none; border: none; font-size: 17px; }
         .dark-mode .ios-input { background: rgba(255,255,255,0.1); color: white; }
         
-        /* Collage corregido */
+        /* Collage */
         .collage-grid { display: grid; gap: 4px; border-radius: 18px; overflow: hidden; width: 100%; height: 280px; }
         .collage-img { width: 100%; height: 100%; object-fit: cover; background: #eee; cursor: pointer; }
         .grid-1 { grid-template-columns: 1fr; }
@@ -30,8 +30,8 @@
         .grid-5 { grid-template-areas: "a a b" "a a c" "d e b"; grid-template-columns: 1fr 1fr 1fr; }
         .grid-5 :nth-child(1) { grid-area: a; }
 
-        /* Viewer con Z-index máximo */
-        #imageViewer { transition: opacity 0.3s; display: none; opacity: 0; background: rgba(0,0,0,0.95); z-index: 2000; }
+        /* Visor de Imagen */
+        #imageViewer { transition: opacity 0.3s; display: none; opacity: 0; background: rgba(0,0,0,0.9); z-index: 3000; position: fixed; inset: 0; align-items: center; justify-content: center; padding: 20px; }
         #imageViewer.active { display: flex; opacity: 1; }
         .detail-pill { background: rgba(0,122,255,0.1); color: var(--apple-blue); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; }
         #fabMenu.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
@@ -78,7 +78,7 @@
     <div id="fabOverlay" onclick="toggleFab()" class="fixed inset-0 bg-black/10 backdrop-blur-[2px] hidden z-[60]"></div>
     <div class="fixed bottom-8 right-6 z-[70] flex flex-col items-end gap-3">
         <div id="fabMenu" class="flex flex-col items-end gap-3 mb-2 pointer-events-none opacity-0 translate-y-4 transition-all duration-300">
-            <button onclick="toggleFab(); toggleSheet('monthSheet')" class="glass px-5 py-3 rounded-full shadow-xl text-blue-500 apple-btn-active font-bold text-[14px] border border-white/20">Añadir Meses Anteriores</button>
+            <button onclick="toggleFab(); toggleSheet('monthSheet')" class="glass px-5 py-3 rounded-full shadow-xl text-blue-500 apple-btn-active font-bold text-[14px] border border-white/20">Añadir Meses</button>
             <button onclick="toggleFab(); openActivitySheet()" class="glass px-5 py-3 rounded-full shadow-xl text-blue-500 apple-btn-active font-bold text-[14px] border border-white/20">Nueva Jornada</button>
         </div>
         <button id="mainFab" onclick="toggleFab()" class="bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl apple-btn-active">
@@ -86,11 +86,11 @@
         </button>
     </div>
 
-    <div id="imageViewer" class="fixed inset-0 flex items-center justify-center p-4">
-        <button onclick="closeViewer()" class="absolute top-12 right-6 z-[2100] text-white bg-white/20 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md apple-btn-active">
+    <div id="imageViewer" onclick="closeViewer()">
+        <button onclick="event.stopPropagation(); closeViewer();" class="absolute top-12 right-6 z-[3100] text-white bg-white/20 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
-        <img id="fullImage" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain">
+        <img id="fullImage" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain" onclick="event.stopPropagation()">
     </div>
 
     <div id="detailSheetOverlay" onclick="closeDetailSheet()" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
@@ -144,7 +144,7 @@
     <div id="monthSheetOverlay" onclick="toggleSheet('monthSheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
     <div id="monthSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet p-6 pb-12">
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
-        <h3 class="text-2xl font-bold mb-4">Mes Completo Anteriores</h3>
+        <h3 class="text-2xl font-bold mb-4">Mes Completo</h3>
         <form id="monthForm" class="space-y-4">
             <select id="monthSelect" required class="ios-input font-bold">
                 <option value="">Selecciona Mes</option>
@@ -177,21 +177,20 @@
     let isEditMode = false;
     let isFabOpen = false;
 
-    // --- FUNCIÓN DE MIGRACIÓN: Recupera fotos desaparecidas ---
-    function migratePhotos() {
+    // --- MIGRACIÓN DE FOTOS (Rescata tus fotos desaparecidas) ---
+    function migrate() {
         let changed = false;
         activities = activities.map(act => {
             if (act.image && (!act.images || act.images.length === 0)) {
-                act.images = [act.image];
-                changed = true;
+                act.images = [act.image]; changed = true;
             }
             return act;
         });
         if (changed) localStorage.setItem('precursor_activities', JSON.stringify(activities));
     }
-    migratePhotos();
+    migrate();
 
-    // Visor de Imagen Corregido
+    // Visor de Imagen
     function openViewer(src) {
         document.getElementById('fullImage').src = src;
         const v = document.getElementById('imageViewer');
@@ -249,7 +248,7 @@
         }
     }
 
-    // Procesamiento Imágenes
+    // Imágenes
     async function handleFileSelect(input, isEdit) {
         const files = Array.from(input.files).slice(0, 5);
         const label = document.getElementById(isEdit ? 'editFileNameDisplay' : 'fileNameDisplay');
@@ -403,7 +402,7 @@
         document.getElementById('darkModeToggle').checked = true;
     }
 
-    function clearData() { if(confirm('¡ATENCIÓN! Se borrará todo el historial permanentemente. ¿Continuar?')) { localStorage.clear(); location.reload(); } }
+    function clearData() { if(confirm('¿Borrar todo el historial permanentemente?')) { localStorage.clear(); location.reload(); } }
     window.onload = updateDashboard;
     </script>
 </body>
