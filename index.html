@@ -16,7 +16,7 @@
             -webkit-tap-highlight-color: transparent;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
         }
-        body { background-color: var(--apple-bg); color: #000; transition: background-color 0.4s ease; overflow-x: hidden; }
+        body { background-color: var(--apple-bg); color: #000; transition: background-color 0.4s ease; }
         body.dark-mode { --apple-bg: #000000; --apple-card: rgba(28, 28, 30, 0.8); color: #FFFFFF; }
         .glass { backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); background-color: var(--apple-card); }
         .squicle { border-radius: 22px; }
@@ -24,12 +24,17 @@
         .bottom-sheet { transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1); transform: translateY(105%); }
         .bottom-sheet.active { transform: translateY(0); }
         .apple-btn-active:active { transform: scale(0.94); opacity: 0.7; }
-        .ios-input { width: 100%; background: rgba(0,0,0,0.05); border-radius: 12px; padding: 12px 16px; outline: none; font-size: 17px; border: none; }
-        .dark-mode .ios-input { background: rgba(255,255,255,0.1); color: white; }
+        .ios-input { width: 100%; background: rgba(0,0,0,0.05); border-radius: 12px; padding: 12px 16px; outline: none; font-size: 17px; }
+        .dark-mode .ios-input { background: rgba(255,255,255,0.1); }
+        .large-title { font-size: 28px; font-weight: 750; letter-spacing: -0.5px; }
+        ::-webkit-scrollbar { display: none; }
         
         /* Collage */
         .collage-grid { display: grid; gap: 4px; border-radius: 18px; overflow: hidden; width: 100%; height: 280px; }
-        .collage-img { width: 100%; height: 100%; object-fit: cover; background: #eee; cursor: pointer; }
+        .collage-img { width: 100%; height: 100%; object-fit: cover; background: #eee; cursor: pointer; transition: opacity 0.2s; }
+        .collage-img:active { opacity: 0.8; }
+        .dark-mode .collage-img { background: #222; }
+        
         .grid-1 { grid-template-columns: 1fr; }
         .grid-2 { grid-template-columns: 1fr 1fr; }
         .grid-3 { grid-template-areas: "main side1" "main side2"; grid-template-columns: 2fr 1.2fr; }
@@ -40,21 +45,21 @@
         .grid-5 :nth-child(2) { grid-area: b; }
 
         /* Lightbox Viewer */
-        #imageViewer { transition: opacity 0.3s ease; display: none; opacity: 0; }
+        #imageViewer { transition: opacity 0.3s ease; display: none; }
         #imageViewer.active { display: flex; opacity: 1; }
 
-        .detail-pill { display: inline-flex; align-items: center; background: rgba(0,122,255,0.12); color: var(--apple-blue); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; }
+        .detail-pill { display: inline-flex; align-items: center; background: rgba(0,122,255,0.12); color: var(--apple-blue); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; letter-spacing: 0.3px; }
         #fabMenu.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
     </style>
 </head>
 <body class="select-none">
 
     <header class="sticky top-0 z-40 glass px-6 pt-12 pb-4 border-b border-black/5 dark:border-white/5">
-        <p class="text-[13px] font-semibold text-blue-500 uppercase tracking-tight mb-1">Servicio 2026</p>
+        <p class="text-[13px] font-semibold text-blue-500 uppercase tracking-tight mb-1">Año de Servicio 2026</p>
         <div class="flex justify-between items-end">
-            <h1 class="text-3xl font-bold tracking-tight">Tu Actividad</h1>
+            <h1 class="large-title">Tu Actividad</h1>
             <button onclick="toggleSheet('settingsSheet')" class="apple-btn-active pb-2">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-500"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             </button>
         </div>
     </header>
@@ -67,9 +72,9 @@
                         <circle class="opacity-10" stroke-width="9" stroke="currentColor" fill="transparent" r="42" cx="48" cy="48" style="color: var(--apple-blue)"/>
                         <circle id="monthRing" class="progress-ring" stroke-width="9" stroke-linecap="round" stroke="currentColor" fill="transparent" r="42" cx="48" cy="48" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="color: var(--apple-blue)"/>
                     </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center font-bold text-xl" id="labelMonth">0</div>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center font-bold"><span id="labelMonth" class="text-xl">0</span></div>
                 </div>
-                <p class="text-[11px] font-bold opacity-50 uppercase">Este Mes</p>
+                <p class="text-[12px] font-bold opacity-60 uppercase">Este Mes</p>
             </div>
             <div class="glass squicle p-6 flex flex-col items-center border border-white/20">
                 <div class="relative mb-2">
@@ -77,72 +82,108 @@
                         <circle class="opacity-10" stroke-width="9" stroke="currentColor" fill="transparent" r="42" cx="48" cy="48" style="color: var(--apple-green)"/>
                         <circle id="yearRing" class="progress-ring" stroke-width="9" stroke-linecap="round" stroke="currentColor" fill="transparent" r="42" cx="48" cy="48" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="color: var(--apple-green)"/>
                     </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center font-bold text-xl" id="labelYear">0</div>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center font-bold"><span id="labelYear" class="text-xl">0</span></div>
                 </div>
-                <p class="text-[11px] font-bold opacity-50 uppercase">Año Total</p>
+                <p class="text-[12px] font-bold opacity-60 uppercase">Año Total</p>
             </div>
         </section>
-        <div id="activitiesList" class="space-y-3"></div>
+
+        <section class="space-y-4">
+            <h2 class="text-2xl font-bold tracking-tight px-1">Recientes</h2>
+            <div id="activitiesList" class="space-y-3"></div>
+        </section>
     </main>
 
     <div id="fabOverlay" onclick="toggleFab()" class="fixed inset-0 bg-black/10 backdrop-blur-[2px] hidden z-[60]"></div>
     <div class="fixed bottom-8 right-6 z-[70] flex flex-col items-end gap-3">
         <div id="fabMenu" class="flex flex-col items-end gap-3 mb-2 pointer-events-none opacity-0 translate-y-4 transition-all duration-300">
-            <button onclick="toggleFab(); toggleSheet('monthSheet')" class="glass px-5 py-3 rounded-full shadow-xl text-blue-500 apple-btn-active font-bold text-[14px] border border-white/20">Añadir Meses</button>
-            <button onclick="toggleFab(); openActivitySheet()" class="glass px-5 py-3 rounded-full shadow-xl text-blue-500 apple-btn-active font-bold text-[14px] border border-white/20">Nueva Jornada</button>
+            <button onclick="toggleFab(); toggleSheet('monthSheet')" class="glass px-5 py-3 rounded-full shadow-xl border border-white/20 flex items-center gap-2 text-blue-500 apple-btn-active font-bold text-[14px]">
+                Añadir Meses <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </button>
+            <button onclick="toggleFab(); openActivitySheet()" class="glass px-5 py-3 rounded-full shadow-xl border border-white/20 flex items-center gap-2 text-blue-500 apple-btn-active font-bold text-[14px]">
+                Nueva Jornada <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
         </div>
-        <button id="mainFab" onclick="toggleFab()" class="bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl apple-btn-active">
-            <svg id="fabIcon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="transition-transform duration-300"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <button id="mainFab" onclick="toggleFab()" class="bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl shadow-blue-500/40 apple-btn-active">
+            <svg id="fabIcon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         </button>
     </div>
 
-    <div id="imageViewer" class="fixed inset-0 z-[110] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4">
-        <button onclick="closeViewer()" class="absolute top-12 right-6 z-[120] text-white bg-white/20 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md apple-btn-active">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    <div id="imageViewer" onclick="closeViewer()" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4">
+        <button class="absolute top-12 right-6 text-white/70 bg-white/10 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
-        <img id="fullImage" class="max-w-full max-h-[80vh] rounded-lg shadow-2xl object-contain">
+        <img id="fullImage" class="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain">
     </div>
 
-    <div id="detailSheetOverlay" onclick="closeDetailSheet()" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
+    <div id="detailSheetOverlay" onclick="closeDetailSheet()" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[80]"></div>
     <div id="detailSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet max-h-[92vh] overflow-y-auto">
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
         <div class="px-6 pb-12 space-y-5">
-            <div class="flex justify-between items-center"><h3 id="detailSheetTitle" class="text-2xl font-bold truncate">Detalle</h3><button id="editToggleBtn" onclick="toggleEditMode()" class="text-blue-500 font-bold">Editar</button></div>
+            <div class="flex justify-between items-center gap-3">
+                <h3 id="detailSheetTitle" class="text-2xl font-bold tracking-tight truncate flex-1">Detalle</h3>
+                <button id="editToggleBtn" onclick="toggleEditMode()" class="text-blue-500 font-semibold text-[15px]">Editar</button>
+            </div>
+            
             <div id="detailViewMode" class="space-y-4">
                 <div id="detailCollageWrap"></div>
-                <div class="flex items-center gap-3"><span id="detailCategory" class="detail-pill"></span><span id="detailDate" class="text-[13px] opacity-40 font-medium capitalize"></span></div>
-                <div class="flex items-end gap-2"><span id="detailHours" class="text-6xl font-black text-blue-500"></span><span class="text-xl font-bold opacity-30 mb-2">horas</span></div>
-                <button onclick="deleteFromDetail()" class="w-full py-4 text-red-500 font-bold bg-red-500/5 rounded-xl border border-red-500/10 apple-btn-active">Eliminar Registro</button>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span id="detailCategory" class="detail-pill"></span>
+                    <span id="detailDate" class="text-[13px] opacity-40 font-medium capitalize"></span>
+                </div>
+                <div class="flex items-end gap-2">
+                    <span id="detailHours" class="text-5xl font-black tracking-tight text-blue-500"></span>
+                    <span class="text-[15px] font-semibold opacity-50 mb-2">horas</span>
+                </div>
+                <div class="w-full h-px bg-black/5 dark:bg-white/5"></div>
+                <button onclick="deleteFromDetail()" class="w-full py-3.5 rounded-xl text-red-500 font-bold border border-red-500/20 bg-red-500/5 apple-btn-active">Eliminar</button>
             </div>
+
             <div id="detailEditMode" class="space-y-4 hidden">
                 <form id="editForm" class="space-y-4">
-                    <input type="text" id="editTitle" required class="ios-input" placeholder="Nombre">
-                    <div class="flex gap-3"><input type="date" id="editDate" required class="ios-input flex-1"><input type="number" id="editHours" step="0.5" required class="ios-input w-24"></div>
-                    <select id="editCategory" class="ios-input text-blue-500 font-bold">
-                        <option value="Casa en Casa">Casa en Casa</option><option value="Carritos">Carritos</option><option value="Pública">Pública</option><option value="Informal">Informal</option><option value="Telefónica">Telefónica</option><option value="Curso Bíblico">Curso Bíblico</option>
+                    <input type="text" id="editTitle" required class="ios-input">
+                    <div class="flex gap-3">
+                        <input type="date" id="editDate" required class="ios-input flex-1">
+                        <input type="number" id="editHours" step="0.5" required class="ios-input w-24">
+                    </div>
+                    <select id="editCategory" class="ios-input text-blue-500 font-medium">
+                        <option value="Casa en Casa">Casa en Casa</option>
+                        <option value="Carritos">Carritos</option>
+                        <option value="Pública">Pública</option>
+                        <option value="Informal">Informal</option>
+                        <option value="Telefónica">Telefónica</option>
+                        <option value="Curso Bíblico">Curso Bíblico</option>
                     </select>
-                    <label class="flex items-center justify-center w-full bg-blue-500/10 p-4 rounded-xl text-blue-500 font-bold cursor-pointer apple-btn-active">
+                    <label class="flex items-center justify-center w-full bg-blue-500/10 p-4 rounded-xl text-blue-500 font-semibold cursor-pointer apple-btn-active">
                         <input type="file" id="editImageFile" accept="image/*" multiple class="hidden" onchange="handleFileSelect(this, true)">
                         <span id="editFileNameDisplay">Cambiar Fotos</span>
                     </label>
-                    <button type="submit" class="w-full py-4 bg-blue-500 text-white font-bold rounded-xl shadow-lg apple-btn-active">Guardar Cambios</button>
+                    <button type="submit" class="w-full py-4 bg-blue-500 text-white font-bold rounded-xl shadow-lg apple-btn-active">Guardar</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <div id="activitySheetOverlay" onclick="toggleSheet('activitySheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
+    <div id="activitySheetOverlay" onclick="toggleSheet('activitySheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[80]"></div>
     <div id="activitySheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet max-h-[92vh] overflow-y-auto">
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
         <div class="px-6 pb-12 space-y-6">
             <h3 class="text-2xl font-bold">Nueva Jornada</h3>
             <form id="activityForm" class="space-y-4">
-                <input type="text" id="title" required placeholder="Nombre de actividad" class="ios-input">
-                <div class="flex gap-3"><input type="date" id="date" required class="ios-input flex-1"><input type="number" id="hours" step="0.5" required placeholder="Hrs" class="ios-input w-24"></div>
-                <select id="category" class="ios-input text-blue-500 font-bold">
-                    <option value="Casa en Casa">Casa en Casa</option><option value="Carritos">Carritos</option><option value="Pública">Pública</option><option value="Informal">Informal</option><option value="Telefónica">Telefónica</option><option value="Curso Bíblico">Curso Bíblico</option>
+                <input type="text" id="title" required placeholder="Actividad" class="ios-input">
+                <div class="flex gap-3">
+                    <input type="date" id="date" required class="ios-input flex-1">
+                    <input type="number" id="hours" step="0.5" required placeholder="Hrs" class="ios-input w-24">
+                </div>
+                <select id="category" class="ios-input text-blue-500 font-medium">
+                    <option value="Casa en Casa">Casa en Casa</option>
+                    <option value="Carritos">Carritos</option>
+                    <option value="Pública">Pública</option>
+                    <option value="Informal">Informal</option>
+                    <option value="Telefónica">Telefónica</option>
+                    <option value="Curso Bíblico">Curso Bíblico</option>
                 </select>
-                <label class="flex items-center justify-center w-full bg-blue-500/10 p-4 rounded-xl text-blue-500 font-bold cursor-pointer apple-btn-active">
+                <label class="flex items-center justify-center w-full bg-blue-500/10 p-4 rounded-xl text-blue-500 font-semibold cursor-pointer apple-btn-active">
                     <input type="file" id="imageFile" accept="image/*" multiple class="hidden" onchange="handleFileSelect(this, false)">
                     <span id="fileNameDisplay">Añadir Fotos (Max 5)</span>
                 </label>
@@ -151,11 +192,11 @@
         </div>
     </div>
 
-    <div id="monthSheetOverlay" onclick="toggleSheet('monthSheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
-    <div id="monthSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet p-6 pb-12"><h3 class="text-2xl font-bold mb-4">Añadir Mes</h3><form id="monthForm" class="space-y-4"><select id="monthSelect" required class="ios-input font-bold"><option value="">Selecciona Mes</option><option value="2026-01">Enero 2026</option><option value="2026-02">Febrero 2026</option><option value="2026-03">Marzo 2026</option><option value="2026-04">Abril 2026</option><option value="2026-05">Mayo 2026</option></select><input type="number" id="monthHours" step="0.5" required placeholder="Total horas" class="ios-input"><button type="submit" class="w-full py-4 bg-green-500 text-white font-bold rounded-xl shadow-lg apple-btn-active">Registrar Mes</button></form></div>
+    <div id="monthSheetOverlay" onclick="toggleSheet('monthSheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[80]"></div>
+    <div id="monthSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet"><div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div><div class="px-6 pb-12 space-y-6"><h3 class="text-2xl font-bold">Mes Completo</h3><form id="monthForm" class="space-y-4"><select id="monthSelect" required class="ios-input font-medium"><option value="">Selecciona Mes</option><option value="2025-09">Septiembre 2025</option><option value="2025-10">Octubre 2025</option><option value="2025-11">Noviembre 2025</option><option value="2025-12">Diciembre 2025</option><option value="2026-01">Enero 2026</option><option value="2026-02">Febrero 2026</option><option value="2026-03">Marzo 2026</option><option value="2026-04">Abril 2026</option><option value="2026-05">Mayo 2026</option><option value="2026-06">Junio 2026</option><option value="2026-07">Julio 2026</option><option value="2026-08">Agosto 2026</option></select><input type="number" id="monthHours" step="0.5" required placeholder="Total horas" class="ios-input"><button type="submit" class="w-full py-4 bg-green-500 text-white font-bold rounded-xl shadow-lg apple-btn-active">Registrar</button></form></div></div>
 
-    <div id="settingsSheetOverlay" onclick="toggleSheet('settingsSheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
-    <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet p-6 pb-12"><h3 class="text-2xl font-bold mb-6">Ajustes</h3><div class="bg-black/5 dark:bg-white/5 rounded-2xl overflow-hidden"><div class="flex justify-between items-center p-5 border-b border-black/5 dark:border-white/5"><span class="font-bold">Modo Oscuro</span><input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()" class="w-12 h-6 bg-gray-300 rounded-full appearance-none checked:bg-green-500 transition-all relative after:absolute after:w-5 after:h-5 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 checked:after:left-6 after:transition-all"></div><button onclick="clearData()" class="w-full p-5 text-red-500 font-bold text-left">Borrar todo</button></div></div>
+    <div id="settingsSheetOverlay" onclick="toggleSheet('settingsSheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[80]"></div>
+    <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet p-6 pb-12"><h3 class="text-2xl font-bold mb-6">Configuración</h3><div class="bg-white/50 dark:bg-white/5 rounded-xl overflow-hidden mb-6"><div class="flex justify-between items-center p-4 border-b border-black/5 dark:border-white/5"><span class="font-medium">Modo Oscuro</span><input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()" class="w-10 h-5 bg-gray-300 rounded-full appearance-none checked:bg-green-500 transition-all relative after:content-[''] after:absolute after:w-4 after:h-4 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 after:transition-all checked:after:left-5"></div><button onclick="clearData()" class="w-full p-4 text-red-500 font-bold text-left">Borrar todos los datos</button></div></div>
 
     <script>
     let activities = JSON.parse(localStorage.getItem('precursor_activities')) || [];
@@ -165,68 +206,60 @@
     let isEditMode = false;
     let isFabOpen = false;
 
-    // Lightbox corregido
+    const GOAL_MONTH = 50;
+    const GOAL_YEAR = 600;
+
+    // Viewer Logic
     function openViewer(src) {
         document.getElementById('fullImage').src = src;
-        const v = document.getElementById('imageViewer');
-        v.classList.add('active');
-        v.style.display = 'flex';
-        setTimeout(() => v.style.opacity = '1', 10);
+        document.getElementById('imageViewer').style.display = 'flex';
+        setTimeout(() => document.getElementById('imageViewer').style.opacity = '1', 10);
         pushSheetState('viewer');
     }
     function closeViewer() {
         if (history.state?.sheet === 'viewer') history.back();
     }
     function _closeViewerUI() {
-        const v = document.getElementById('imageViewer');
-        v.style.opacity = '0';
-        setTimeout(() => { v.style.display = 'none'; v.classList.remove('active'); }, 300);
+        document.getElementById('imageViewer').style.opacity = '0';
+        setTimeout(() => document.getElementById('imageViewer').style.display = 'none', 300);
     }
 
-    // Navegación y Sheets
+    // Navigation
     let activeSheet = null;
     function pushSheetState(id) { history.pushState({ sheet: id }, ''); }
-    window.onpopstate = (e) => {
+    window.addEventListener('popstate', (e) => {
         if (isFabOpen) toggleFab();
         else if (e.state?.sheet === 'viewer') _closeViewerUI();
         else if (activeSheet === 'detailSheet') _closeDetailSheet();
         else if (activeSheet) _toggleSheetClose(activeSheet);
         else _closeViewerUI();
-    };
+    });
 
-    function _toggleSheetClose(id) {
-        document.getElementById(id).classList.remove('active');
-        document.getElementById(id + 'Overlay').classList.add('hidden');
-        activeSheet = null;
+    function toggleDarkMode() {
+        const isDark = document.getElementById('darkModeToggle').checked;
+        document.body.classList.toggle('dark-mode', isDark);
+        localStorage.setItem('dark_mode', isDark);
     }
-    function _closeDetailSheet() {
-        document.getElementById('detailSheet').classList.remove('active');
-        document.getElementById('detailSheetOverlay').classList.add('hidden');
-        currentDetailId = null; isEditMode = false; tempImages = []; activeSheet = null;
-    }
-    function toggleSheet(id) {
-        const s = document.getElementById(id);
-        if (s.classList.contains('active')) history.back();
-        else {
-            s.classList.add('active');
-            document.getElementById(id + 'Overlay').classList.remove('hidden');
-            activeSheet = id; pushSheetState(id);
-        }
+    if (localStorage.getItem('dark_mode') === 'true') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('darkModeToggle').checked = true;
     }
 
     function toggleFab() {
-        const menu = document.getElementById('fabMenu'), icon = document.getElementById('fabIcon'), overlay = document.getElementById('fabOverlay');
+        const menu = document.getElementById('fabMenu'), icon = document.getElementById('fabIcon'), overlay = document.getElementById('fabOverlay'), mainBtn = document.getElementById('mainFab');
         isFabOpen = !isFabOpen;
-        if (isFabOpen) { 
-            menu.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none'); menu.classList.add('active');
-            overlay.classList.remove('hidden'); icon.style.transform = 'rotate(135deg)';
-        } else {
-            menu.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none'); menu.classList.remove('active');
-            overlay.classList.add('hidden'); icon.style.transform = 'rotate(0deg)';
-        }
+        if (isFabOpen) { menu.classList.add('active', 'opacity-100'); menu.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none'); overlay.classList.remove('hidden'); icon.style.transform = 'rotate(135deg)'; mainBtn.classList.add('scale-90'); }
+        else { menu.classList.remove('active', 'opacity-100'); menu.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none'); overlay.classList.add('hidden'); icon.style.transform = 'rotate(0deg)'; mainBtn.classList.remove('scale-90'); }
     }
 
-    // Imágenes
+    function _toggleSheetClose(id) { document.getElementById(id).classList.remove('active'); document.getElementById(id + 'Overlay').classList.add('hidden'); activeSheet = null; }
+    function _closeDetailSheet() { document.getElementById('detailSheet').classList.remove('active'); document.getElementById('detailSheetOverlay').classList.add('hidden'); currentDetailId = null; isEditMode = false; tempImages = []; activeSheet = null; }
+    function toggleSheet(id) {
+        const s = document.getElementById(id);
+        if (s.classList.contains('active')) history.back();
+        else { s.classList.add('active'); document.getElementById(id + 'Overlay').classList.remove('hidden'); activeSheet = id; pushSheetState(id); }
+    }
+
     async function handleFileSelect(input, isEdit) {
         const files = Array.from(input.files).slice(0, 5);
         const label = document.getElementById(isEdit ? 'editFileNameDisplay' : 'fileNameDisplay');
@@ -234,8 +267,8 @@
         label.innerText = "Procesando...";
         tempImages = [];
         for (const file of files) {
-            const b64 = await compressImage(file);
-            tempImages.push(b64);
+            const base64 = await compressImage(file);
+            tempImages.push(base64);
         }
         label.innerText = `¡${tempImages.length} fotos listas!`;
     }
@@ -261,14 +294,15 @@
     }
 
     function createCollageHTML(images) {
-        if (!images || images.length === 0) return `<div class="w-full h-32 bg-blue-500/5 rounded-2xl flex items-center justify-center opacity-20"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>`;
-        return `<div class="collage-grid grid-${images.length}">${images.map(src => `<img src="${src}" class="collage-img" onclick="openViewer('${src}')">`).join('')}</div>`;
+        if (!images || images.length === 0) return `<div class="w-full h-32 bg-blue-500/5 rounded-xl flex items-center justify-center opacity-20"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>`;
+        const count = images.length;
+        return `<div class="collage-grid grid-${count}">${images.map(src => `<img src="${src}" class="collage-img" onclick="openViewer('${src}')">`).join('')}</div>`;
     }
 
-    // Actividades
     function openActivitySheet() {
         document.getElementById('date').value = new Date().toISOString().split('T')[0];
-        tempImages = []; document.getElementById('fileNameDisplay').innerText = "Añadir Fotos (Max 5)";
+        tempImages = [];
+        document.getElementById('fileNameDisplay').innerText = "Añadir Fotos (Max 5)";
         toggleSheet('activitySheet');
     }
 
@@ -280,7 +314,7 @@
         document.getElementById('detailHours').innerText = act.hours;
         document.getElementById('detailCategory').innerText = act.category;
         document.getElementById('detailDate').innerText = new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
-        document.getElementById('detailCollageWrap').innerHTML = createCollageHTML(act.images || []);
+        document.getElementById('detailCollageWrap').innerHTML = createCollageHTML(act.images || (act.image ? [act.image] : []));
         document.getElementById('detailViewMode').classList.remove('hidden');
         document.getElementById('detailEditMode').classList.add('hidden');
         document.getElementById('editToggleBtn').innerText = 'Editar';
@@ -295,7 +329,7 @@
             document.getElementById('editDate').value = act.date;
             document.getElementById('editHours').value = act.hours;
             document.getElementById('editCategory').value = act.category;
-            tempImages = act.images || [];
+            tempImages = act.images || (act.image ? [act.image] : []);
             document.getElementById('editFileNameDisplay').innerText = `Mantener ${tempImages.length} fotos`;
             document.getElementById('detailViewMode').classList.add('hidden');
             document.getElementById('detailEditMode').classList.remove('hidden');
@@ -342,35 +376,28 @@
             const r = document.getElementById(id), circ = 263.9;
             r.style.strokeDashoffset = circ - (Math.min(cur / goal, 1) * circ);
         };
-        upRing('monthRing', totalMonth, 50);
-        upRing('yearRing', totalYear, 600);
+        upRing('monthRing', totalMonth, GOAL_MONTH);
+        upRing('yearRing', totalYear, GOAL_YEAR);
         renderActivities();
     }
 
     function renderActivities() {
         const list = document.getElementById('activitiesList');
-        if (activities.length === 0) { list.innerHTML = `<div class="p-10 text-center opacity-30 font-bold">Sin registros aún</div>`; return; }
+        if (activities.length === 0) { list.innerHTML = `<div class="p-10 text-center opacity-30 font-medium">Sin registros</div>`; return; }
         const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
-        list.innerHTML = sorted.map(act => `
+        list.innerHTML = sorted.map(act => {
+            const firstImg = (act.images && act.images.length > 0) ? act.images[0] : act.image;
+            return `
             <div onclick="openDetailSheet('${act.id}')" class="glass squicle p-4 flex gap-4 items-center border border-white/10 apple-btn-active cursor-pointer">
-                ${act.images && act.images[0] ? `<img src="${act.images[0]}" class="w-14 h-14 rounded-xl object-cover">` : `<div class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold">${act.hours}</div>`}
+                ${firstImg ? `<img src="${firstImg}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">` : `<div class="w-14 h-14 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold flex-shrink-0">${act.hours}</div>`}
                 <div class="flex-1 min-w-0">
-                    <p class="text-[10px] font-bold text-blue-500 uppercase">${act.category}</p>
-                    <h3 class="font-bold truncate">${act.title}</h3>
+                    <p class="text-[10px] font-extrabold text-blue-500 uppercase">${act.category}</p>
+                    <h3 class="font-bold text-[16px] truncate">${act.title}</h3>
                     <p class="text-[12px] opacity-40">${new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {day:'numeric', month:'short'})}</p>
                 </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="opacity-20"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </div>`).join('');
-    }
-
-    function toggleDarkMode() {
-        const isDark = document.getElementById('darkModeToggle').checked;
-        document.body.classList.toggle('dark-mode', isDark);
-        localStorage.setItem('dark_mode', isDark);
-    }
-    if (localStorage.getItem('dark_mode') === 'true') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('darkModeToggle').checked = true;
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="opacity-20 flex-shrink-0"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>`;
+        }).join('');
     }
 
     document.getElementById('monthForm').onsubmit = (e) => {
@@ -382,6 +409,6 @@
 
     function clearData() { if(confirm('¿Borrar todo?')) { localStorage.clear(); location.reload(); } }
     window.onload = updateDashboard;
-    </script>
+</script>
 </body>
 </html>
