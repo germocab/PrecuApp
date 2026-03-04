@@ -17,82 +17,37 @@
             -webkit-tap-highlight-color: transparent;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
         }
-        body {
-            background-color: var(--apple-bg);
-            color: #000;
-            transition: background-color 0.4s ease;
-        }
-        body.dark-mode {
-            --apple-bg: #000000;
-            --apple-card: rgba(28, 28, 30, 0.8);
-            color: #FFFFFF;
-        }
-        .glass {
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            background-color: var(--apple-card);
-        }
+        body { background-color: var(--apple-bg); color: #000; transition: background-color 0.4s ease; }
+        body.dark-mode { --apple-bg: #000000; --apple-card: rgba(28, 28, 30, 0.8); color: #FFFFFF; }
+        .glass { backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); background-color: var(--apple-card); }
         .squicle { border-radius: 22px; }
-        .progress-ring {
-            transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-        }
-        .bottom-sheet {
-            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-            transform: translateY(105%);
-        }
+        .progress-ring { transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1); transform: rotate(-90deg); transform-origin: 50% 50%; }
+        .bottom-sheet { transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1); transform: translateY(105%); }
         .bottom-sheet.active { transform: translateY(0); }
-        .apple-btn-active:active {
-            transform: scale(0.94);
-            opacity: 0.7;
-        }
-        .ios-input {
-            width: 100%;
-            background: rgba(0,0,0,0.05);
-            border-radius: 12px;
-            padding: 12px 16px;
-            outline: none;
-            font-size: 17px;
-        }
+        .apple-btn-active:active { transform: scale(0.94); opacity: 0.7; }
+        .ios-input { width: 100%; background: rgba(0,0,0,0.05); border-radius: 12px; padding: 12px 16px; outline: none; font-size: 17px; }
         .dark-mode .ios-input { background: rgba(255,255,255,0.1); }
-        .large-title {
-            font-size: 28px;
-            font-weight: 750;
-            letter-spacing: -0.5px;
-        }
+        .large-title { font-size: 28px; font-weight: 750; letter-spacing: -0.5px; }
         ::-webkit-scrollbar { display: none; }
-        .detail-hero {
-            width: 100%;
-            height: 240px;
-            object-fit: cover;
-            border-radius: 18px;
-        }
-        .detail-hero-placeholder {
-            width: 100%;
-            height: 150px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, rgba(0,122,255,0.1), rgba(0,122,255,0.03));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .detail-pill {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(0,122,255,0.12);
-            color: var(--apple-blue);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-        }
-        #fabMenu.active {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
+        
+        /* Estilos del Collage */
+        .collage-grid { display: grid; gap: 4px; border-radius: 18px; overflow: hidden; width: 100%; height: 280px; }
+        .collage-img { width: 100%; height: 100%; object-fit: cover; background: #eee; }
+        .dark-mode .collage-img { background: #222; }
+        
+        /* Variaciones de Grid */
+        .grid-1 { grid-template-columns: 1fr; }
+        .grid-2 { grid-template-columns: 1fr 1fr; }
+        .grid-3 { grid-template-areas: "main side1" "main side2"; grid-template-columns: 2fr 1.2fr; }
+        .grid-3 :first-child { grid-area: main; }
+        .grid-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+        .grid-5 { grid-template-areas: "a a b" "a a c" "d e b"; grid-template-columns: 1fr 1fr 1fr; }
+        .grid-5 :nth-child(1) { grid-area: a; }
+        .grid-5 :nth-child(2) { grid-area: b; }
+
+        .detail-hero-placeholder { width: 100%; height: 150px; border-radius: 18px; background: linear-gradient(135deg, rgba(0,122,255,0.1), rgba(0,122,255,0.03)); display: flex; align-items: center; justify-content: center; }
+        .detail-pill { display: inline-flex; align-items: center; background: rgba(0,122,255,0.12); color: var(--apple-blue); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; letter-spacing: 0.3px; }
+        #fabMenu.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
     </style>
 </head>
 <body class="select-none">
@@ -134,6 +89,7 @@
                 <p class="text-[12px] font-bold opacity-60">AÑO TOTAL</p>
             </div>
         </section>
+
         <section class="space-y-4">
             <h2 class="text-2xl font-bold tracking-tight px-1">Recientes</h2>
             <div id="activitiesList" class="space-y-3"></div>
@@ -141,19 +97,17 @@
     </main>
 
     <div id="fabOverlay" onclick="toggleFab()" class="fixed inset-0 bg-black/10 backdrop-blur-[2px] hidden z-[60]"></div>
-    
     <div class="fixed bottom-8 right-6 z-[70] flex flex-col items-end gap-3">
         <div id="fabMenu" class="flex flex-col items-end gap-3 mb-2 pointer-events-none opacity-0 translate-y-4 transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)]">
             <button onclick="toggleFab(); toggleSheet('monthSheet')" class="glass px-5 py-3 rounded-full shadow-xl border border-white/20 flex items-center gap-2 text-blue-500 apple-btn-active">
                 <span class="text-[14px] font-bold">Añadir Meses</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
             </button>
             <button onclick="toggleFab(); openActivitySheet()" class="glass px-5 py-3 rounded-full shadow-xl border border-white/20 flex items-center gap-2 text-blue-500 apple-btn-active">
                 <span class="text-[14px] font-bold">Nueva Jornada</span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </button>
         </div>
-
         <button id="mainFab" onclick="toggleFab()" class="bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl shadow-blue-500/40 apple-btn-active transition-all duration-300">
             <svg id="fabIcon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         </button>
@@ -169,7 +123,7 @@
             </div>
             
             <div id="detailViewMode" class="space-y-4">
-                <div id="detailImageWrap"></div>
+                <div id="detailCollageWrap"></div>
                 <div class="flex items-center gap-3 flex-wrap">
                     <span id="detailCategory" class="detail-pill"></span>
                     <span id="detailDate" class="text-[13px] opacity-40 font-medium capitalize"></span>
@@ -199,13 +153,9 @@
                         <option value="Telefónica">Telefónica</option>
                         <option value="Curso Bíblico">Curso Bíblico</option>
                     </select>
-                    <div id="editCurrentImageWrap" class="hidden">
-                        <p class="text-[11px] opacity-40 font-bold mb-2 uppercase tracking-wider">Foto actual</p>
-                        <img id="editCurrentImage" class="w-full rounded-xl object-cover" style="max-height:180px;">
-                    </div>
                     <label class="flex items-center justify-center w-full bg-blue-500/10 p-4 rounded-xl text-blue-500 font-semibold cursor-pointer apple-btn-active">
-                        <input type="file" id="editImageFile" accept="image/*" class="hidden" onchange="handleEditFileSelect(this)">
-                        <span id="editFileNameDisplay">Cambiar Foto</span>
+                        <input type="file" id="editImageFile" accept="image/*" multiple class="hidden" onchange="handleFileSelect(this, true)">
+                        <span id="editFileNameDisplay">Reemplazar Fotos (Max 5)</span>
                     </label>
                     <button type="submit" class="w-full py-4 bg-blue-500 text-white font-bold rounded-xl shadow-lg apple-btn-active">Guardar Cambios</button>
                 </form>
@@ -236,8 +186,8 @@
                     <option value="Curso Bíblico">Curso Bíblico</option>
                 </select>
                 <label class="flex items-center justify-center w-full bg-blue-500/10 p-4 rounded-xl text-blue-500 font-semibold cursor-pointer apple-btn-active">
-                    <input type="file" id="imageFile" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
-                    <span id="fileNameDisplay">Añadir Foto</span>
+                    <input type="file" id="imageFile" accept="image/*" multiple class="hidden" onchange="handleFileSelect(this, false)">
+                    <span id="fileNameDisplay">Añadir Fotos (Max 5)</span>
                 </label>
                 <button type="submit" class="w-full py-4 bg-blue-500 text-white font-bold rounded-xl shadow-lg apple-btn-active">Guardar Registro</button>
             </form>
@@ -245,51 +195,15 @@
     </div>
 
     <div id="monthSheetOverlay" onclick="toggleSheet('monthSheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[80]"></div>
-    <div id="monthSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet">
-        <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
-        <div class="px-6 pb-12 space-y-6">
-            <h3 class="text-2xl font-bold tracking-tight">Añadir Mes Completo</h3>
-            <p class="text-[13px] opacity-60 -mt-4">Ideal para migrar datos de meses anteriores.</p>
-            <form id="monthForm" class="space-y-4">
-                <select id="monthSelect" required class="ios-input font-medium">
-                    <option value="">Selecciona el Mes</option>
-                    <option value="2025-09">Septiembre 2025</option>
-                    <option value="2025-10">Octubre 2025</option>
-                    <option value="2025-11">Noviembre 2025</option>
-                    <option value="2025-12">Diciembre 2025</option>
-                    <option value="2026-01">Enero 2026</option>
-                    <option value="2026-02">Febrero 2026</option>
-                    <option value="2026-03">Marzo 2026</option>
-                    <option value="2026-04">Abril 2026</option>
-                    <option value="2026-05">Mayo 2026</option>
-                    <option value="2026-06">Junio 2026</option>
-                    <option value="2026-07">Julio 2026</option>
-                    <option value="2026-08">Agosto 2026</option>
-                    <option value="2026-09">Septiembre 2026</option>
-                </select>
-                <input type="number" id="monthHours" step="0.5" required placeholder="Total horas del mes" class="ios-input">
-                <button type="submit" class="w-full py-4 bg-green-500 text-white font-bold rounded-xl shadow-lg apple-btn-active">Registrar Mes</button>
-            </form>
-        </div>
-    </div>
-
+    <div id="monthSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet"><div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div><div class="px-6 pb-12 space-y-6"><h3 class="text-2xl font-bold tracking-tight">Añadir Mes Completo</h3><form id="monthForm" class="space-y-4"><select id="monthSelect" required class="ios-input font-medium"><option value="">Selecciona el Mes</option><option value="2025-09">Septiembre 2025</option><option value="2025-10">Octubre 2025</option><option value="2025-11">Noviembre 2025</option><option value="2025-12">Diciembre 2025</option><option value="2026-01">Enero 2026</option><option value="2026-02">Febrero 2026</option><option value="2026-03">Marzo 2026</option><option value="2026-04">Abril 2026</option><option value="2026-05">Mayo 2026</option><option value="2026-06">Junio 2026</option><option value="2026-07">Julio 2026</option><option value="2026-08">Agosto 2026</option><option value="2026-09">Septiembre 2026</option></select><input type="number" id="monthHours" step="0.5" required placeholder="Total horas" class="ios-input"><button type="submit" class="w-full py-4 bg-green-500 text-white font-bold rounded-xl shadow-lg apple-btn-active">Registrar Mes</button></form></div></div>
+    
     <div id="settingsSheetOverlay" onclick="toggleSheet('settingsSheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[80]"></div>
-    <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet p-6 pb-12">
-        <h3 class="text-2xl font-bold tracking-tight mb-6">Configuración</h3>
-        <div class="bg-white/50 dark:bg-white/5 rounded-xl overflow-hidden mb-6">
-            <div class="flex justify-between items-center p-4 border-b border-black/5 dark:border-white/5">
-                <span class="font-medium">Modo Oscuro</span>
-                <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()" class="w-10 h-5 bg-gray-300 rounded-full appearance-none checked:bg-green-500 transition-all relative after:content-[''] after:absolute after:w-4 after:h-4 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 after:transition-all checked:after:left-5">
-            </div>
-            <button onclick="clearData()" class="w-full p-4 text-red-500 font-bold text-left">Borrar todos los datos</button>
-        </div>
-    </div>
+    <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet p-6 pb-12"><h3 class="text-2xl font-bold tracking-tight mb-6">Configuración</h3><div class="bg-white/50 dark:bg-white/5 rounded-xl overflow-hidden mb-6"><div class="flex justify-between items-center p-4 border-b border-black/5 dark:border-white/5"><span class="font-medium">Modo Oscuro</span><input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()" class="w-10 h-5 bg-gray-300 rounded-full appearance-none checked:bg-green-500 transition-all relative after:content-[''] after:absolute after:w-4 after:h-4 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 after:transition-all checked:after:left-5"></div><button onclick="clearData()" class="w-full p-4 text-red-500 font-bold text-left">Borrar todos los datos</button></div></div>
 
     <script>
     let activities = JSON.parse(localStorage.getItem('precursor_activities')) || [];
     let monthlyEntries = JSON.parse(localStorage.getItem('monthly_entries')) || [];
-    let currentImageData = "";
-    let editImageData = "";
+    let tempImages = []; 
     let currentDetailId = null;
     let isEditMode = false;
     let isFabOpen = false;
@@ -297,98 +211,112 @@
     const GOAL_MONTH = 50;
     const GOAL_YEAR = 600;
 
+    // --- DARK MODE ---
     if (localStorage.getItem('dark_mode') === 'true') {
         document.body.classList.add('dark-mode');
         document.getElementById('darkModeToggle').checked = true;
     }
-
     function toggleDarkMode() {
         const isDark = document.getElementById('darkModeToggle').checked;
         document.body.classList.toggle('dark-mode', isDark);
         localStorage.setItem('dark_mode', isDark);
     }
 
+    // --- FAB ---
     function toggleFab() {
-        const menu = document.getElementById('fabMenu');
-        const icon = document.getElementById('fabIcon');
-        const overlay = document.getElementById('fabOverlay');
-        const mainBtn = document.getElementById('mainFab');
+        const menu = document.getElementById('fabMenu'), icon = document.getElementById('fabIcon'), overlay = document.getElementById('fabOverlay'), mainBtn = document.getElementById('mainFab');
         isFabOpen = !isFabOpen;
-        if (isFabOpen) {
-            menu.classList.add('active');
-            menu.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
-            overlay.classList.remove('hidden');
-            icon.style.transform = 'rotate(135deg)';
-            mainBtn.classList.add('scale-90');
-        } else {
-            menu.classList.remove('active');
-            menu.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
-            overlay.classList.add('hidden');
-            icon.style.transform = 'rotate(0deg)';
-            mainBtn.classList.remove('scale-90');
-        }
+        if (isFabOpen) { menu.classList.add('active'); menu.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none'); overlay.classList.remove('hidden'); icon.style.transform = 'rotate(135deg)'; mainBtn.classList.add('scale-90'); }
+        else { menu.classList.remove('active'); menu.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none'); overlay.classList.add('hidden'); icon.style.transform = 'rotate(0deg)'; mainBtn.classList.remove('scale-90'); }
     }
 
+    // --- NAVIGATION ---
     let activeSheet = null;
-    function pushSheetState(sheetId) { history.pushState({ sheet: sheetId }, ''); }
-
-    window.addEventListener('popstate', (e) => {
+    function pushSheetState(id) { history.pushState({ sheet: id }, ''); }
+    window.addEventListener('popstate', () => {
         if (isFabOpen) toggleFab();
         else if (activeSheet === 'detailSheet') _closeDetailSheet();
         else if (activeSheet) _toggleSheetClose(activeSheet);
     });
-
-    function _toggleSheetClose(id) {
-        document.getElementById(id).classList.remove('active');
-        document.getElementById(id + 'Overlay').classList.add('hidden');
-        activeSheet = null;
-    }
-
-    function _closeDetailSheet() {
-        document.getElementById('detailSheet').classList.remove('active');
-        document.getElementById('detailSheetOverlay').classList.add('hidden');
-        currentDetailId = null; isEditMode = false; editImageData = ""; activeSheet = null;
-    }
-
+    function _toggleSheetClose(id) { document.getElementById(id).classList.remove('active'); document.getElementById(id + 'Overlay').classList.add('hidden'); activeSheet = null; }
+    function _closeDetailSheet() { document.getElementById('detailSheet').classList.remove('active'); document.getElementById('detailSheetOverlay').classList.add('hidden'); currentDetailId = null; isEditMode = false; tempImages = []; activeSheet = null; }
     function toggleSheet(id) {
-        const sheet = document.getElementById(id);
-        if (sheet.classList.contains('active')) history.back();
-        else {
-            sheet.classList.add('active');
-            document.getElementById(id + 'Overlay').classList.remove('hidden');
-            activeSheet = id; pushSheetState(id);
-        }
+        const s = document.getElementById(id);
+        if (s.classList.contains('active')) history.back();
+        else { s.classList.add('active'); document.getElementById(id + 'Overlay').classList.remove('hidden'); activeSheet = id; pushSheetState(id); }
     }
 
+    // --- IMAGES & COLLAGE ---
+    async function handleFileSelect(input, isEdit) {
+        const files = Array.from(input.files).slice(0, 5);
+        const label = document.getElementById(isEdit ? 'editFileNameDisplay' : 'fileNameDisplay');
+        if (files.length === 0) return;
+        
+        label.innerText = "Procesando...";
+        tempImages = [];
+
+        for (const file of files) {
+            const base64 = await compressImage(file);
+            tempImages.push(base64);
+        }
+        label.innerText = `¡${tempImages.length} fotos listas!`;
+    }
+
+    function compressImage(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX = 500;
+                    let w = img.width, h = img.height;
+                    if (w > MAX) { h *= MAX/w; w = MAX; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL('image/jpeg', 0.6));
+                };
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function createCollageHTML(images) {
+        if (!images || images.length === 0) {
+            return `<div class="detail-hero-placeholder"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-20"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>`;
+        }
+        const count = images.length;
+        const gridClass = `grid-${count}`;
+        let imgsHTML = images.map(src => `<img src="${src}" class="collage-img">`).join('');
+        return `<div class="collage-grid ${gridClass}">${imgsHTML}</div>`;
+    }
+
+    // --- ACTIVITY LOGIC ---
     function openActivitySheet() {
         document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        tempImages = [];
+        document.getElementById('fileNameDisplay').innerText = "Añadir Fotos (Max 5)";
         toggleSheet('activitySheet');
     }
 
     function openDetailSheet(id) {
         const act = activities.find(a => a.id === id);
         if (!act) return;
-        currentDetailId = id;
-        isEditMode = false;
-
-        // SE ACTUALIZA SOLO EL TÍTULO DEL ENCABEZADO
+        currentDetailId = id; isEditMode = false;
+        
         document.getElementById('detailSheetTitle').innerText = act.title;
         document.getElementById('detailHours').innerText = act.hours;
         document.getElementById('detailCategory').innerText = act.category;
-        document.getElementById('detailDate').innerText = new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {
-            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-        });
-
-        const imgWrap = document.getElementById('detailImageWrap');
-        if (act.image) imgWrap.innerHTML = `<img src="${act.image}" class="detail-hero">`;
-        else imgWrap.innerHTML = `<div class="detail-hero-placeholder"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-20"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>`;
+        document.getElementById('detailDate').innerText = new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+        
+        // Cargar Collage
+        document.getElementById('detailCollageWrap').innerHTML = createCollageHTML(act.images || (act.image ? [act.image] : []));
 
         document.getElementById('detailViewMode').classList.remove('hidden');
         document.getElementById('detailEditMode').classList.add('hidden');
         document.getElementById('editToggleBtn').innerText = 'Editar';
-        document.getElementById('detailSheet').classList.add('active');
-        document.getElementById('detailSheetOverlay').classList.remove('hidden');
-        activeSheet = 'detailSheet'; pushSheetState('detailSheet');
+        toggleSheet('detailSheet');
     }
 
     function closeDetailSheet() { history.back(); }
@@ -401,71 +329,56 @@
             document.getElementById('editDate').value = act.date;
             document.getElementById('editHours').value = act.hours;
             document.getElementById('editCategory').value = act.category;
-            editImageData = "";
-            document.getElementById('editFileNameDisplay').innerText = 'Cambiar Foto';
-            const wrap = document.getElementById('editCurrentImageWrap');
-            if (act.image) {
-                document.getElementById('editCurrentImage').src = act.image;
-                wrap.classList.remove('hidden');
-            } else wrap.classList.add('hidden');
+            tempImages = act.images || (act.image ? [act.image] : []);
+            document.getElementById('editFileNameDisplay').innerText = `Mantener ${tempImages.length} fotos`;
             document.getElementById('detailViewMode').classList.add('hidden');
             document.getElementById('detailEditMode').classList.remove('hidden');
             document.getElementById('editToggleBtn').innerText = 'Cancelar';
-            document.getElementById('detailSheetTitle').innerText = 'Editar';
         } else {
             document.getElementById('detailViewMode').classList.remove('hidden');
             document.getElementById('detailEditMode').classList.add('hidden');
             document.getElementById('editToggleBtn').innerText = 'Editar';
-            document.getElementById('detailSheetTitle').innerText = act.title;
         }
     }
+
+    document.getElementById('activityForm').onsubmit = (e) => {
+        e.preventDefault();
+        activities.push({
+            id: Date.now().toString(),
+            title: document.getElementById('title').value,
+            date: document.getElementById('date').value,
+            hours: parseFloat(document.getElementById('hours').value),
+            category: document.getElementById('category').value,
+            images: tempImages
+        });
+        saveAndReload(e);
+    };
 
     document.getElementById('editForm').onsubmit = (e) => {
         e.preventDefault();
         const idx = activities.findIndex(a => a.id === currentDetailId);
-        if (idx === -1) return;
-        activities[idx] = {
-            ...activities[idx],
+        activities[idx] = { ...activities[idx],
             title: document.getElementById('editTitle').value,
             date: document.getElementById('editDate').value,
             hours: parseFloat(document.getElementById('editHours').value),
             category: document.getElementById('editCategory').value,
-            image: editImageData || activities[idx].image
+            images: tempImages.length > 0 ? tempImages : activities[idx].images
         };
-        localStorage.setItem('precursor_activities', JSON.stringify(activities));
-        history.back(); updateDashboard();
+        saveAndReload(e);
     };
+
+    function saveAndReload(e) {
+        localStorage.setItem('precursor_activities', JSON.stringify(activities));
+        if(e) e.target.reset();
+        history.back();
+        updateDashboard();
+    }
 
     function deleteFromDetail() {
         if (confirm('¿Eliminar registro?')) {
             activities = activities.filter(a => a.id !== currentDetailId);
-            localStorage.setItem('precursor_activities', JSON.stringify(activities));
-            history.back(); updateDashboard();
+            saveAndReload();
         }
-    }
-
-    function handleEditFileSelect(input) {
-        const file = input.files[0];
-        if (!file) return;
-        document.getElementById('editFileNameDisplay').innerText = 'Cargando...';
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.src = e.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const MAX = 400;
-                let w = img.width, h = img.height;
-                if (w > MAX) { h *= MAX/w; w = MAX; }
-                canvas.width = w; canvas.height = h;
-                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                editImageData = canvas.toDataURL('image/jpeg', 0.6);
-                document.getElementById('editCurrentImage').src = editImageData;
-                document.getElementById('editCurrentImageWrap').classList.remove('hidden');
-                document.getElementById('editFileNameDisplay').innerText = '¡Foto lista!';
-            };
-        };
-        reader.readAsDataURL(file);
     }
 
     function updateDashboard() {
@@ -475,8 +388,7 @@
             const d = new Date(a.date);
             return (d.getMonth() === curM && d.getFullYear() === curY) ? sum + parseFloat(a.hours) : sum;
         }, 0);
-        const totalYear = activities.reduce((sum, a) => sum + parseFloat(a.hours), 0) + 
-                          monthlyEntries.reduce((sum, m) => sum + parseFloat(m.hours), 0);
+        const totalYear = activities.reduce((sum, a) => sum + parseFloat(a.hours), 0) + monthlyEntries.reduce((sum, m) => sum + parseFloat(m.hours), 0);
         document.getElementById('labelMonth').innerText = totalMonth;
         document.getElementById('labelYear').innerText = Math.round(totalYear);
         const updateRing = (id, cur, goal) => {
@@ -490,69 +402,29 @@
 
     function renderActivities() {
         const list = document.getElementById('activitiesList');
-        if (activities.length === 0) {
-            list.innerHTML = `<div class="p-10 text-center opacity-30 font-medium">Sin registros recientes</div>`;
-            return;
-        }
+        if (activities.length === 0) { list.innerHTML = `<div class="p-10 text-center opacity-30 font-medium">Sin registros recientes</div>`; return; }
         const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
-        list.innerHTML = sorted.map(act => `
+        list.innerHTML = sorted.map(act => {
+            const firstImg = (act.images && act.images.length > 0) ? act.images[0] : act.image;
+            return `
             <div onclick="openDetailSheet('${act.id}')" class="glass squicle p-4 flex gap-4 items-center shadow-sm border border-white/10 apple-btn-active cursor-pointer">
-                ${act.image ? `<img src="${act.image}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">` : `<div class="w-14 h-14 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold flex-shrink-0">${act.hours}</div>`}
+                ${firstImg ? `<img src="${firstImg}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">` : `<div class="w-14 h-14 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold flex-shrink-0">${act.hours}</div>`}
                 <div class="flex-1 min-w-0">
                     <p class="text-[10px] font-extrabold text-blue-500 uppercase">${act.category}</p>
                     <h3 class="font-bold text-[16px] truncate">${act.title}</h3>
                     <p class="text-[12px] opacity-40">${new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {day:'numeric', month:'short'})}</p>
                 </div>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-20 flex-shrink-0"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     }
-
-    document.getElementById('activityForm').onsubmit = (e) => {
-        e.preventDefault();
-        activities.push({
-            id: Date.now().toString(),
-            title: document.getElementById('title').value,
-            date: document.getElementById('date').value,
-            hours: parseFloat(document.getElementById('hours').value),
-            category: document.getElementById('category').value,
-            image: currentImageData
-        });
-        localStorage.setItem('precursor_activities', JSON.stringify(activities));
-        currentImageData = ""; e.target.reset(); history.back(); updateDashboard();
-    };
 
     document.getElementById('monthForm').onsubmit = (e) => {
         e.preventDefault();
-        monthlyEntries.push({
-            id: Date.now().toString(),
-            month: document.getElementById('monthSelect').value,
-            hours: parseFloat(document.getElementById('monthHours').value)
-        });
+        monthlyEntries.push({ id: Date.now().toString(), month: document.getElementById('monthSelect').value, hours: parseFloat(document.getElementById('monthHours').value) });
         localStorage.setItem('monthly_entries', JSON.stringify(monthlyEntries));
-        e.target.reset(); history.back(); updateDashboard();
+        saveAndReload(e);
     };
-
-    function handleFileSelect(input) {
-        const file = input.files[0];
-        if (!file) return;
-        document.getElementById('fileNameDisplay').innerText = "Cargando...";
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.src = e.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const MAX = 400;
-                let w = img.width, h = img.height;
-                if (w > MAX) { h *= MAX/w; w = MAX; }
-                canvas.width = w; canvas.height = h;
-                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                currentImageData = canvas.toDataURL('image/jpeg', 0.6);
-                document.getElementById('fileNameDisplay').innerText = "¡Foto lista!";
-            };
-        };
-        reader.readAsDataURL(file);
-    }
 
     function clearData() { if(confirm('Se borrarán todos los datos definitivamente.')) { localStorage.clear(); location.reload(); } }
     window.onload = updateDashboard;
