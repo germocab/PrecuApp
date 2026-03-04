@@ -74,8 +74,8 @@
     <div id="fabOverlay" onclick="toggleFab()" class="fixed inset-0 bg-black/10 backdrop-blur-[2px] hidden z-[60]"></div>
     <div class="fixed bottom-8 right-6 z-[70] flex flex-col items-end gap-3">
         <div id="fabMenu" class="flex flex-col items-end gap-3 mb-2 pointer-events-none opacity-0 translate-y-4 transition-all duration-300">
-            <button onclick="toggleFab(); toggleSheet('monthSheet')" class="glass px-5 py-3 rounded-full shadow-xl text-blue-500 apple-btn-active font-bold text-[14px] border border-white/20">Añadir Meses</button>
-            <button onclick="toggleFab(); openActivitySheet()" class="glass px-5 py-3 rounded-full shadow-xl text-blue-500 apple-btn-active font-bold text-[14px] border border-white/20">Nueva Jornada</button>
+            <button onclick="toggleFab(); toggleSheet('monthSheet')" class="glass px-5 py-3 rounded-full shadow-xl text-blue-500 apple-btn-active font-bold text-[14px] border border-white/20">Añadir a Mes</button>
+            <button onclick="toggleFab(); openActivitySheet()" class="glass px-5 py-3 rounded-full shadow-xl text-blue-500 apple-btn-active font-bold text-[14px] border border-white/20">Nueva Actividad</button>
         </div>
         <button id="mainFab" onclick="toggleFab()" class="bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl apple-btn-active">
             <svg id="fabIcon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="transition-transform duration-300"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -123,7 +123,7 @@
     <div id="activitySheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet max-h-[92vh] overflow-y-auto">
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
         <div class="px-6 pb-12 space-y-6">
-            <h3 class="text-2xl font-bold">Nueva Jornada</h3>
+            <h3 class="text-2xl font-bold">Nueva Actividad</h3>
             <form id="activityForm" class="space-y-4">
                 <input type="text" id="title" required placeholder="Nombre de actividad" class="ios-input">
                 <div class="flex gap-3"><input type="date" id="date" required class="ios-input flex-1"><input type="number" id="hours" step="0.5" required placeholder="Hrs" class="ios-input w-24"></div>
@@ -147,7 +147,7 @@
             <select id="monthSelect" required class="ios-input font-bold">
                 <option value="">Selecciona Mes</option>
                 <option value="2025-09">Septiembre 2025</option><option value="2025-10">Octubre 2025</option><option value="2025-11">Noviembre 2025</option><option value="2025-12">Diciembre 2025</option>
-                <option value="2026-01">Enero 2026</option><option value="2026-02">Febrero 2026</option>
+                <option value="2026-01">Enero 2026</option><option value="2026-02">Febrero 2026</option><option value="2026-023">Marzo 2026</option><option value="2026-04">Abril 2026</option><option value="2026-05">Mayo 2026</option><option value="2026-06">Junio 2026</option><option value="2026-07">Julio 2026</option><option value="2026-08">Agosto 2026</option><option value="2026-09">Septiembre 2026</option>
             </select>
             <input type="number" id="monthHours" step="0.5" required placeholder="Total horas" class="ios-input">
             <button type="submit" class="w-full py-4 bg-green-500 text-white font-bold rounded-xl apple-btn-active">Registrar Mes</button>
