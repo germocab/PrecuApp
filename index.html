@@ -88,6 +88,12 @@
             font-weight: 700;
             letter-spacing: 0.3px;
         }
+        /* Estilos del Menú Flotante */
+        #fabMenu.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
     </style>
 </head>
 <body class="select-none">
@@ -135,25 +141,27 @@
         </section>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 glass border-t border-black/5 dark:border-white/10 z-50 px-6" style="padding-bottom: var(--safe-area-bottom);">
-        <div class="flex justify-around items-center h-16">
-            <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center gap-0.5 text-blue-500 apple-btn-active">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                <span class="text-[10px] font-medium">Inicio</span>
+    <div id="fabOverlay" onclick="toggleFab()" class="fixed inset-0 bg-black/10 backdrop-blur-[2px] hidden z-[60]"></div>
+    
+    <div class="fixed bottom-8 right-6 z-[70] flex flex-col items-end gap-3">
+        <div id="fabMenu" class="flex flex-col items-end gap-3 mb-2 pointer-events-none opacity-0 translate-y-4 transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)]">
+            <button onclick="toggleFab(); toggleSheet('monthSheet')" class="glass px-5 py-3 rounded-full shadow-xl border border-white/20 flex items-center gap-2 text-blue-500 apple-btn-active">
+                <span class="text-[14px] font-bold">Añadir Meses</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
             </button>
-            <button onclick="openActivitySheet()" class="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-xl apple-btn-active -mt-6 border-4 border-[#F2F2F7] dark:border-black">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            </button>
-            <button onclick="toggleSheet('monthSheet')" class="flex flex-col items-center gap-0.5 text-gray-400 apple-btn-active">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <span class="text-[10px] font-medium">Meses</span>
+            <button onclick="toggleFab(); openActivitySheet()" class="glass px-5 py-3 rounded-full shadow-xl border border-white/20 flex items-center gap-2 text-blue-500 apple-btn-active">
+                <span class="text-[14px] font-bold">Nueva Jornada</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </button>
         </div>
-    </nav>
 
-    <!-- DETAIL / EDIT SHEET -->
-    <div id="detailSheetOverlay" onclick="closeDetailSheet()" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[60]"></div>
-    <div id="detailSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[70] bottom-sheet max-h-[92vh] overflow-y-auto">
+        <button id="mainFab" onclick="toggleFab()" class="bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl shadow-blue-500/40 apple-btn-active transition-all duration-300">
+            <svg id="fabIcon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+    </div>
+
+    <div id="detailSheetOverlay" onclick="closeDetailSheet()" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[80]"></div>
+    <div id="detailSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet max-h-[92vh] overflow-y-auto">
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
         <div class="px-6 pb-12 space-y-5">
             <div class="flex justify-between items-center gap-3">
@@ -162,7 +170,6 @@
                     <button id="editToggleBtn" onclick="toggleEditMode()" class="text-blue-500 font-semibold text-[15px]">Editar</button>
                 </div>
             </div>
-            <!-- VIEW MODE -->
             <div id="detailViewMode" class="space-y-4">
                 <div id="detailImageWrap"></div>
                 <div class="flex items-center gap-3 flex-wrap">
@@ -179,7 +186,6 @@
                     Eliminar Actividad
                 </button>
             </div>
-            <!-- EDIT MODE -->
             <div id="detailEditMode" class="space-y-4 hidden">
                 <form id="editForm" class="space-y-4">
                     <input type="text" id="editTitle" required placeholder="Nombre de la Actividad" class="ios-input">
@@ -209,9 +215,8 @@
         </div>
     </div>
 
-    <!-- ADD ACTIVITY SHEET -->
-    <div id="activitySheetOverlay" onclick="toggleSheet('activitySheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[60]"></div>
-    <div id="activitySheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[70] bottom-sheet max-h-[92vh] overflow-y-auto">
+    <div id="activitySheetOverlay" onclick="toggleSheet('activitySheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[80]"></div>
+    <div id="activitySheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet max-h-[92vh] overflow-y-auto">
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
         <div class="px-6 pb-12 space-y-6">
             <div class="flex justify-between items-center">
@@ -241,9 +246,8 @@
         </div>
     </div>
 
-    <!-- MONTH SHEET -->
-    <div id="monthSheetOverlay" onclick="toggleSheet('monthSheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[60]"></div>
-    <div id="monthSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[70] bottom-sheet">
+    <div id="monthSheetOverlay" onclick="toggleSheet('monthSheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[80]"></div>
+    <div id="monthSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet">
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
         <div class="px-6 pb-12 space-y-6">
             <h3 class="text-2xl font-bold tracking-tight">Añadir Mes Completo</h3>
@@ -271,9 +275,8 @@
         </div>
     </div>
 
-    <!-- SETTINGS SHEET -->
-    <div id="settingsSheetOverlay" onclick="toggleSheet('settingsSheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[60]"></div>
-    <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[70] bottom-sheet p-6 pb-12">
+    <div id="settingsSheetOverlay" onclick="toggleSheet('settingsSheet')" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden z-[80]"></div>
+    <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet p-6 pb-12">
         <h3 class="text-2xl font-bold tracking-tight mb-6">Configuración</h3>
         <div class="bg-white/50 dark:bg-white/5 rounded-xl overflow-hidden mb-6">
             <div class="flex justify-between items-center p-4 border-b border-black/5 dark:border-white/5">
@@ -291,6 +294,7 @@
     let editImageData = "";
     let currentDetailId = null;
     let isEditMode = false;
+    let isFabOpen = false;
 
     const GOAL_MONTH = 50;
     const GOAL_YEAR = 600;
@@ -306,6 +310,30 @@
         localStorage.setItem('dark_mode', isDark);
     }
 
+    // --- LÓGICA FAB ---
+    function toggleFab() {
+        const menu = document.getElementById('fabMenu');
+        const icon = document.getElementById('fabIcon');
+        const overlay = document.getElementById('fabOverlay');
+        const mainBtn = document.getElementById('mainFab');
+
+        isFabOpen = !isFabOpen;
+
+        if (isFabOpen) {
+            menu.classList.add('active');
+            menu.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            overlay.classList.remove('hidden');
+            icon.style.transform = 'rotate(135deg)';
+            mainBtn.classList.add('scale-90');
+        } else {
+            menu.classList.remove('active');
+            menu.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            overlay.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
+            mainBtn.classList.remove('scale-90');
+        }
+    }
+
     // ── History API para gestos "atrás" ───────────────────
     let activeSheet = null;
 
@@ -314,15 +342,15 @@
     }
 
     window.addEventListener('popstate', (e) => {
-        // El usuario hizo gesto/botón atrás
-        if (activeSheet === 'detailSheet') {
+        if (isFabOpen) {
+            toggleFab();
+        } else if (activeSheet === 'detailSheet') {
             _closeDetailSheet();
         } else if (activeSheet) {
             _toggleSheetClose(activeSheet);
         }
     });
 
-    // Versiones internas (sin tocar history)
     function _toggleSheetClose(id) {
         document.getElementById(id).classList.remove('active');
         document.getElementById(id + 'Overlay').classList.add('hidden');
@@ -338,12 +366,11 @@
         activeSheet = null;
     }
 
-    // ── Funciones públicas (usan history) ─────────────────
     function toggleSheet(id) {
         const sheet = document.getElementById(id);
         const isOpen = sheet.classList.contains('active');
         if (isOpen) {
-            history.back(); // dispara popstate → cierra
+            history.back();
         } else {
             sheet.classList.add('active');
             document.getElementById(id + 'Overlay').classList.remove('hidden');
@@ -375,13 +402,7 @@
         if (act.image) {
             imgWrap.innerHTML = `<img src="${act.image}" class="detail-hero">`;
         } else {
-            imgWrap.innerHTML = `
-                <div class="detail-hero-placeholder">
-                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-20">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                        <polyline points="9 22 9 12 15 12 15 22"/>
-                    </svg>
-                </div>`;
+            imgWrap.innerHTML = `<div class="detail-hero-placeholder"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-20"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>`;
         }
 
         document.getElementById('detailViewMode').classList.remove('hidden');
@@ -394,13 +415,12 @@
     }
 
     function closeDetailSheet() {
-        history.back(); // dispara popstate → cierra
+        history.back();
     }
 
     function toggleEditMode() {
         isEditMode = !isEditMode;
         const act = activities.find(a => a.id === currentDetailId);
-
         if (isEditMode) {
             document.getElementById('editTitle').value = act.title;
             document.getElementById('editDate').value = act.date;
@@ -408,7 +428,6 @@
             document.getElementById('editCategory').value = act.category;
             editImageData = "";
             document.getElementById('editFileNameDisplay').innerText = 'Cambiar Foto';
-
             const wrap = document.getElementById('editCurrentImageWrap');
             const img = document.getElementById('editCurrentImage');
             if (act.image) {
@@ -417,7 +436,6 @@
             } else {
                 wrap.classList.add('hidden');
             }
-
             document.getElementById('detailViewMode').classList.add('hidden');
             document.getElementById('detailEditMode').classList.remove('hidden');
             document.getElementById('editToggleBtn').innerText = 'Cancelar';
@@ -443,7 +461,7 @@
             image: editImageData || activities[idx].image
         };
         localStorage.setItem('precursor_activities', JSON.stringify(activities));
-        history.back(); // cierra con gesto natural
+        history.back();
         updateDashboard();
     };
 
@@ -480,30 +498,24 @@
         reader.readAsDataURL(file);
     }
 
-    // ── Dashboard ─────────────────────────────────────────
     function updateDashboard() {
         const now = new Date();
         const curM = now.getMonth(), curY = now.getFullYear();
-
         const totalMonth = activities.reduce((sum, a) => {
             const d = new Date(a.date);
             return (d.getMonth() === curM && d.getFullYear() === curY) ? sum + parseFloat(a.hours) : sum;
         }, 0);
-
         const actYear = activities.reduce((sum, a) => sum + parseFloat(a.hours), 0);
         const manualYear = monthlyEntries.reduce((sum, m) => sum + parseFloat(m.hours), 0);
         const totalYear = actYear + manualYear;
-
         document.getElementById('labelMonth').innerText = totalMonth;
         document.getElementById('labelYear').innerText = Math.round(totalYear);
-
         const updateRing = (id, cur, goal) => {
             const ring = document.getElementById(id), circ = 263.9;
             ring.style.strokeDashoffset = circ - (Math.min(cur / goal, 1) * circ);
         };
         updateRing('monthRing', totalMonth, GOAL_MONTH);
         updateRing('yearRing', totalYear, GOAL_YEAR);
-
         renderActivities();
     }
 
@@ -544,7 +556,7 @@
         currentImageData = "";
         document.getElementById('fileNameDisplay').innerText = 'Añadir Foto';
         e.target.reset();
-        history.back(); // cierra con gesto natural
+        history.back();
         updateDashboard();
     };
 
@@ -557,17 +569,9 @@
         });
         localStorage.setItem('monthly_entries', JSON.stringify(monthlyEntries));
         e.target.reset();
-        history.back(); // cierra con gesto natural
+        history.back();
         updateDashboard();
     };
-
-    function deleteActivity(id) {
-        if(confirm('¿Eliminar registro?')) {
-            activities = activities.filter(a => a.id !== id);
-            localStorage.setItem('precursor_activities', JSON.stringify(activities));
-            updateDashboard();
-        }
-    }
 
     function handleFileSelect(input) {
         const file = input.files[0];
@@ -602,8 +606,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
