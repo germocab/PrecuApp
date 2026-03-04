@@ -18,8 +18,6 @@
         .apple-btn-active:active { transform: scale(0.96); opacity: 0.7; }
         .ios-input { width: 100%; background: rgba(0,0,0,0.05); border-radius: 12px; padding: 14px; outline: none; border: none; font-size: 17px; }
         .dark-mode .ios-input { background: rgba(255,255,255,0.1); color: white; }
-        
-        /* Collage */
         .collage-grid { display: grid; gap: 4px; border-radius: 18px; overflow: hidden; width: 100%; height: 280px; }
         .collage-img { width: 100%; height: 100%; object-fit: cover; background: #eee; cursor: pointer; }
         .grid-1 { grid-template-columns: 1fr; }
@@ -29,8 +27,6 @@
         .grid-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
         .grid-5 { grid-template-areas: "a a b" "a a c" "d e b"; grid-template-columns: 1fr 1fr 1fr; }
         .grid-5 :nth-child(1) { grid-area: a; }
-
-        /* Visor de Imagen */
         #imageViewer { transition: opacity 0.3s; display: none; opacity: 0; background: rgba(0,0,0,0.9); z-index: 3000; position: fixed; inset: 0; align-items: center; justify-content: center; padding: 20px; }
         #imageViewer.active { display: flex; opacity: 1; }
         .detail-pill { background: rgba(0,122,255,0.1); color: var(--apple-blue); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; }
@@ -86,13 +82,15 @@
         </button>
     </div>
 
-    <div id="imageViewer" onclick="closeViewer()">
-        <button onclick="event.stopPropagation(); closeViewer();" class="absolute top-12 right-6 z-[3100] text-white bg-white/20 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md">
+    <!-- FIX 1: Visor llama _closeViewerUI() directamente, sin pasar por history -->
+    <div id="imageViewer" onclick="_closeViewerUI()">
+        <button onclick="event.stopPropagation(); _closeViewerUI();" class="absolute top-12 right-6 z-[3100] text-white bg-white/20 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
         <img id="fullImage" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain" onclick="event.stopPropagation()">
     </div>
 
+    <!-- FIX 2: overlay llama closeDetailSheet() que ahora existe como función pública -->
     <div id="detailSheetOverlay" onclick="closeDetailSheet()" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
     <div id="detailSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet max-h-[92vh] overflow-y-auto">
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
@@ -172,12 +170,11 @@
     <script>
     let activities = JSON.parse(localStorage.getItem('precursor_activities')) || [];
     let monthlyEntries = JSON.parse(localStorage.getItem('monthly_entries')) || [];
-    let tempImages = []; 
+    let tempImages = [];
     let currentDetailId = null;
     let isEditMode = false;
     let isFabOpen = false;
 
-    // --- MIGRACIÓN DE FOTOS (Rescata tus fotos desaparecidas) ---
     function migrate() {
         let changed = false;
         activities = activities.map(act => {
@@ -190,30 +187,25 @@
     }
     migrate();
 
-    // Visor de Imagen
+    // FIX 1: openViewer ya no usa pushSheetState. _closeViewerUI() cierra directo.
     function openViewer(src) {
         document.getElementById('fullImage').src = src;
         const v = document.getElementById('imageViewer');
         v.style.display = 'flex';
         setTimeout(() => { v.style.opacity = '1'; v.classList.add('active'); }, 10);
-        pushSheetState('viewer');
     }
-    function closeViewer() { if (history.state?.sheet === 'viewer') history.back(); }
     function _closeViewerUI() {
         const v = document.getElementById('imageViewer');
         v.style.opacity = '0';
         setTimeout(() => { v.style.display = 'none'; v.classList.remove('active'); }, 300);
     }
 
-    // Navegación
     let activeSheet = null;
     function pushSheetState(id) { history.pushState({ sheet: id }, ''); }
     window.onpopstate = (e) => {
         if (isFabOpen) toggleFab();
-        else if (e.state?.sheet === 'viewer') _closeViewerUI();
-        else if (activeSheet === 'detailSheet') _closeDetailSheet();
+        else if (activeSheet === 'detailSheet') _closeDetailSheetUI();
         else if (activeSheet) _toggleSheetClose(activeSheet);
-        else _closeViewerUI();
     };
 
     function _toggleSheetClose(id) {
@@ -221,11 +213,18 @@
         document.getElementById(id + 'Overlay').classList.add('hidden');
         activeSheet = null;
     }
-    function _closeDetailSheet() {
+
+    // FIX 2: closeDetailSheet() es una función pública que usa history.back() correctamente
+    function closeDetailSheet() {
+        if (activeSheet === 'detailSheet') history.back();
+        else _closeDetailSheetUI();
+    }
+    function _closeDetailSheetUI() {
         document.getElementById('detailSheet').classList.remove('active');
         document.getElementById('detailSheetOverlay').classList.add('hidden');
         currentDetailId = null; isEditMode = false; tempImages = []; activeSheet = null;
     }
+
     function toggleSheet(id) {
         const s = document.getElementById(id);
         if (s.classList.contains('active')) history.back();
@@ -239,7 +238,7 @@
     function toggleFab() {
         const menu = document.getElementById('fabMenu'), icon = document.getElementById('fabIcon'), overlay = document.getElementById('fabOverlay');
         isFabOpen = !isFabOpen;
-        if (isFabOpen) { 
+        if (isFabOpen) {
             menu.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none'); menu.classList.add('active');
             overlay.classList.remove('hidden'); icon.style.transform = 'rotate(135deg)';
         } else {
@@ -248,7 +247,6 @@
         }
     }
 
-    // Imágenes
     async function handleFileSelect(input, isEdit) {
         const files = Array.from(input.files).slice(0, 5);
         const label = document.getElementById(isEdit ? 'editFileNameDisplay' : 'fileNameDisplay');
@@ -287,7 +285,6 @@
         return `<div class="collage-grid grid-${images.length}">${images.map(src => `<img src="${src}" class="collage-img" onclick="openViewer('${src}')">`).join('')}</div>`;
     }
 
-    // Actividades
     function openActivitySheet() {
         document.getElementById('date').value = new Date().toISOString().split('T')[0];
         tempImages = []; document.getElementById('fileNameDisplay').innerText = "Añadir Fotos (Max 5)";
