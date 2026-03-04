@@ -88,7 +88,6 @@
             font-weight: 700;
             letter-spacing: 0.3px;
         }
-        /* Estilos del Menú Flotante */
         #fabMenu.active {
             opacity: 1;
             transform: translateY(0);
@@ -146,11 +145,11 @@
     <div class="fixed bottom-8 right-6 z-[70] flex flex-col items-end gap-3">
         <div id="fabMenu" class="flex flex-col items-end gap-3 mb-2 pointer-events-none opacity-0 translate-y-4 transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)]">
             <button onclick="toggleFab(); toggleSheet('monthSheet')" class="glass px-5 py-3 rounded-full shadow-xl border border-white/20 flex items-center gap-2 text-blue-500 apple-btn-active">
-                <span class="text-[14px] font-bold">Añadir a Mes</span>
+                <span class="text-[14px] font-bold">Añadir Meses</span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
             </button>
             <button onclick="toggleFab(); openActivitySheet()" class="glass px-5 py-3 rounded-full shadow-xl border border-white/20 flex items-center gap-2 text-blue-500 apple-btn-active">
-                <span class="text-[14px] font-bold">Nueva Actividad</span>
+                <span class="text-[14px] font-bold">Nueva Jornada</span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </button>
         </div>
@@ -165,11 +164,10 @@
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
         <div class="px-6 pb-12 space-y-5">
             <div class="flex justify-between items-center gap-3">
-                <h3 id="detailSheetTitle" class="text-2xl font-bold tracking-tight truncate">Detalle</h3>
-                <div class="flex gap-4 items-center flex-shrink-0">
-                    <button id="editToggleBtn" onclick="toggleEditMode()" class="text-blue-500 font-semibold text-[15px]">Editar</button>
-                </div>
+                <h3 id="detailSheetTitle" class="text-2xl font-bold tracking-tight truncate flex-1">Detalle</h3>
+                <button id="editToggleBtn" onclick="toggleEditMode()" class="text-blue-500 font-semibold text-[15px] flex-shrink-0">Editar</button>
             </div>
+            
             <div id="detailViewMode" class="space-y-4">
                 <div id="detailImageWrap"></div>
                 <div class="flex items-center gap-3 flex-wrap">
@@ -185,6 +183,7 @@
                     Eliminar Actividad
                 </button>
             </div>
+
             <div id="detailEditMode" class="space-y-4 hidden">
                 <form id="editForm" class="space-y-4">
                     <input type="text" id="editTitle" required placeholder="Nombre de la Actividad" class="ios-input">
@@ -199,7 +198,6 @@
                         <option value="Informal">Informal</option>
                         <option value="Telefónica">Telefónica</option>
                         <option value="Curso Bíblico">Curso Bíblico</option>
-                        <option value="Cartas">Cartas</option>
                     </select>
                     <div id="editCurrentImageWrap" class="hidden">
                         <p class="text-[11px] opacity-40 font-bold mb-2 uppercase tracking-wider">Foto actual</p>
@@ -236,7 +234,6 @@
                     <option value="Informal">Informal</option>
                     <option value="Telefónica">Telefónica</option>
                     <option value="Curso Bíblico">Curso Bíblico</option>
-                    <option value="Cartas">Cartas</option>
                 </select>
                 <label class="flex items-center justify-center w-full bg-blue-500/10 p-4 rounded-xl text-blue-500 font-semibold cursor-pointer apple-btn-active">
                     <input type="file" id="imageFile" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
@@ -311,15 +308,12 @@
         localStorage.setItem('dark_mode', isDark);
     }
 
-    // --- LÓGICA FAB ---
     function toggleFab() {
         const menu = document.getElementById('fabMenu');
         const icon = document.getElementById('fabIcon');
         const overlay = document.getElementById('fabOverlay');
         const mainBtn = document.getElementById('mainFab');
-
         isFabOpen = !isFabOpen;
-
         if (isFabOpen) {
             menu.classList.add('active');
             menu.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
@@ -335,21 +329,13 @@
         }
     }
 
-    // ── History API para gestos "atrás" ───────────────────
     let activeSheet = null;
-
-    function pushSheetState(sheetId) {
-        history.pushState({ sheet: sheetId }, '');
-    }
+    function pushSheetState(sheetId) { history.pushState({ sheet: sheetId }, ''); }
 
     window.addEventListener('popstate', (e) => {
-        if (isFabOpen) {
-            toggleFab();
-        } else if (activeSheet === 'detailSheet') {
-            _closeDetailSheet();
-        } else if (activeSheet) {
-            _toggleSheetClose(activeSheet);
-        }
+        if (isFabOpen) toggleFab();
+        else if (activeSheet === 'detailSheet') _closeDetailSheet();
+        else if (activeSheet) _toggleSheetClose(activeSheet);
     });
 
     function _toggleSheetClose(id) {
@@ -361,22 +347,16 @@
     function _closeDetailSheet() {
         document.getElementById('detailSheet').classList.remove('active');
         document.getElementById('detailSheetOverlay').classList.add('hidden');
-        currentDetailId = null;
-        isEditMode = false;
-        editImageData = "";
-        activeSheet = null;
+        currentDetailId = null; isEditMode = false; editImageData = ""; activeSheet = null;
     }
 
     function toggleSheet(id) {
         const sheet = document.getElementById(id);
-        const isOpen = sheet.classList.contains('active');
-        if (isOpen) {
-            history.back();
-        } else {
+        if (sheet.classList.contains('active')) history.back();
+        else {
             sheet.classList.add('active');
             document.getElementById(id + 'Overlay').classList.remove('hidden');
-            activeSheet = id;
-            pushSheetState(id);
+            activeSheet = id; pushSheetState(id);
         }
     }
 
@@ -391,8 +371,8 @@
         currentDetailId = id;
         isEditMode = false;
 
+        // SE ACTUALIZA SOLO EL TÍTULO DEL ENCABEZADO
         document.getElementById('detailSheetTitle').innerText = act.title;
-        document.getElementById('detailTitleLabel').innerText = act.title;
         document.getElementById('detailHours').innerText = act.hours;
         document.getElementById('detailCategory').innerText = act.category;
         document.getElementById('detailDate').innerText = new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {
@@ -400,24 +380,18 @@
         });
 
         const imgWrap = document.getElementById('detailImageWrap');
-        if (act.image) {
-            imgWrap.innerHTML = `<img src="${act.image}" class="detail-hero">`;
-        } else {
-            imgWrap.innerHTML = `<div class="detail-hero-placeholder"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-20"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>`;
-        }
+        if (act.image) imgWrap.innerHTML = `<img src="${act.image}" class="detail-hero">`;
+        else imgWrap.innerHTML = `<div class="detail-hero-placeholder"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-20"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>`;
 
         document.getElementById('detailViewMode').classList.remove('hidden');
         document.getElementById('detailEditMode').classList.add('hidden');
         document.getElementById('editToggleBtn').innerText = 'Editar';
         document.getElementById('detailSheet').classList.add('active');
         document.getElementById('detailSheetOverlay').classList.remove('hidden');
-        activeSheet = 'detailSheet';
-        pushSheetState('detailSheet');
+        activeSheet = 'detailSheet'; pushSheetState('detailSheet');
     }
 
-    function closeDetailSheet() {
-        history.back();
-    }
+    function closeDetailSheet() { history.back(); }
 
     function toggleEditMode() {
         isEditMode = !isEditMode;
@@ -430,13 +404,10 @@
             editImageData = "";
             document.getElementById('editFileNameDisplay').innerText = 'Cambiar Foto';
             const wrap = document.getElementById('editCurrentImageWrap');
-            const img = document.getElementById('editCurrentImage');
             if (act.image) {
-                img.src = act.image;
+                document.getElementById('editCurrentImage').src = act.image;
                 wrap.classList.remove('hidden');
-            } else {
-                wrap.classList.add('hidden');
-            }
+            } else wrap.classList.add('hidden');
             document.getElementById('detailViewMode').classList.add('hidden');
             document.getElementById('detailEditMode').classList.remove('hidden');
             document.getElementById('editToggleBtn').innerText = 'Cancelar';
@@ -462,16 +433,14 @@
             image: editImageData || activities[idx].image
         };
         localStorage.setItem('precursor_activities', JSON.stringify(activities));
-        history.back();
-        updateDashboard();
+        history.back(); updateDashboard();
     };
 
     function deleteFromDetail() {
         if (confirm('¿Eliminar registro?')) {
             activities = activities.filter(a => a.id !== currentDetailId);
             localStorage.setItem('precursor_activities', JSON.stringify(activities));
-            history.back();
-            updateDashboard();
+            history.back(); updateDashboard();
         }
     }
 
@@ -487,7 +456,7 @@
                 const canvas = document.createElement('canvas');
                 const MAX = 400;
                 let w = img.width, h = img.height;
-                if (w > MAX) { h *= MAX / w; w = MAX; }
+                if (w > MAX) { h *= MAX/w; w = MAX; }
                 canvas.width = w; canvas.height = h;
                 canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                 editImageData = canvas.toDataURL('image/jpeg', 0.6);
@@ -506,9 +475,8 @@
             const d = new Date(a.date);
             return (d.getMonth() === curM && d.getFullYear() === curY) ? sum + parseFloat(a.hours) : sum;
         }, 0);
-        const actYear = activities.reduce((sum, a) => sum + parseFloat(a.hours), 0);
-        const manualYear = monthlyEntries.reduce((sum, m) => sum + parseFloat(m.hours), 0);
-        const totalYear = actYear + manualYear;
+        const totalYear = activities.reduce((sum, a) => sum + parseFloat(a.hours), 0) + 
+                          monthlyEntries.reduce((sum, m) => sum + parseFloat(m.hours), 0);
         document.getElementById('labelMonth').innerText = totalMonth;
         document.getElementById('labelYear').innerText = Math.round(totalYear);
         const updateRing = (id, cur, goal) => {
@@ -528,19 +496,15 @@
         }
         const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
         list.innerHTML = sorted.map(act => `
-            <div onclick="openDetailSheet('${act.id}')" class="glass squicle p-4 flex gap-4 items-center shadow-sm border border-white/10 relative overflow-hidden apple-btn-active cursor-pointer">
-                ${act.image
-                    ? `<img src="${act.image}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">`
-                    : `<div class="w-14 h-14 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold flex-shrink-0">${act.hours}</div>`
-                }
+            <div onclick="openDetailSheet('${act.id}')" class="glass squicle p-4 flex gap-4 items-center shadow-sm border border-white/10 apple-btn-active cursor-pointer">
+                ${act.image ? `<img src="${act.image}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0">` : `<div class="w-14 h-14 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold flex-shrink-0">${act.hours}</div>`}
                 <div class="flex-1 min-w-0">
                     <p class="text-[10px] font-extrabold text-blue-500 uppercase">${act.category}</p>
                     <h3 class="font-bold text-[16px] truncate">${act.title}</h3>
                     <p class="text-[12px] opacity-40">${new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {day:'numeric', month:'short'})}</p>
                 </div>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-20 flex-shrink-0"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </div>
-        `).join('');
+            </div>`).join('');
     }
 
     document.getElementById('activityForm').onsubmit = (e) => {
@@ -554,11 +518,7 @@
             image: currentImageData
         });
         localStorage.setItem('precursor_activities', JSON.stringify(activities));
-        currentImageData = "";
-        document.getElementById('fileNameDisplay').innerText = 'Añadir Foto';
-        e.target.reset();
-        history.back();
-        updateDashboard();
+        currentImageData = ""; e.target.reset(); history.back(); updateDashboard();
     };
 
     document.getElementById('monthForm').onsubmit = (e) => {
@@ -569,9 +529,7 @@
             hours: parseFloat(document.getElementById('monthHours').value)
         });
         localStorage.setItem('monthly_entries', JSON.stringify(monthlyEntries));
-        e.target.reset();
-        history.back();
-        updateDashboard();
+        e.target.reset(); history.back(); updateDashboard();
     };
 
     function handleFileSelect(input) {
@@ -596,13 +554,7 @@
         reader.readAsDataURL(file);
     }
 
-    function clearData() {
-        if(confirm('Se borrarán todos los datos definitivamente.')) {
-            localStorage.clear();
-            location.reload();
-        }
-    }
-
+    function clearData() { if(confirm('Se borrarán todos los datos definitivamente.')) { localStorage.clear(); location.reload(); } }
     window.onload = updateDashboard;
 </script>
 </body>
