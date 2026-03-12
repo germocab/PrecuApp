@@ -82,7 +82,6 @@
         </button>
     </div>
 
-    <!-- FIX 1: Visor llama _closeViewerUI() directamente, sin pasar por history -->
     <div id="imageViewer" onclick="_closeViewerUI()">
         <button onclick="event.stopPropagation(); _closeViewerUI();" class="absolute top-12 right-6 z-[3100] text-white bg-white/20 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -90,8 +89,7 @@
         <img id="fullImage" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain" onclick="event.stopPropagation()">
     </div>
 
-    <!-- FIX 2: overlay llama closeDetailSheet() que ahora existe como función pública -->
-    <div id="detailSheetOverlay" onclick="closeDetailSheet()" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
+    <div id="detailSheetOverlay" onclick="closeSheetDirectly('detailSheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
     <div id="detailSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet max-h-[92vh] overflow-y-auto">
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
         <div class="px-6 pb-12 space-y-5">
@@ -119,7 +117,7 @@
         </div>
     </div>
 
-    <div id="activitySheetOverlay" onclick="toggleSheet('activitySheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
+    <div id="activitySheetOverlay" onclick="closeSheetDirectly('activitySheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
     <div id="activitySheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet max-h-[92vh] overflow-y-auto">
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
         <div class="px-6 pb-12 space-y-6">
@@ -139,7 +137,7 @@
         </div>
     </div>
 
-    <div id="monthSheetOverlay" onclick="toggleSheet('monthSheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
+    <div id="monthSheetOverlay" onclick="closeSheetDirectly('monthSheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
     <div id="monthSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet p-6 pb-12">
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
         <h3 class="text-2xl font-bold mb-4">Mes Completo</h3>
@@ -147,14 +145,14 @@
             <select id="monthSelect" required class="ios-input font-bold">
                 <option value="">Selecciona Mes</option>
                 <option value="2025-09">Septiembre 2025</option><option value="2025-10">Octubre 2025</option><option value="2025-11">Noviembre 2025</option><option value="2025-12">Diciembre 2025</option>
-                <option value="2026-01">Enero 2026</option><option value="2026-02">Febrero 2026</option><option value="2026-023">Marzo 2026</option><option value="2026-04">Abril 2026</option><option value="2026-05">Mayo 2026</option><option value="2026-06">Junio 2026</option><option value="2026-07">Julio 2026</option><option value="2026-08">Agosto 2026</option><option value="2026-09">Septiembre 2026</option>
+                <option value="2026-01">Enero 2026</option><option value="2026-02">Febrero 2026</option><option value="2026-03">Marzo 2026</option><option value="2026-04">Abril 2026</option><option value="2026-05">Mayo 2026</option><option value="2026-06">Junio 2026</option><option value="2026-07">Julio 2026</option><option value="2026-08">Agosto 2026</option><option value="2026-09">Septiembre 2026</option>
             </select>
             <input type="number" id="monthHours" step="0.5" required placeholder="Total horas" class="ios-input">
             <button type="submit" class="w-full py-4 bg-green-500 text-white font-bold rounded-xl apple-btn-active">Registrar Mes</button>
         </form>
     </div>
 
-    <div id="settingsSheetOverlay" onclick="toggleSheet('settingsSheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
+    <div id="settingsSheetOverlay" onclick="closeSheetDirectly('settingsSheet')" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[80]"></div>
     <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 glass rounded-t-[30px] z-[90] bottom-sheet p-6 pb-12">
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto my-3"></div>
         <h3 class="text-2xl font-bold mb-6">Ajustes</h3>
@@ -174,6 +172,7 @@
     let currentDetailId = null;
     let isEditMode = false;
     let isFabOpen = false;
+    let activeSheet = null;
 
     function migrate() {
         let changed = false;
@@ -187,7 +186,7 @@
     }
     migrate();
 
-    // FIX 1: openViewer ya no usa pushSheetState. _closeViewerUI() cierra directo.
+    // ── Visor de imágenes ──────────────────────────────────────────────
     function openViewer(src) {
         document.getElementById('fullImage').src = src;
         const v = document.getElementById('imageViewer');
@@ -200,53 +199,56 @@
         setTimeout(() => { v.style.display = 'none'; v.classList.remove('active'); }, 300);
     }
 
-    let activeSheet = null;
-    function pushSheetState(id) { history.pushState({ sheet: id }, ''); }
-    window.onpopstate = (e) => {
-        if (isFabOpen) toggleFab();
-        else if (activeSheet === 'detailSheet') _closeDetailSheetUI();
-        else if (activeSheet) _toggleSheetClose(activeSheet);
-    };
+    // ── Sheets: abrir / cerrar directo (sin history API) ──────────────
+    function openSheet(id) {
+        closeAllSheets();
+        document.getElementById(id).classList.add('active');
+        document.getElementById(id + 'Overlay').classList.remove('hidden');
+        activeSheet = id;
+    }
 
-    function _toggleSheetClose(id) {
+    function closeSheetDirectly(id) {
         document.getElementById(id).classList.remove('active');
         document.getElementById(id + 'Overlay').classList.add('hidden');
+        if (activeSheet === id) activeSheet = null;
+        if (id === 'detailSheet') { currentDetailId = null; isEditMode = false; }
+    }
+
+    function closeAllSheets() {
+        ['activitySheet', 'monthSheet', 'detailSheet', 'settingsSheet'].forEach(id => {
+            document.getElementById(id).classList.remove('active');
+            document.getElementById(id + 'Overlay').classList.add('hidden');
+        });
         activeSheet = null;
     }
 
-    // FIX 2: closeDetailSheet() es una función pública que usa history.back() correctamente
-    function closeDetailSheet() {
-        if (activeSheet === 'detailSheet') history.back();
-        else _closeDetailSheetUI();
-    }
-    function _closeDetailSheetUI() {
-        document.getElementById('detailSheet').classList.remove('active');
-        document.getElementById('detailSheetOverlay').classList.add('hidden');
-        currentDetailId = null; isEditMode = false; tempImages = []; activeSheet = null;
-    }
-
+    // Mantener toggleSheet para el botón de settings (por compatibilidad)
     function toggleSheet(id) {
         const s = document.getElementById(id);
-        if (s.classList.contains('active')) history.back();
-        else {
-            s.classList.add('active');
-            document.getElementById(id + 'Overlay').classList.remove('hidden');
-            activeSheet = id; pushSheetState(id);
-        }
+        if (s.classList.contains('active')) closeSheetDirectly(id);
+        else openSheet(id);
     }
 
+    // ── FAB ───────────────────────────────────────────────────────────
     function toggleFab() {
-        const menu = document.getElementById('fabMenu'), icon = document.getElementById('fabIcon'), overlay = document.getElementById('fabOverlay');
+        const menu = document.getElementById('fabMenu');
+        const icon = document.getElementById('fabIcon');
+        const overlay = document.getElementById('fabOverlay');
         isFabOpen = !isFabOpen;
         if (isFabOpen) {
-            menu.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none'); menu.classList.add('active');
-            overlay.classList.remove('hidden'); icon.style.transform = 'rotate(135deg)';
+            menu.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            menu.classList.add('active');
+            overlay.classList.remove('hidden');
+            icon.style.transform = 'rotate(135deg)';
         } else {
-            menu.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none'); menu.classList.remove('active');
-            overlay.classList.add('hidden'); icon.style.transform = 'rotate(0deg)';
+            menu.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            menu.classList.remove('active');
+            overlay.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
         }
     }
 
+    // ── Imágenes ──────────────────────────────────────────────────────
     async function handleFileSelect(input, isEdit) {
         const files = Array.from(input.files).slice(0, 5);
         const label = document.getElementById(isEdit ? 'editFileNameDisplay' : 'fileNameDisplay');
@@ -270,7 +272,7 @@
                     const canvas = document.createElement('canvas');
                     const MAX = 800;
                     let w = img.width, h = img.height;
-                    if (w > MAX) { h *= MAX/w; w = MAX; }
+                    if (w > MAX) { h *= MAX / w; w = MAX; }
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                     res(canvas.toDataURL('image/jpeg', 0.7));
@@ -282,28 +284,34 @@
 
     function createCollageHTML(images) {
         if (!images || images.length === 0) return `<div class="w-full h-32 bg-blue-500/5 rounded-2xl flex items-center justify-center opacity-20"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>`;
-        return `<div class="collage-grid grid-${images.length}">${images.map(src => `<img src="${src}" class="collage-img" onclick="openViewer('${src}')">`).join('')}</div>`;
+        const n = Math.min(images.length, 5);
+        return `<div class="collage-grid grid-${n}">${images.slice(0, n).map(src => `<img src="${src}" class="collage-img" onclick="openViewer('${src}')">`).join('')}</div>`;
     }
 
+    // ── Abrir sheets ──────────────────────────────────────────────────
     function openActivitySheet() {
         document.getElementById('date').value = new Date().toISOString().split('T')[0];
-        tempImages = []; document.getElementById('fileNameDisplay').innerText = "Añadir Fotos (Max 5)";
-        toggleSheet('activitySheet');
+        tempImages = [];
+        document.getElementById('fileNameDisplay').innerText = "Añadir Fotos (Max 5)";
+        document.getElementById('activityForm').reset();
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        openSheet('activitySheet');
     }
 
     function openDetailSheet(id) {
         const act = activities.find(a => a.id === id);
         if (!act) return;
-        currentDetailId = id; isEditMode = false;
+        currentDetailId = id;
+        isEditMode = false;
         document.getElementById('detailSheetTitle').innerText = act.title;
         document.getElementById('detailHours').innerText = act.hours;
         document.getElementById('detailCategory').innerText = act.category;
-        document.getElementById('detailDate').innerText = new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
+        document.getElementById('detailDate').innerText = new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
         document.getElementById('detailCollageWrap').innerHTML = createCollageHTML(act.images || []);
         document.getElementById('detailViewMode').classList.remove('hidden');
         document.getElementById('detailEditMode').classList.add('hidden');
         document.getElementById('editToggleBtn').innerText = 'Editar';
-        toggleSheet('detailSheet');
+        openSheet('detailSheet');
     }
 
     function toggleEditMode() {
@@ -314,7 +322,7 @@
             document.getElementById('editDate').value = act.date;
             document.getElementById('editHours').value = act.hours;
             document.getElementById('editCategory').value = act.category;
-            tempImages = act.images || [];
+            tempImages = act.images ? [...act.images] : [];
             document.getElementById('editFileNameDisplay').innerText = `Mantener ${tempImages.length} fotos`;
             document.getElementById('detailViewMode').classList.add('hidden');
             document.getElementById('detailEditMode').classList.remove('hidden');
@@ -326,44 +334,81 @@
         }
     }
 
+    // ── Guardar (sin history.back) ─────────────────────────────────────
+    function saveAndReload(formId) {
+        localStorage.setItem('precursor_activities', JSON.stringify(activities));
+        localStorage.setItem('monthly_entries', JSON.stringify(monthlyEntries));
+
+        if (formId) {
+            const form = document.getElementById(formId);
+            if (form) form.reset();
+        }
+
+        tempImages = [];
+        closeAllSheets();
+        updateDashboard();
+    }
+
+    // ── Formularios ───────────────────────────────────────────────────
     document.getElementById('activityForm').onsubmit = (e) => {
         e.preventDefault();
-        activities.push({ id: Date.now().toString(), title: document.getElementById('title').value, date: document.getElementById('date').value, hours: parseFloat(document.getElementById('hours').value), category: document.getElementById('category').value, images: tempImages });
-        saveAndReload(e);
+        activities.push({
+            id: Date.now().toString(),
+            title: document.getElementById('title').value,
+            date: document.getElementById('date').value,
+            hours: parseFloat(document.getElementById('hours').value),
+            category: document.getElementById('category').value,
+            images: [...tempImages]
+        });
+        saveAndReload('activityForm');
     };
 
     document.getElementById('editForm').onsubmit = (e) => {
         e.preventDefault();
         const idx = activities.findIndex(a => a.id === currentDetailId);
-        activities[idx] = { ...activities[idx], title: document.getElementById('editTitle').value, date: document.getElementById('editDate').value, hours: parseFloat(document.getElementById('editHours').value), category: document.getElementById('editCategory').value, images: tempImages.length > 0 ? tempImages : activities[idx].images };
-        saveAndReload(e);
+        if (idx !== -1) {
+            activities[idx] = {
+                ...activities[idx],
+                title: document.getElementById('editTitle').value,
+                date: document.getElementById('editDate').value,
+                hours: parseFloat(document.getElementById('editHours').value),
+                category: document.getElementById('editCategory').value,
+                images: tempImages.length > 0 ? [...tempImages] : (activities[idx].images || [])
+            };
+        }
+        saveAndReload('editForm');
     };
 
     document.getElementById('monthForm').onsubmit = (e) => {
         e.preventDefault();
-        monthlyEntries.push({ id: Date.now().toString(), month: document.getElementById('monthSelect').value, hours: parseFloat(document.getElementById('monthHours').value) });
-        localStorage.setItem('monthly_entries', JSON.stringify(monthlyEntries));
-        saveAndReload(e);
+        monthlyEntries.push({
+            id: Date.now().toString(),
+            month: document.getElementById('monthSelect').value,
+            hours: parseFloat(document.getElementById('monthHours').value)
+        });
+        saveAndReload('monthForm');
     };
 
-    function saveAndReload(e) {
-        localStorage.setItem('precursor_activities', JSON.stringify(activities));
-        if(e) e.target.reset();
-        history.back();
-        updateDashboard();
+    function deleteFromDetail() {
+        if (confirm('¿Eliminar este registro?')) {
+            activities = activities.filter(a => a.id !== currentDetailId);
+            saveAndReload(null);
+        }
     }
 
-    function deleteFromDetail() { if (confirm('¿Eliminar este registro?')) { activities = activities.filter(a => a.id !== currentDetailId); saveAndReload(); } }
-
+    // ── Dashboard ─────────────────────────────────────────────────────
     function updateDashboard() {
         const now = new Date(), curM = now.getMonth(), curY = now.getFullYear();
         const totalMonth = activities.reduce((sum, a) => {
-            const d = new Date(a.date);
+            const d = new Date(a.date + 'T12:00:00');
             return (d.getMonth() === curM && d.getFullYear() === curY) ? sum + parseFloat(a.hours) : sum;
         }, 0);
-        const totalYear = activities.reduce((sum, a) => sum + parseFloat(a.hours), 0) + monthlyEntries.reduce((sum, m) => sum + parseFloat(m.hours), 0);
+        const totalYear = activities.reduce((sum, a) => sum + parseFloat(a.hours), 0)
+            + monthlyEntries.reduce((sum, m) => sum + parseFloat(m.hours), 0);
+
         document.getElementById('labelMonth').innerText = totalMonth;
         document.getElementById('labelYear').innerText = Math.round(totalYear);
+
         const upRing = (id, cur, goal) => {
             const r = document.getElementById(id), circ = 263.9;
             r.style.strokeDashoffset = circ - (Math.min(cur / goal, 1) * circ);
@@ -375,20 +420,26 @@
 
     function renderActivities() {
         const list = document.getElementById('activitiesList');
-        if (activities.length === 0) { list.innerHTML = `<div class="p-10 text-center opacity-30 font-bold">Sin registros</div>`; return; }
+        if (activities.length === 0) {
+            list.innerHTML = `<div class="p-10 text-center opacity-30 font-bold">Sin registros</div>`;
+            return;
+        }
         const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
         list.innerHTML = sorted.map(act => `
             <div onclick="openDetailSheet('${act.id}')" class="glass squicle p-4 flex gap-4 items-center border border-white/10 apple-btn-active cursor-pointer">
-                ${act.images && act.images[0] ? `<img src="${act.images[0]}" class="w-14 h-14 rounded-xl object-cover">` : `<div class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold">${act.hours}</div>`}
+                ${act.images && act.images[0]
+                    ? `<img src="${act.images[0]}" class="w-14 h-14 rounded-xl object-cover">`
+                    : `<div class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold">${act.hours}</div>`}
                 <div class="flex-1 min-w-0">
                     <p class="text-[10px] font-bold text-blue-500 uppercase">${act.category}</p>
                     <h3 class="font-bold truncate">${act.title}</h3>
-                    <p class="text-[12px] opacity-40">${new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', {day:'numeric', month:'short'})}</p>
+                    <p class="text-[12px] opacity-40">${new Date(act.date + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</p>
                 </div>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="opacity-20"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </div>`).join('');
     }
 
+    // ── Dark mode ─────────────────────────────────────────────────────
     function toggleDarkMode() {
         const isDark = document.getElementById('darkModeToggle').checked;
         document.body.classList.toggle('dark-mode', isDark);
@@ -399,7 +450,13 @@
         document.getElementById('darkModeToggle').checked = true;
     }
 
-    function clearData() { if(confirm('¿Borrar todo el historial permanentemente?')) { localStorage.clear(); location.reload(); } }
+    function clearData() {
+        if (confirm('¿Borrar todo el historial permanentemente?')) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
     window.onload = updateDashboard;
     </script>
 </body>
